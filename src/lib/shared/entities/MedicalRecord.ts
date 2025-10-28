@@ -1,10 +1,8 @@
-import type { uuid } from "../types/type_def";
+import type { JsonObject, uuid } from "../types/type_def";
 import { Patient } from "./Patient";
 import { User } from "./User";
 import { Departments } from "./Departments";
 import { Utils } from "../utils/Utils";
-
-type JsonObject = Map<any, any>;
 
 export class MedicalRecord extends Utils {
     constructor(

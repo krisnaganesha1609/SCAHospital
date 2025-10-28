@@ -1,4 +1,4 @@
-import type { uuid } from "../types/type_def";
+import type { reservationStatus, uuid } from "../types/type_def";
 import { Utils, type FromJson } from "../utils/Utils";
 import { Patient } from "./Patient";
 import { User } from "./User";
@@ -10,7 +10,7 @@ export class Reservation extends Utils {
         private receptionist: User,
         private doctor: User,
         private reservationTime: Date,
-        private status: string,
+        private status: reservationStatus,
         private source: string,
         private notes: string,
         private createdAt: Date

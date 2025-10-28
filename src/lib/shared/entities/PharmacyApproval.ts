@@ -1,4 +1,4 @@
-import type { uuid } from "../types/type_def";
+import type { pharmacyApprovalStatus, uuid } from "../types/type_def";
 import { Utils } from "../utils/Utils";
 import { Prescription } from "./Prescription";
 import { User } from "./User";
@@ -9,7 +9,7 @@ export class PharmacyApproval extends Utils {
         private prescription: Prescription,
         private pharmacist: User,
         private dispensedAt: Date,
-        private status: string,
+        private status: pharmacyApprovalStatus,
         private totalPrice: number
     ) { super(id); }
     public getId(): uuid {

@@ -1,4 +1,4 @@
-import type { uuid } from "../types/type_def";
+import type { prescriptionStatus, uuid } from "../types/type_def";
 import type { User } from "./User";
 import type { MedicalRecord } from "./MedicalRecord";
 import { Utils } from "../utils/Utils";
@@ -9,7 +9,7 @@ export class Prescription extends Utils {
         private medicalRecord: MedicalRecord,
         private doctor: User,
         private prescribedAt: Date,
-        private status: string,
+        private status: prescriptionStatus,
         private totalCost: number,
         private notes: string,
         private createdAt: Date

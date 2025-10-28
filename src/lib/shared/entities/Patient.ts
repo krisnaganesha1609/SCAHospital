@@ -1,4 +1,4 @@
-import type { uuid } from "../types/type_def";
+import type { JsonObject, uuid } from "../types/type_def";
 import { Utils } from "../utils/Utils";
 
 export class Patient extends Utils{
@@ -43,7 +43,7 @@ export class Patient extends Utils{
     public getAllergies(): string {
         return this.allergies;
     }
-    public getEmergencyContact(): Map<any, any> {
+    public getEmergencyContact(): JsonObject {
         return this.emergencyContact;
     }
     public getCreatedAt(): Date {

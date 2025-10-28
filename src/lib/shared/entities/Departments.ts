@@ -3,7 +3,7 @@ import { Utils } from "../utils/Utils";
 
 export class Departments extends Utils {
     constructor(
-        private id: uuid,
+        id: uuid,
         private name: string,
         private description: string,
     ) { super(id); }

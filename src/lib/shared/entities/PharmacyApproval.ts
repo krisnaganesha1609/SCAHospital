@@ -5,7 +5,7 @@ import { User } from "./User";
 
 export class PharmacyApproval extends Utils {
     constructor(
-        private id: uuid,
+        id: uuid,
         private prescription: Prescription,
         private pharmacist: User,
         private dispensedAt: Date,

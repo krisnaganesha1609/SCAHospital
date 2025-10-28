@@ -3,7 +3,7 @@ import { Utils } from "../utils/Utils";
 
 export class User extends Utils {
     constructor(
-        private userId: uuid,
+        id: uuid,
         private fullName: string,
         private username: string,
         private passwordHash: string,
@@ -12,11 +12,11 @@ export class User extends Utils {
         private email: string,
         private createdAt: Date
     ) {
-        super(userId);
+        super(id);
     }
 
     public getUserId(): uuid {
-        return this.userId;
+        return this.id;
     }
     public getFullName(): string {
         return this.fullName;
@@ -41,7 +41,7 @@ export class User extends Utils {
     }
     public toJson(): object {
         return {
-            userId: this.userId,
+            userId: this.id,
             fullName: this.fullName,
             username: this.username,
             passwordHash: this.passwordHash,
@@ -53,7 +53,7 @@ export class User extends Utils {
     }
     public static fromJson(json: any): User {
         return new User(
-            json.userId,
+            json.id,
             json.fullName,
             json.username,
             json.passwordHash,

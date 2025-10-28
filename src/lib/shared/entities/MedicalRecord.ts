@@ -8,7 +8,7 @@ type JsonObject = Map<any, any>;
 
 export class MedicalRecord extends Utils {
     constructor(
-        private id: uuid,
+        id: uuid,
         private patient: Patient,
         private doctor: User,
         private department: Departments,

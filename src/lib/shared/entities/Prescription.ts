@@ -5,7 +5,7 @@ import { Utils } from "../utils/Utils";
 
 export class Prescription extends Utils {
     constructor(
-        private id: uuid,
+        id: uuid,
         private medicalRecord: MedicalRecord,
         private doctor: User,
         private prescribedAt: Date,

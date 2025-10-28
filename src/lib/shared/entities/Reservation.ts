@@ -5,7 +5,7 @@ import { User } from "./User";
 
 export class Reservation extends Utils {
     constructor(
-        private id: uuid,
+        id: uuid,
         private patient: Patient,
         private receptionist: User,
         private doctor: User,

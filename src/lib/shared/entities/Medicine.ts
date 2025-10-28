@@ -3,7 +3,7 @@ import { Utils } from "../utils/Utils";
 
 export class Medicine extends Utils {
     constructor(
-        private id: uuid,
+        id: uuid,
         private code: string,
         private name: string,
         private form: string,

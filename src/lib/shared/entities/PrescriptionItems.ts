@@ -6,7 +6,7 @@ import { Utils } from "../utils/Utils";
 export class PrescriptionItems extends Utils {
     
     constructor(
-        private id: uuid,
+        id: uuid,
         private prescription: Prescription,
         private medicine: Medicine,
         private medicineName: string,

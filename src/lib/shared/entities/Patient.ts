@@ -12,7 +12,7 @@ export class Patient extends Utils{
         private phone: string,
         private bloodType: string,
         private allergies: string,
-        private emergencyContact: Map<any, any>,
+        private emergencyContact: JsonObject,
         private createdAt: Date
     ) {super(id);}
 

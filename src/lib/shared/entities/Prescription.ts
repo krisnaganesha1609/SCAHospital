@@ -40,7 +40,7 @@ export class Prescription extends Utils {
         return this.createdAt;
     }
 
-    public toJson(): any {
+    public toJson(): object {
         return {
             id: this.id,
             medicalRecord: this.medicalRecord,

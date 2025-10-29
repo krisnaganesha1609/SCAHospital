@@ -1,9 +1,10 @@
 import type { Reservation } from "$lib/shared/entities/Reservation";
+import type { uuid } from "$lib/shared/types/type_def";
 
 export abstract class ReservationRepository {
     abstract createReservation(data: Partial<Reservation>): Promise<any>;
-    abstract getReservationById(id: string): Promise<any>;
-    abstract updateReservation(id: string, data: Partial<Reservation>): Promise<any>;
-    abstract deleteReservation(id: string): Promise<void>;
+    abstract getReservationById(id: uuid): Promise<any>;
+    abstract updateReservation(id: uuid, data: Partial<Reservation>): Promise<any>;
+    abstract deleteReservation(id: uuid): Promise<void>;
     abstract listReservations(filter?: any): Promise<any[]>;
 }

@@ -25,7 +25,9 @@
 	<title>SCA Hospital</title>
 </svelte:head>
 
-<NavigationMenu.Root class="w-full max-w-full bg-[#1A1A1A] text-center text-white sticky">
+<NavigationMenu.Root
+	class="sticky top-0 z-50 w-full max-w-full bg-[#1A1A1A] text-center text-white shadow-md"
+>
 	<NavigationMenu.List class=" flex w-full items-center justify-center space-x-8 align-middle">
 		<NavigationMenu.Item>
 			<NavigationMenu.Link class="cursor-pointer">
@@ -53,3 +55,14 @@
 </NavigationMenu.Root>
 
 {@render children?.()}
+
+<footer class="mt-20 bg-black py-12 text-white">
+	<div class="flex flex-col items-center gap-4">
+		<img src={logo} alt="SCA Hospital" class="w-96 opacity-90" />
+
+		<p class="text-center text-sm text-white/70">
+			© 2025 SCA Hospital — Built with compassion and precision.
+		</p>
+	</div>
+</footer>
+

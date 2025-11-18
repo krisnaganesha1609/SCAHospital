@@ -26,7 +26,7 @@
 			></NavigationMenu.Item
 		>
 		<NavigationMenu.Item
-			><NavigationMenu.Link class="cursor-pointer">Sign In</NavigationMenu.Link
+			><NavigationMenu.Link href="/auth" class="cursor-pointer">Sign In</NavigationMenu.Link
 			></NavigationMenu.Item
 		>
 		<NavigationMenu.Item><Search color="#ffffff" /></NavigationMenu.Item>

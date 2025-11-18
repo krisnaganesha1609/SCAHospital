@@ -27,7 +27,7 @@ export const actions: Actions = {
       redirect(303, '/auth/error')
     } else {
       console.log(data)
-      redirect(303, '/private')
+      redirect(303, '/app/dashboard/${role?.toLowerCase()}')
     }
   },
 }

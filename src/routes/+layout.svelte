@@ -1,9 +1,11 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import logo from '$lib/assets/logo.svg';
+	import logo from '$lib/assets/logo-white.svg';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
+	import { Search } from '@lucide/svelte';
 
 	let { data, children } = $props();
 	let { session, supabase } = $derived(data);
@@ -23,8 +25,31 @@
 	<title>SCA Hospital</title>
 </svelte:head>
 
-<div class="mx-auto my-8 w-[500px]">
-	<img src={logo} alt="Logo" />
-</div>
+<NavigationMenu.Root class="w-full max-w-full bg-[#1A1A1A] text-center text-white sticky">
+	<NavigationMenu.List class=" flex w-full items-center justify-center space-x-8 align-middle">
+		<NavigationMenu.Item>
+			<NavigationMenu.Link class="cursor-pointer">
+				<div class=" h-[54px] w-[170px]">
+					<img src={logo} alt="Logo" />
+				</div>
+			</NavigationMenu.Link>
+		</NavigationMenu.Item>
+		<NavigationMenu.Item>
+			<NavigationMenu.Link class="cursor-pointer">Home</NavigationMenu.Link>
+		</NavigationMenu.Item>
+		<NavigationMenu.Item
+			><NavigationMenu.Link class="cursor-pointer">Values</NavigationMenu.Link></NavigationMenu.Item
+		>
+		<NavigationMenu.Item
+			><NavigationMenu.Link class="cursor-pointer">Announcements</NavigationMenu.Link
+			></NavigationMenu.Item
+		>
+		<NavigationMenu.Item
+			><NavigationMenu.Link class="cursor-pointer">Sign In</NavigationMenu.Link
+			></NavigationMenu.Item
+		>
+		<NavigationMenu.Item><Search color="#ffffff" /></NavigationMenu.Item>
+	</NavigationMenu.List>
+</NavigationMenu.Root>
 
 {@render children?.()}

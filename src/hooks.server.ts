@@ -3,6 +3,7 @@ import { type Handle, redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY } from '$env/static/public'
+import { AuthServiceImpl } from '$lib/server/services/AuthServiceImpl'
 
 const supabase: Handle = async ({ event, resolve }) => {
   /**
@@ -32,23 +33,21 @@ const supabase: Handle = async ({ event, resolve }) => {
    * JWT before returning the session.
    */
   event.locals.safeGetSession = async () => {
-    const {
-      data: { session },
-    } = await event.locals.supabase.auth.getSession()
-    if (!session) {
-      return { session: null, user: null }
+    try {
+      const enriched = await new AuthServiceImpl().getEnrichedSessionFromClient(event.locals.supabase);
+      event.locals.session = enriched.session;
+      event.locals.user = enriched.user;
+      event.locals.profile = enriched.profile;
+      event.locals.role = enriched.role;
+      return enriched;
     }
-
-    const {
-      data: { user },
-      error,
-    } = await event.locals.supabase.auth.getUser()
-    if (error) {
-      // JWT validation has failed
-      return { session: null, user: null }
+    catch (error) {// on error, ensure locals are null
+      event.locals.session = null;
+      event.locals.user = null;
+      event.locals.profile = null;
+      event.locals.role = null;
+      return { session: null, user: null, profile: null, role: null };
     }
-
-    return { session, user }
   }
 
   return resolve(event, {
@@ -63,9 +62,11 @@ const supabase: Handle = async ({ event, resolve }) => {
 }
 
 const authGuard: Handle = async ({ event, resolve }) => {
-  const { session, user } = await event.locals.safeGetSession()
+  const { session, user, profile, role } = await event.locals.safeGetSession()
   event.locals.session = session
   event.locals.user = user
+  event.locals.profile = profile
+  event.locals.role = role
 
   if (!event.locals.session && event.url.pathname.startsWith('/private')) {
     redirect(303, '/auth')

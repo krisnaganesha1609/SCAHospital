@@ -5,7 +5,9 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 </script>
 
-<Card.Root class="mx-auto my-8 w-full max-w-sm ">
+<Card.Root
+	class="absolute top-1/2 left-1/2 mx-auto my-8 w-full max-w-sm translate-x-[-50%] translate-y-[-50%] transform"
+>
 	<Card.Header>
 		<Card.Title class="text-center text-2xl">Login</Card.Title>
 	</Card.Header>

@@ -2,22 +2,10 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import logo from '$lib/assets/logo-white.svg';
-	import { invalidate } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
 	import { Search } from '@lucide/svelte';
 
-	let { data, children } = $props();
-	let { session, supabase } = $derived(data);
-
-	onMount(() => {
-		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
-			if (newSession?.expires_at !== session?.expires_at) {
-				invalidate('supabase:auth');
-			}
-		});
-		return () => data.subscription.unsubscribe();
-	});
+	let { children } = $props();
 </script>
 
 <svelte:head>
@@ -65,4 +53,3 @@
 		</p>
 	</div>
 </footer>
-

@@ -5,17 +5,20 @@
 	import boxblue from '$lib/assets/box-blue.png';
 	import boxred from '$lib/assets/box-red.png';
 	import boxwhitewhite from '$lib/assets/box-white-white.png';
+	import LandingNavMenu from '$lib/shared/components/LandingNavMenu.svelte';
+	import Footer from '$lib/shared/components/Footer.svelte';
 </script>
 
-<div class="flex w-full flex-col">
+<LandingNavMenu />
 
+<div class="flex w-full flex-col">
 	<!-- HERO 1 -->
 	<section
 		class="relative flex min-h-screen items-center justify-center bg-cover bg-center bg-no-repeat text-white"
 		style="background-image: url({heroonepicture});"
 	>
 		<!-- GRADIENT -->
-		<div class="absolute inset-0 bg-gradient-to-b from-[#3F3F3F] to-white/10"></div>
+		<div class="absolute inset-0 bg-linear-to-b from-[#3F3F3F] to-white/10"></div>
 
 		<!-- TEXT -->
 		<div class="relative container px-4 text-center">
@@ -81,11 +84,11 @@
 	<section class="mx-auto grid max-w-6xl gap-6 bg-white px-6 pb-24 sm:grid-cols-2">
 		<!-- CARD 1 -->
 		<div
-			class="relative flex h-[240px] flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-white shadow"
+			class="relative flex h-60 flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-white shadow"
 			style="background-image: url({boxblue}); background-size: cover; background-position: center;"
 		>
 			<div
-				class="absolute inset-0 bg-gradient-to-b from-blue-700/90 via-blue-700/60 to-transparent"
+				class="absolute inset-0 bg-linear-to-b from-blue-700/90 via-blue-700/60 to-transparent"
 			></div>
 			<div class="relative z-10">
 				<h3 class="text-xl font-semibold">Excellence in Care</h3>
@@ -98,12 +101,10 @@
 
 		<!-- CARD 2 -->
 		<div
-			class="relative flex h-[240px] flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-gray-900 shadow"
+			class="relative flex h-60 flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-gray-900 shadow"
 			style="background-image: url({boxwhitewhite}); background-size: cover; background-position: center;"
 		>
-			<div
-				class="absolute inset-0 bg-gradient-to-b from-white/95 via-white/70 to-transparent"
-			></div>
+			<div class="absolute inset-0 bg-linear-to-b from-white/95 via-white/70 to-transparent"></div>
 			<div class="relative z-10">
 				<h3 class="text-xl font-semibold">Innovation for Healing</h3>
 				<p class="mt-3 text-sm opacity-90">
@@ -115,12 +116,10 @@
 
 		<!-- CARD 3 -->
 		<div
-			class="relative flex h-[240px] flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-gray-900 shadow"
+			class="relative flex h-60 flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-gray-900 shadow"
 			style="background-image: url({boxwhitewhite}); background-size: cover; background-position: center;"
 		>
-			<div
-				class="absolute inset-0 bg-gradient-to-b from-white/95 via-white/70 to-transparent"
-			></div>
+			<div class="absolute inset-0 bg-linear-to-b from-white/95 via-white/70 to-transparent"></div>
 			<div class="relative z-10">
 				<h3 class="text-xl font-semibold">Integrity in Every Step</h3>
 				<p class="mt-3 text-sm opacity-90">
@@ -132,11 +131,11 @@
 
 		<!-- CARD 4 -->
 		<div
-			class="relative flex h-[240px] flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-white shadow"
+			class="relative flex h-60 flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-white shadow"
 			style="background-image: url({boxred}); background-size: cover; background-position: center;"
 		>
 			<div
-				class="absolute inset-0 bg-gradient-to-b from-pink-600/90 via-pink-600/60 to-transparent"
+				class="absolute inset-0 bg-linear-to-b from-pink-600/90 via-pink-600/60 to-transparent"
 			></div>
 			<div class="relative z-10">
 				<h3 class="text-xl font-semibold">Human-Centered Experience</h3>
@@ -152,7 +151,6 @@
 	<section class="bg-white py-20 text-black">
 		<div class="container mx-auto max-w-6xl px-6">
 			<div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-
 				<!-- LEFT -->
 				<div class="order-1 md:order-1">
 					<h2 class="mb-4 text-3xl font-semibold">Every story reminds us why we care.</h2>
@@ -176,3 +174,5 @@
 		</div>
 	</section>
 </div>
+
+<Footer />

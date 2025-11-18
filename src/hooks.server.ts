@@ -35,6 +35,7 @@ const supabase: Handle = async ({ event, resolve }) => {
   event.locals.safeGetSession = async () => {
     try {
       const enriched = await new AuthServiceImpl().getEnrichedSessionFromClient(event.locals.supabase);
+      console.log('Enriched session:', enriched);
       event.locals.session = enriched.session;
       event.locals.user = enriched.user;
       event.locals.profile = enriched.profile;
@@ -68,12 +69,12 @@ const authGuard: Handle = async ({ event, resolve }) => {
   event.locals.profile = profile
   event.locals.role = role
 
-  if (!event.locals.session && event.url.pathname.startsWith('/private')) {
+  if (!event.locals.session && event.url.pathname.startsWith('/app')) {
     redirect(303, '/auth')
   }
 
   if (event.locals.session && event.url.pathname === '/auth') {
-    redirect(303, '/private')
+    redirect(303, `/app/dashboard/${role?.toLowerCase()}`)
   }
 
   return resolve(event)

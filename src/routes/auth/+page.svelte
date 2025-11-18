@@ -3,34 +3,81 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
+	import Footer from '$lib/shared/components/Footer.svelte';
+	import logo from '$lib/assets/logo.svg';
+	import herobg from '$lib/assets/hero-bg-login.png';
 </script>
 
-<Card.Root
-	class="absolute top-1/2 left-1/2 mx-auto my-8 w-full max-w-sm translate-x-[-50%] translate-y-[-50%] transform"
+<div
+	class="relative flex min-h-screen w-full flex-col overflow-hidden bg-cover bg-center"
+	style="background-image: url({herobg});"
 >
-	<Card.Header>
-		<Card.Title class="text-center text-2xl">Login</Card.Title>
-	</Card.Header>
-	<Card.Content>
-	<form method="POST" action="?/login">
-		<div class="flex flex-col gap-6">
-			<div class="grid gap-2">
-				<Label for="email">Email</Label>
-				<Input id="email" type="email" name="email" placeholder="doctor@example.com" required />
-			</div>
-			<div class="grid gap-2">
-				<div class="flex items-center">
-					<Label for="password">Password</Label>
-					<a href="##" class="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-						Forgot your password?
-					</a>
-				</div>
-				<Input id="password" type="password" name="password" required />
-			</div>
+	<div
+		class="pointer-events-none absolute inset-0 bg-gradient-to-b from-gray-800/70 via-gray-700/50 to-gray-600/35 [mask-image:linear-gradient(to_bottom,black_10%,black_20%,transparent_100%)]"
+	></div>
+	<!-- Main area: grows to fill available space and centers the card -->
+	<main class="mt-8 flex flex-1 items-center justify-center px-4">
+		<Card.Root class="w-full max-w-sm rounded-4xl bg-white/90 p-6 shadow-2xl backdrop-blur-lg">
+			<Card.Header class="flex flex-col items-center">
+				<img src={logo} alt="Logo" class="mb-4 h-20" />
+			</Card.Header>
 
-			<Button type="submit" class="w-full mt-4">Login</Button>
+			<Card.Content>
+				<form method="POST" action="?/login" class="flex flex-col gap-6">
+					<div class="grid gap-2">
+						<Input
+							id="email"
+							type="email"
+							name="email"
+							placeholder="Email"
+							required
+							class="rounded-full py-6 text-lg"
+						/>
+					</div>
+
+					<div class="grid gap-2">
+						<Input
+							id="password"
+							type="password"
+							name="password"
+							placeholder="Password"
+							required
+							class="rounded-full py-6 text-lg"
+						/>
+					</div>
+
+					<Button type="submit" class="mt-2 w-full rounded-full py-6">Login</Button>
+				</form>
+			</Card.Content>
+		</Card.Root>
+	</main>
+
+	<!-- Footer row: full width, not constrained by the centered card -->
+	<footer class="w-full flex-shrink-0">
+		<div class="mx-auto max-w-full">
+			<!-- Footer component is now inside a full-width container so it won't be squished -->
+			<Footer />
 		</div>
-	</form>
-</Card.Content>
+	</footer>
+</div>
 
-</Card.Root>
+<style>
+	/* Make sure the page never scrolls and uses the full viewport height */
+	:global(html),
+	:global(body) {
+		height: 100%;
+		margin: 0;
+	}
+
+	/* Optional: keep overflow visible only when necessary. If you truly want no scrolling at all,
+uncomment the next rule, but it may hide content on very small devices. */
+	/* :global(body) { overflow: hidden; } */
+
+	/* Small tweak: ensure the footer image inside Footer.svelte is responsive and won't force large width */
+	:global(.footer-logo) {
+		max-width: 100%; /* replace fixed w-96 */
+		width: 100%;
+		height: auto;
+		opacity: 0.9;
+	}
+</style>

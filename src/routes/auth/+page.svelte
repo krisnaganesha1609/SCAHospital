@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Label } from '$lib/components/ui/label/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import Footer from '$lib/shared/components/Footer.svelte';
@@ -13,7 +12,7 @@
 	style="background-image: url({herobg});"
 >
 	<div
-		class="pointer-events-none absolute inset-0 bg-gradient-to-b from-gray-800/70 via-gray-700/50 to-gray-600/35 [mask-image:linear-gradient(to_bottom,black_10%,black_20%,transparent_100%)]"
+		class="pointer-events-none absolute inset-0 bg-linear-to-b from-gray-800/70 via-gray-700/50 to-gray-600/35 mask-[linear-gradient(to_bottom,black_10%,black_20%,transparent_100%)]"
 	></div>
 	<!-- Main area: grows to fill available space and centers the card -->
 	<main class="mt-8 flex flex-1 items-center justify-center px-4">
@@ -53,7 +52,7 @@
 	</main>
 
 	<!-- Footer row: full width, not constrained by the centered card -->
-	<footer class="w-full flex-shrink-0">
+	<footer class="w-full shrink-0">
 		<div class="mx-auto max-w-full">
 			<!-- Footer component is now inside a full-width container so it won't be squished -->
 			<Footer />

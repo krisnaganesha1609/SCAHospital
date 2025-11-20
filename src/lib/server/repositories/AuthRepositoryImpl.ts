@@ -1,5 +1,4 @@
 import type { AuthRepository } from "./interfaces/AuthRepository";
-import { supabase } from "../../supabaseClient";
 import { User } from "$lib/shared/entities";
 import type { SupabaseClient } from "@supabase/supabase-js";
 

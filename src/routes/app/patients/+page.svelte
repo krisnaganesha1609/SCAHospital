@@ -39,7 +39,9 @@
 				<Item.Root class="mb-4 border border-gray-300 bg-white p-4 shadow-sm hover:shadow-md">
 					<Item.Content class="flex flex-col gap-1">
 						<div class="">
-							<Item.Title>{patient.getFullName()}</Item.Title>
+							<Item.Title
+								>{patient.getFullName()} {patient.getGender() == 'Male' ? '♂' : '♀'}</Item.Title
+							>
 							<Item.Description
 								>Medical Record No.<br /> {patient.getMedicalRecordNumber()}</Item.Description
 							>

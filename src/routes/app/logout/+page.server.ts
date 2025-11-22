@@ -5,6 +5,6 @@ export const load = async ({ locals }) => {
   locals.session = null;
   locals.user = null;
   locals.role = null;
-  await new AuthServiceImpl().logout(locals.supabase);
+  await new AuthServiceImpl(locals.supabase).logout();
   redirect(303, '/auth');
 };

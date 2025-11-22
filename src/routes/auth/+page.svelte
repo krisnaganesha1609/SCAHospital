@@ -5,7 +5,10 @@
 	import Footer from '$lib/shared/components/Footer.svelte';
 	import logo from '$lib/assets/logo.svg';
 	import herobg from '$lib/assets/hero-bg-login.png';
+	import LandingNavMenu from '$lib/shared/components/LandingNavMenu.svelte';
 </script>
+
+<LandingNavMenu />
 
 <div
 	class="relative flex min-h-screen w-full flex-col overflow-hidden bg-cover bg-center"

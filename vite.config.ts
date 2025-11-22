@@ -9,8 +9,8 @@ export default defineConfig({
     // This allows Vite to be accessed over the network (e.g., via ngrok or LAN)
     host: true, 
 	allowedHosts: [
-		'localhost' //,
-		//'c802b164580d.ngrok-free.app'
+		'localhost',
+		'33ea3ed8df3a.ngrok-free.app'
 	]
   	}
 });

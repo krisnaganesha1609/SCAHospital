@@ -16,7 +16,7 @@
 			</NavigationMenu.Link>
 		</NavigationMenu.Item>
 		<NavigationMenu.Item>
-			<NavigationMenu.Link class="cursor-pointer">Home</NavigationMenu.Link>
+			<NavigationMenu.Link href="/" class="cursor-pointer">Home</NavigationMenu.Link>
 		</NavigationMenu.Item>
 		<NavigationMenu.Item
 			><NavigationMenu.Link class="cursor-pointer">Values</NavigationMenu.Link></NavigationMenu.Item

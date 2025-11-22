@@ -4,17 +4,17 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export class AuthRepositoryImpl implements AuthRepository {
     async getUserProfile(supabase: SupabaseClient, userId: string): Promise<User | null> {
-    if (!userId) return null
-    const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
-    if (error || !data) {
-        console.error('Error fetching user profile:', error);
-        return null;
-    }
-    return User.fromJson(data);
+        if (!userId) return null
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single();
+        if (error || !data) {
+            console.error('Error fetching user profile:', error);
+            return null;
+        }
+        return User.fromJson(data);
     }
 
     async getUserRole(supabase: SupabaseClient, userId: string): Promise<string | null> {
@@ -22,4 +22,7 @@ export class AuthRepositoryImpl implements AuthRepository {
         return profile?.getRole() ?? null;
     }
 
+    async logout(supabase: SupabaseClient): Promise<void> {
+        await supabase.auth.signOut();
+    }
 }

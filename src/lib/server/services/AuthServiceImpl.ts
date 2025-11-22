@@ -1,30 +1,38 @@
-import type { User } from "$lib/shared/entities/User";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AuthService, EnrichedSession } from "./interfaces/AuthService";
 import { AuthRepositoryImpl } from "../repositories/AuthRepositoryImpl";
 
 export class AuthServiceImpl implements AuthService {
-    async enrichSession(supabase: SupabaseClient, session: any, user: any): Promise<EnrichedSession> {
+
+    private supabase: SupabaseClient;
+    constructor(supabase: SupabaseClient) {
+        this.supabase = supabase;
+    }
+    async enrichSession( session: any, user: any): Promise<EnrichedSession> {
         if (!session || !user) {
             return { session: null, user: null, profile: null, role: null };
         }
 
-        const profile = await new AuthRepositoryImpl().getUserProfile(supabase, user.id);
+        const profile = await new AuthRepositoryImpl().getUserProfile(this.supabase, user.id);
         const role = profile?.getRole() ?? null;
 
         return { session, user, profile, role };
     }
-    async getEnrichedSessionFromClient(supabase: SupabaseClient): Promise<EnrichedSession> {
-        const {data: { session }} = await supabase.auth.getSession();
+    async getEnrichedSessionFromClient(): Promise<EnrichedSession> {
+        const {data: { session }} = await this.supabase.auth.getSession();
 
         if (!session) return { session: null, user: null, profile: null, role: null };
 
-        const {data: { user }, error} = await supabase.auth.getUser();
+        const {data: { user }, error} = await this.supabase.auth.getUser();
 
         if (error || !user) {
             return { session: null, user: null, profile: null, role: null };
         }
 
-        return this.enrichSession(supabase, session, user);
+        return this.enrichSession(session, user);
+    }
+
+    async logout(): Promise<void> {
+        await new AuthRepositoryImpl().logout(this.supabase);
     }
 }

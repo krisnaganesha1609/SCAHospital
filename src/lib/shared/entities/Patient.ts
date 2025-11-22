@@ -53,32 +53,48 @@ export class Patient extends Utils{
     public toJson(): object {
         return {
             id: this.id,
-            medicalRecordNumber: this.medicalRecordNumber,
-            fullName: this.fullName,
-            dateOfBirth: this.dateOfBirth,
+            medical_record_number: this.medicalRecordNumber,
+            full_name: this.fullName,
+            date_of_birth: this.dateOfBirth,
             gender: this.gender,
             address: this.address,
             phone: this.phone,
-            bloodType: this.bloodType,
+            blood_type: this.bloodType,
             allergies: this.allergies,
-            emergencyContact: this.emergencyContact,
-            createdAt: this.createdAt
+            emergency_contact: this.emergencyContact,
+            created_at: this.createdAt
         };
     }
 
     public static fromJson(json: any): Patient {
         return new Patient(
             json.id,
-            json.medicalRecordNumber,
-            json.fullName,
-            json.dateOfBirth,
+            json.medical_record_number,
+            json.full_name,
+            json.date_of_birth,
             json.gender,
             json.address,
             json.phone,
-            json.bloodType,
+            json.blood_type,
             json.allergies,
-            json.emergencyContact,
-            json.createdAt
+            json.emergency_contact,
+            json.created_at
+        );
+    }
+
+    public static fromPOJO(obj: any): Patient {
+        return new Patient(
+            obj.id,
+            obj.medicalRecordNumber,
+            obj.fullName,
+            obj.dateOfBirth,
+            obj.gender,
+            obj.address,
+            obj.phone,
+            obj.bloodType,
+            obj.allergies,
+            obj.emergencyContact,
+            obj.createdAt
         );
     }
 }

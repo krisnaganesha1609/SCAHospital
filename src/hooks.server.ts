@@ -34,7 +34,7 @@ const supabase: Handle = async ({ event, resolve }) => {
    */
   event.locals.safeGetSession = async () => {
     try {
-      const enriched = await new AuthServiceImpl().getEnrichedSessionFromClient(event.locals.supabase);
+      const enriched = await new AuthServiceImpl(event.locals.supabase).getEnrichedSessionFromClient();
       // console.log('Enriched session:', enriched);
       event.locals.session = enriched.session;
       event.locals.user = enriched.user;

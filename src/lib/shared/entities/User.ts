@@ -38,23 +38,23 @@ export class User extends Utils {
     public toJson(): object {
         return {
             userId: this.id,
-            fullName: this.fullName,
+            full_name: this.fullName,
             username: this.username,
             role: this.role,
             phone: this.phone,
             email: this.email,
-            createdAt: this.createdAt
+            created_at: this.createdAt
         };
     }
     public static fromJson(json: any): User {
         return new User(
             json.id,
-            json.fullName,
+            json.full_name,
             json.username,
             json.role,
             json.phone,
             json.email,
-            new Date(json.createdAt)
+            new Date(json.created_at)
         );
     }
 }

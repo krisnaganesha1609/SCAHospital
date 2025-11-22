@@ -12,3 +12,7 @@ export abstract class Utils {
         return true;
     }
 }
+
+export function toPOJO<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value))
+}

@@ -4,7 +4,7 @@
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
 	import * as InputGroup from '$lib/components/ui/input-group';
 	import * as Item from '$lib/components/ui/item';
-	import { SearchIcon } from '@lucide/svelte';
+	import { Mars, SearchIcon, Venus } from '@lucide/svelte';
 	import { Patient } from '$lib/shared/entities';
 
 	let { data }: PageProps = $props();
@@ -40,8 +40,14 @@
 					<Item.Content class="flex flex-col gap-1">
 						<div class="">
 							<Item.Title
-								>{patient.getFullName()} {patient.getGender() == 'Male' ? '♂' : '♀'}</Item.Title
+								>{patient.getFullName()}
+								{#if patient.getGender() == 'Male'}
+									<Mars class="ml-1 inline-block" color="#0000FF" />
+								{:else}
+									<Venus class="ml-1 inline-block" color="#FF1493" />
+								{/if}</Item.Title
 							>
+
 							<Item.Description
 								>Medical Record No.<br /> {patient.getMedicalRecordNumber()}</Item.Description
 							>

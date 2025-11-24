@@ -6,6 +6,12 @@
 	import logo from '$lib/assets/logo.svg';
 	import herobg from '$lib/assets/hero-bg-login.png';
 	import LandingNavMenu from '$lib/shared/components/LandingNavMenu.svelte';
+	import { isActionFailure } from '@sveltejs/kit';
+	import { page } from '$app/state';
+	import { toast } from 'svelte-sonner';
+	if (isActionFailure(page.error)) {
+		toast.error('Authentication Error', { description: page.error.message, closeButton: true });
+	}
 </script>
 
 <LandingNavMenu />

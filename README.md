@@ -24,3 +24,4 @@ npx shadcn-svelte@latest add [component_name]
 ```
 
 - [`supabase-js`](https://supabase.com/docs/guides/auth/server-side/sveltekit)
+- [`svelte-sonner`]

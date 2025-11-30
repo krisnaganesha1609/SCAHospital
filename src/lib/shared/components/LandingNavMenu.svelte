@@ -9,7 +9,7 @@
 >
 	<NavigationMenu.List class=" flex w-full items-center justify-center space-x-8 align-middle">
 		<NavigationMenu.Item>
-			<NavigationMenu.Link class="cursor-pointer">
+			<NavigationMenu.Link href="/" class="cursor-pointer">
 				<div class=" h-[54px] w-[170px]">
 					<img src={logo} alt="Logo" />
 				</div>

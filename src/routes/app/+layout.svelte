@@ -32,9 +32,12 @@
 		isCollapsed = !isCollapsed;
 		collapsed.set(isCollapsed);
 	}
+	const layoutBg = $derived((page?.url?.pathname || '').startsWith('/app/dashboard')
+	? 'bg-white'
+	: 'bg-[#F5F5F5]');
 </script>
 
-<div class="flex min-h-screen flex-col">
+<div class="flex min-h-screen flex-col {layoutBg}">
 	<div>
 		<button
 			class="fixed top-4 {isCollapsed

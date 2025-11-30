@@ -57,4 +57,15 @@ export class User extends Utils {
             new Date(json.created_at)
         );
     }
+    public static fromPOJO(pojo: any): User {
+        return new User(
+            pojo.id,
+            pojo.fullName,
+            pojo.username,
+            pojo.role,
+            pojo.phone,
+            pojo.email,
+            new Date(pojo.createdAt)
+        );
+    }
 }

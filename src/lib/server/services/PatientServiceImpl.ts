@@ -17,7 +17,7 @@ export class PatientServiceImpl implements PatientService {
         return this.patientRepository.updateExistingPatient(patientId, p);
     }
     async listPatients(): Promise<Patient[]> {
-        const patients = await this.patientRepository.fetchPatients(get(patientPaginationStore).pageNumber, get(patientPaginationStore).itemsPerPage);
+        const patients = await this.patientRepository.fetchPatients(get(patientPaginationStore).currentPage, get(patientPaginationStore).itemsPerPage);
         if (patients === null) {
             throw new Error('Failed to fetch patients. Please Contact Admin.');
         }

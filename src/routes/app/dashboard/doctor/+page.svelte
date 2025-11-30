@@ -2,14 +2,16 @@
 	import boxblue from '$lib/assets/box-blue.png';
 	import boxred from '$lib/assets/box-red.png';
 	import boxwhitewhite from '$lib/assets/box-white-white.png';
+	import { User } from '$lib/shared/entities/User';
 	let { data } = $props();
-	let { user } = $derived(data);
+
+	const user = User.fromPOJO(data.profile);
 </script>
 
 <div class="flex w-full flex-col">
 	<!-- HEADER TITLE -->
 	<section class="py-16 text-center">
-		<p class="text-4xl font-bold">Hi, dr. {user?.email}</p>
+		<p class="text-4xl font-bold">Hi, dr. {user?.getFullName()}</p>
 		<h2 class="text-6xl font-bold">Remember Our Commitment</h2>
 	</section>
 

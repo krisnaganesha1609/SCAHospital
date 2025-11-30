@@ -1,10 +1,21 @@
 import type { MedicalRecord } from "$lib/shared/entities/MedicalRecord";
 import type { uuid } from "$lib/shared/types/type_def";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { MedicalRecordRepositoryImpl } from '../repositories/MedicalRecordRepositoryImpl';
 import type { MedicalRecordService } from "./interfaces/MedicalRecordService";
 
 export class MedicalRecordServiceImpl implements MedicalRecordService {
-    listMedicalRecordOfAPatient(patientId: uuid): Promise<MedicalRecord[]> {
-        throw new Error("Method not implemented.");
+    private medicalRecordRepository: MedicalRecordRepositoryImpl;
+        constructor(supabase: SupabaseClient) {
+            this.medicalRecordRepository = new MedicalRecordRepositoryImpl(supabase);
+        }
+    async getMedicalRecordOfAPatient(patientId: uuid): Promise<MedicalRecord | null> {
+         const data = await this.medicalRecordRepository.getMedicalRecordById(patientId);
+         if (data) {
+                return data;
+         } else {
+             return null;
+         }
     }
     createMedicalRecordForAPatient(patientId: uuid, payload: MedicalRecord): Promise<void> {
         throw new Error("Method not implemented.");

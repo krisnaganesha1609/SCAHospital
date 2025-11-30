@@ -6,5 +6,5 @@ export abstract class MedicalRecordRepository {
     abstract getMedicalRecordById(id: uuid): Promise<any>;
     abstract updateMedicalRecord(id: uuid, data: Partial<MedicalRecord>): Promise<void>;
     abstract deleteMedicalRecord(id: uuid): Promise<void>;
-    abstract listMedicalRecords(filter?: any): Promise<any[]>;
+    abstract listMedicalRecords(filter?: any): Promise<any>;
 }

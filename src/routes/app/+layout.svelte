@@ -32,9 +32,9 @@
 		isCollapsed = !isCollapsed;
 		collapsed.set(isCollapsed);
 	}
-	const layoutBg = $derived((page?.url?.pathname || '').startsWith('/app/dashboard')
-	? 'bg-white'
-	: 'bg-[#F5F5F5]');
+	const layoutBg = $derived(
+		(page?.url?.pathname || '').startsWith('/app/dashboard') ? 'bg-white' : 'bg-[#F5F5F5]'
+	);
 </script>
 
 <div class="flex min-h-screen flex-col {layoutBg}">
@@ -252,7 +252,7 @@
 				</ul>
 			</div>
 		</aside>
-		<div class="{isCollapsed ? 'ml-12 ' : 'ml-64 '} transition-all duration-300">
+		<div class="{isCollapsed ? 'ml-16' : 'ml-64 '} transition-all duration-300">
 			{@render children?.()}
 		</div>
 	</div>

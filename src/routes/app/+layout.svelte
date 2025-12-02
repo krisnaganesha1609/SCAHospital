@@ -7,7 +7,8 @@
 		ChevronRight,
 		HeartPulse,
 		House,
-		LogOut
+		LogOut,
+		Pill
 	} from '@lucide/svelte';
 	import logo from '$lib/assets/logo-white.svg';
 	import { page } from '$app/state';
@@ -84,22 +85,22 @@
 							</a>
 						</li>
 						<li
-							class={page.url.pathname.includes('/app/patients')
+							class={page.url.pathname.includes('/app/patients/doctor')
 								? 'rounded-[20px] bg-[#e8f0fa] py-2'
 								: ''}
 						>
 							<a
-								href="/app/patients"
+								href="/app/patients/doctor"
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
 									: 'pl-4'} "
 							>
 								<HeartPulse
-									color={page.url.pathname.includes('/app/patients') ? '#1754a7' : 'white'}
+									color={page.url.pathname.includes('/app/patients/doctor') ? '#1754a7' : 'white'}
 								/>
 								{#if !isCollapsed}
 									<span
-										class="ms-3 {page.url.pathname.includes('/app/patients')
+										class="ms-3 {page.url.pathname.includes('/app/patients/doctor')
 											? ' text-[#1754a7]'
 											: 'text-white'}">Patients</span
 									>
@@ -154,98 +155,267 @@
 						</li>
 					{/if}
 					{#if role === 'Receptionist'}
-						<li>
+						<li
+							class={page.url.pathname.includes('/app/dashboard/receptionist')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
 							<a
-								href="/app/registrations"
-								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5"
+								href="/app/dashboard/receptionist"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} flex items-center px-2 py-1.5"
 							>
-								<svg
-									class="group-hover:text-fg-brand h-5 w-5 transition duration-75"
-									aria-hidden="true"
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									fill="none"
-									viewBox="0 0 24 24"
-									><path
-										stroke="currentColor"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"
-									/><path
-										stroke="currentColor"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"
-									/></svg
-								>
-								<span class="ms-3">Registrasi Pasien</span>
+								<House
+									color={page.url.pathname.includes('/app/dashboard/receptionist')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/dashboard/receptionist')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Dashboard</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/reservations/receptionist')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/reservations/receptionist"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} "
+							>
+								<CalendarRange
+									color={page.url.pathname.includes('/app/reservations/receptionist')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/reservations/receptionist')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Reservations</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/logout')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/logout"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} "
+							>
+								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/logout')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Log Out</span
+									>
+								{/if}
 							</a>
 						</li>
 					{/if}
 					{#if role === 'Pharmacist'}
-						<li>
+						<li
+							class={page.url.pathname.includes('/app/dashboard/pharmacist')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
 							<a
 								href="/app/dashboard/pharmacist"
-								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} flex items-center px-2 py-1.5"
 							>
-								<svg
-									class="group-hover:text-fg-brand h-5 w-5 transition duration-75"
-									aria-hidden="true"
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									fill="none"
-									viewBox="0 0 24 24"
-									><path
-										stroke="currentColor"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"
-									/><path
-										stroke="currentColor"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"
-									/></svg
-								>
-								<span class="ms-3">Dashboard</span>
+								<House
+									color={page.url.pathname.includes('/app/dashboard/pharmacist')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/dashboard/pharmacist')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Dashboard</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/prescription/pharmacist')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/prescription/pharmacist"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} flex items-center px-2 py-1.5"
+							>
+								<Pill
+									color={page.url.pathname.includes('/app/prescription/pharmacist')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/prescription/pharmacist')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Prescription</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/logout')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/logout"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} "
+							>
+								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/logout')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Log Out</span
+									>
+								{/if}
 							</a>
 						</li>
 					{/if}
 					{#if role === 'Admin'}
-						<li>
+						<li
+							class={page.url.pathname.includes('/app/dashboard/admin')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
 							<a
 								href="/app/dashboard/admin"
-								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} flex items-center px-2 py-1.5"
 							>
-								<svg
-									class="group-hover:text-fg-brand h-5 w-5 transition duration-75"
-									aria-hidden="true"
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									fill="none"
-									viewBox="0 0 24 24"
-									><path
-										stroke="currentColor"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"
-									/><path
-										stroke="currentColor"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"
-									/></svg
-								>
-								<span class="ms-3">Dashboard</span>
+								<House
+									color={page.url.pathname.includes('/app/dashboard/admin') ? '#1754a7' : 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/dashboard/admin')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Dashboard</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/patients/admin')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/patients"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} "
+							>
+								<HeartPulse
+									color={page.url.pathname.includes('/app/patients/admin') ? '#1754a7' : 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/patients/admin')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Patients</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/prescription/admin')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/prescription/admin"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} flex items-center px-2 py-1.5"
+							>
+								<Pill
+									color={page.url.pathname.includes('/app/prescription/admin')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/prescription/admin')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Prescription</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/reservations/admin')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/reservations/admin"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} "
+							>
+								<CalendarRange
+									color={page.url.pathname.includes('/app/reservations/admin')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/reservations/admin')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Reservations</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/logout')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/logout"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} "
+							>
+								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/logout')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Log Out</span
+									>
+								{/if}
 							</a>
 						</li>
 					{/if}

@@ -5,8 +5,7 @@
 	import type { MedicalRecord, Prescription, PrescriptionItems } from '$lib/shared/entities'; // contoh path
 
 	export let record: MedicalRecord; // expect instance of MedicalRecord (or its toJson)
-	export let prescriptions: Prescription[] = []; // array of Prescription instances
-	export let prescriptionItems: PrescriptionItems[] = []; // array of PrescriptionItems instances
+	export let prescriptions: Prescription[]; // array of Prescription instances
 
 	const fmtDate = (d: string | Date | undefined) => {
 		if (!d) return '-';
@@ -25,32 +24,39 @@
 		<!-- visit header -->
 		<div class="mb-4 flex items-center justify-between">
 			<div class="font-semibold text-slate-800">Visit — {fmtDate(record?.getVisitDate())}</div>
-			<div class="text-sm text-slate-500">
-				Follow-Up Date<br /><span class="font-medium">{fmtDate(record?.getFollowUpDate())}</span>
-			</div>
 		</div>
 
 		<!-- top grid -->
-		<div class="grid grid-cols-6 gap-6 text-sm text-slate-700">
-			<div class="col-span-1 space-y-2">
+		<div class="grid grid-cols-14 gap-2 text-sm text-slate-700">
+			<div class="col-span-2 space-y-2">
 				<div class="text-xs text-slate-400">Visit Type</div>
 				<div class="font-medium">{record?.getVisitType() ?? '-'}</div>
 
 				<div class="mt-4 text-xs text-slate-400">Primary Complaint</div>
 				<div class="text-slate-600">{record?.getComplaints() ?? '-'}</div>
 			</div>
-
-			<div class="col-span-1 space-y-2">
+			<div class="col-span-0 flex justify-center">
+				<div class="h-30 w-px border-l border-gray-300"></div>
+			</div>
+			<div class="col-span-2 space-y-2">
 				<div class="text-xs text-slate-400">Medical History</div>
 				<div class="text-slate-600">{record?.getHistory() ?? '-'}</div>
+				<div class="text-xs text-slate-400">Physical Examination</div>
+				<div class="text-slate-600">{record?.getPhysicalExam() ?? '-'}</div>
 			</div>
-
-			<div class="col-span-1 space-y-2">
+			<div class="col-span-0 flex justify-center">
+				<div class="h-30 w-px border-l border-gray-300"></div>
+			</div>
+			<div class="col-span-2 space-y-2">
 				<div class="text-xs text-slate-400">Diagnosis</div>
 				<div class="text-slate-600">{record?.getDiagnosis() ?? '-'}</div>
+				<div class="mt-3 text-xs text-slate-400">Treatment Plan</div>
+				<div class="text-slate-600">{record?.getTreatmentPlan() ?? '-'}</div>
 			</div>
-
-			<div class="col-span-1 space-y-2">
+			<div class="col-span-0 flex justify-center">
+				<div class="h-30 w-px border-l border-gray-300"></div>
+			</div>
+			<div class="col-span-2 space-y-2">
 				<div class="text-xs text-slate-400">Vitals</div>
 				{#if record?.getVital()}
 					{#each Object.entries(formatVital(record.getVital())) as [k, v]}
@@ -63,13 +69,12 @@
 					<div class="text-slate-600">-</div>
 				{/if}
 			</div>
-
+			<div class="col-span-0 flex justify-center">
+				<div class="h-30 w-px border-l border-gray-300"></div>
+			</div>
 			<div class="col-span-2 space-y-2">
-				<div class="text-xs text-slate-400">Physical Examination</div>
-				<div class="text-slate-600">{record?.getPhysicalExam() ?? '-'}</div>
-
-				<div class="mt-3 text-xs text-slate-400">Treatment Plan</div>
-				<div class="text-slate-600">{record?.getTreatmentPlan() ?? '-'}</div>
+				<div class="mt-3 text-xs text-slate-400">Follow-Up Date</div>
+				<div class="text-slate-600">{fmtDate(record?.getFollowUpDate())}</div>
 
 				<div class="mt-3 text-xs text-slate-400">Notes</div>
 				<div class="text-slate-600">{record?.getNotes() ?? '-'}</div>
@@ -87,7 +92,7 @@
 		</div>
 
 		<div class="px-6 pb-6">
-			<PrescriptionList {prescriptions} {prescriptionItems} />
+			<PrescriptionList {prescriptions} />
 		</div>
 	</div>
 </Card>

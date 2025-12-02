@@ -11,14 +11,16 @@ export class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
     createMedicalRecord(data: Partial<MedicalRecord>): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    async getMedicalRecordById(id: string): Promise<MedicalRecord | null> {
-        const { data } = await this.supabase
+    async getMedicalRecordsByPatientId(id: string): Promise<MedicalRecord[] | null> {
+        const { data, error } = await this.supabase
             .from('medical_records')
-            .select('*')
-            .eq('id', id).single();
-
+            .select('*, prescriptions(*, prescription_items(*))')
+            .eq('patient_id', id);
+        if (error) {
+            throw error;
+        }
         if (data) {
-            return Promise.resolve(MedicalRecord.fromJson(data));
+            return Promise.resolve(data.map((record: any) => MedicalRecord.fromJson(record)));
         } else {
             return Promise.resolve(null);
         }

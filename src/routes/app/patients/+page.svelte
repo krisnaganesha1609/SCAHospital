@@ -16,7 +16,6 @@
 	// ---------- INITIAL DATA ----------
 	let { data }: PageProps = $props();
 	const patients: Patient[] = data.patients.map((p) => Patient.fromPOJO(p));
-	const medicalRecord: Map<string, any> | null = data.medicalRecord;
 	let { itemsPerPage } = $patientPaginationStore;
 
 	let perPage = itemsPerPage;
@@ -26,6 +25,7 @@
 	// const totalPages = Math.max(1, Math.ceil(totalResults / perPage));
 
 	import { writable, derived } from 'svelte/store';
+	import { Button } from '$lib/components/ui/button';
 
 	// derived store: the patients to show on current page
 	const displayedPatients = derived(patientPaginationStore, ($current) => {
@@ -89,7 +89,7 @@
 
 <!-- NAVBAR SECTION ARGH, NEED HELP PLOX -->
 <NavigationMenu.Root
-	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200' +
+	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
 	<!-- keep NavigationMenu.List as container (positioning context) -->
@@ -182,14 +182,20 @@
 							</Item.Content>
 						</Item.Root>
 					</Accordion.Trigger>
-					<Accordion.Content class="flex flex-col">
+					<Accordion.Content class="flex flex-col items-end justify-end space-y-6">
+						<Button class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white"
+							>Add Record</Button
+						>
 						<div class="mb-6">
-							{#if !medicalRecord || !medicalRecord.get(patient.getId())}
+							{#if patient.getMedicalRecord() == null}
 								<div class="p-6 text-center text-sm text-slate-500">
 									No medical record found for this patient.
 								</div>
 							{:else}
-								<MedicalRecordCard record={medicalRecord.get(patient.getId())} />
+								<MedicalRecordCard
+									record={patient.getMedicalRecord()[0]}
+									prescriptions={patient.getMedicalRecord()[0].getPrescriptions()}
+								/>
 							{/if}
 						</div>
 					</Accordion.Content>

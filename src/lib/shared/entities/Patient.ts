@@ -1,5 +1,6 @@
 import type { JsonObject, uuid } from "../types/type_def";
 import { Utils } from "../utils/Utils";
+import { MedicalRecord } from "./MedicalRecord";
 
 export class Patient extends Utils{
     constructor(
@@ -13,7 +14,9 @@ export class Patient extends Utils{
         private bloodType: string,
         private allergies: string,
         private emergencyContact: JsonObject,
-        private createdAt: Date
+        private createdAt: Date,
+        private updatedAt: Date,
+        private medicalRecord: MedicalRecord[]
     ) {super(id);}
 
     public getId(): uuid {
@@ -49,6 +52,12 @@ export class Patient extends Utils{
     public getCreatedAt(): Date {
         return this.createdAt;
     }
+    public getUpdatedAt(): Date {
+        return this.updatedAt;
+    }
+    public getMedicalRecord(): MedicalRecord[] {
+        return this.medicalRecord;
+    }
 
     public toJson(): object {
         return {
@@ -78,7 +87,9 @@ export class Patient extends Utils{
             json.blood_type,
             json.allergies,
             json.emergency_contact,
-            json.created_at
+            json.created_at,
+            json.updated_at,
+            json.medical_records ? json.medical_records.map((record: any) => MedicalRecord.fromJson(record)) : []
         );
     }
 
@@ -94,7 +105,9 @@ export class Patient extends Utils{
             obj.bloodType,
             obj.allergies,
             obj.emergencyContact,
-            obj.createdAt
+            obj.createdAt,
+            obj.updatedAt,
+            obj.medicalRecord ? obj.medicalRecord.map((record: any) => MedicalRecord.fromPOJO(record)) : []
         );
     }
 }

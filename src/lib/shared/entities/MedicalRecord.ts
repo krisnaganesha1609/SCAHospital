@@ -3,37 +3,39 @@ import { Patient } from "./Patient";
 import { User } from "./User";
 import { Departments } from "./Departments";
 import { Utils } from "../utils/Utils";
+import { Prescription } from "./Prescription";
 
 export class MedicalRecord extends Utils {
     constructor(
         id: uuid,
-        private patient: Patient,
-        private doctor: User,
-        private department: Departments,
+        private patientId: uuid,
+        private doctorId: uuid,
+        private departmentId: uuid,
         private visitDate: Date,
         private visitType: string,
         private complaints: string,
         private history: string,
         private physicalExam: string,
-        private vital: JsonObject,
+        private vitals: JsonObject,
         private procedures: string,
         private attachments: JsonObject,
         private treatmentPlan: string,
         private followUpDate: Date,
         private diagnosis: string,
-        private notes: String
+        private notes: String,
+        private prescriptions: Prescription[]
     ) { super(id); }
     public getId(): uuid {
         return this.id;
     }
-    public getPatient(): Patient {
-        return this.patient;
+    public getPatientId(): uuid {
+        return this.patientId;
     }
-    public getDoctor(): User {
-        return this.doctor;
+    public getDoctorId(): uuid {
+        return this.doctorId;
     }
-    public getDepartment(): Departments {
-        return this.department;
+    public getDepartmentId(): uuid {
+        return this.departmentId;
     }
     public getVisitDate(): Date {
         return this.visitDate;
@@ -51,7 +53,7 @@ export class MedicalRecord extends Utils {
         return this.physicalExam;
     }
     public getVital(): JsonObject {
-        return this.vital;
+        return this.vitals;
     }
     public getProcedures(): string {
         return this.procedures;
@@ -71,22 +73,25 @@ export class MedicalRecord extends Utils {
     public getNotes(): String {
         return this.notes;
     }
+    public getPrescriptions(): Prescription[] {
+        return this.prescriptions;
+    }
     public toJson(): any {
         return {
             id: this.id,
-            patient: this.patient,
-            doctor: this.doctor,
-            department: this.department,
-            visitDate: this.visitDate,
-            visitType: this.visitType,
+            patient_id: this.patientId,
+            doctor_id: this.doctorId,
+            department_id: this.departmentId,
+            visit_date: this.visitDate,
+            visit_type: this.visitType,
             complaints: this.complaints,
             history: this.history,
-            physicalExam: this.physicalExam,
-            vital: this.vital,
+            physical_exam: this.physicalExam,
+            vitals: this.vitals,
             procedures: this.procedures,
             attachments: this.attachments,
-            treatmentPlan: this.treatmentPlan,
-            followUpDate: this.followUpDate,
+            treatment_plan: this.treatmentPlan,
+            follow_up_date: this.followUpDate,
             diagnosis: this.diagnosis,
             notes: this.notes
         };
@@ -95,21 +100,43 @@ export class MedicalRecord extends Utils {
     public static fromJson(json: any): MedicalRecord {
         return new MedicalRecord(
             json.id,
-            Patient.fromJson(json.patient),
-            User.fromJson(json.doctor),
-            Departments.fromJson(json.department),
-            json.visitDate,
-            json.visitType,
+            json.patient_id,
+            json.doctor_id,
+            json.department_id,
+            json.visit_date,
+            json.visit_type,
             json.complaints,
             json.history,
-            json.physicalExam,
-            json.vital,
+            json.physical_exam,
+            json.vitals,
             json.procedures,
             json.attachments,
-            json.treatmentPlan,
-            json.followUpDate,
+            json.treatment_plan,
+            json.follow_up_date,
             json.diagnosis,
-            json.notes
+            json.notes,
+            json.prescriptions.map((prescription: any) => Prescription.fromJson(prescription))
+        );
+    }
+    public static fromPOJO(obj: any): MedicalRecord {
+        return new MedicalRecord(
+            obj.id,
+            obj.patientId,
+            obj.doctorId,
+            obj.departmentId,
+            obj.visitDate,
+            obj.visitType,
+            obj.complaints,
+            obj.history,
+            obj.physicalExam,
+            obj.vitals,
+            obj.procedures,
+            obj.attachments,
+            obj.treatmentPlan,
+            obj.followUpDate,
+            obj.diagnosis,
+            obj.notes,
+            obj.prescriptions.map((prescription: any) => Prescription.fromPOJO(prescription))
         );
     }
 }

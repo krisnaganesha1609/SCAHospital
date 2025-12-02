@@ -3,10 +3,9 @@
 	import { Separator } from '$lib/components/ui/separator';
 
 	import PrescriptionItem from './PrescriptionItem.svelte';
-	import type { Prescription, PrescriptionItems } from '../entities';
+	import type { Prescription } from '../entities';
 
-	export let prescriptions: Prescription[] = [];
-	export let prescriptionItems: PrescriptionItems[] = [];
+	export let prescriptions: Prescription[];
 
 	const fmtDateTime = (d: string | Date | undefined) => {
 		if (!d) return '-';
@@ -83,7 +82,7 @@
 							</div>
 
 							<div class="mt-3 space-y-2">
-								{#each prescriptionItems as it (it.getId())}
+								{#each p.getPrescriptionItems() as it (it.getId())}
 									<PrescriptionItem item={it} />
 								{/each}
 							</div>

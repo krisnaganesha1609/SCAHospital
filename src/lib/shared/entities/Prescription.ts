@@ -2,6 +2,7 @@ import type { prescriptionStatus, uuid } from "../types/type_def";
 import type { User } from "./User";
 import type { MedicalRecord } from "./MedicalRecord";
 import { Utils } from "../utils/Utils";
+import { PrescriptionItems } from "./PrescriptionItems";
 
 export class Prescription extends Utils {
     constructor(
@@ -12,7 +13,8 @@ export class Prescription extends Utils {
         private status: prescriptionStatus,
         private totalCost: number,
         private notes: string,
-        private createdAt: Date
+        private createdAt: Date,
+        private prescriptionItems: PrescriptionItems[]
     ) {super(id);}
 
     public getId(): uuid {
@@ -39,6 +41,9 @@ export class Prescription extends Utils {
     public getCreatedAt(): Date {
         return this.createdAt;
     }
+    public getPrescriptionItems(): PrescriptionItems[] {
+        return this.prescriptionItems;
+    }
 
     public toJson(): object {
         return {
@@ -49,20 +54,35 @@ export class Prescription extends Utils {
             status: this.status,
             totalCost: this.totalCost,
             notes: this.notes,
-            createdAt: this.createdAt
+            createdAt: this.createdAt,
         };
     }
 
     public static fromJson(json: any): Prescription {
         return new Prescription(
             json.id,
-            json.medicalRecord,
+            json.medical_record,
             json.doctor,
-            json.prescribedAt,
+            json.prescribed_at,
             json.status,
-            json.totalCost,
+            json.total_cost,
             json.notes,
-            json.createdAt
+            json.created_at,
+            json.prescription_items.map((item: any) => PrescriptionItems.fromJson(item))
+        );
+    }
+
+    public static fromPOJO(obj: any): Prescription {
+        return new Prescription(
+            obj.id,
+            obj.medicalRecord,
+            obj.doctor,
+            obj.prescribedAt,
+            obj.status,
+            obj.totalCost,
+            obj.notes,
+            obj.createdAt,
+            obj.prescriptionItems.map((item: any) => PrescriptionItems.fromPOJO(item))
         );
     }
 }

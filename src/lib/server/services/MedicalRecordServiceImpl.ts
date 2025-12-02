@@ -9,8 +9,8 @@ export class MedicalRecordServiceImpl implements MedicalRecordService {
         constructor(supabase: SupabaseClient) {
             this.medicalRecordRepository = new MedicalRecordRepositoryImpl(supabase);
         }
-    async getMedicalRecordOfAPatient(patientId: uuid): Promise<MedicalRecord | null> {
-         const data = await this.medicalRecordRepository.getMedicalRecordById(patientId);
+    async getMedicalRecordOfAPatient(patientId: uuid): Promise<MedicalRecord[] | null> {
+         const data = await this.medicalRecordRepository.getMedicalRecordsByPatientId(patientId);
          if (data) {
                 return data;
          } else {

@@ -49,9 +49,8 @@ export class Medicine extends Utils {
             form: this.form,
             strength: this.strength,
             manufacturer: this.manufacturer,
-            stockQty: this.stockQty,
-            unitPrice: this.unitPrice,
-            createdAt: this.createdAt
+            stock_qty: this.stockQty,
+            unit_price: this.unitPrice,
         };
     }
 
@@ -63,9 +62,23 @@ export class Medicine extends Utils {
             json.form,
             json.strength,
             json.manufacturer,
-            json.stockQty,
-            json.unitPrice,
-            json.createdAt
+            json.stock_qty,
+            json.unit_price,
+            json.created_at
+        );
+    }
+    
+    public static fromPOJO(obj: any): Medicine {
+        return new Medicine(
+            obj.id,
+            obj.code,
+            obj.name,
+            obj.form,
+            obj.strength,
+            obj.manufacturer,
+            obj.stockQty,
+            obj.unitPrice,
+            obj.createdAt
         );
     }
 }

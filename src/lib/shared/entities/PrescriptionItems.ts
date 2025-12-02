@@ -7,7 +7,8 @@ export class PrescriptionItems extends Utils {
     
     constructor(
         id: uuid,
-        private prescription: Prescription,
+        private prescriptionId: uuid,
+        private medicineId: uuid,
         private medicine: Medicine,
         private medicineName: string,
         private strength: string,
@@ -24,8 +25,11 @@ export class PrescriptionItems extends Utils {
     public getId(): uuid {
         return this.id;
     }
-    public getPrescription(): Prescription {
-        return this.prescription;
+    public getPrescriptionId(): uuid {
+        return this.prescriptionId;
+    }
+    public getMedicineId(): uuid {
+        return this.medicineId;
     }
     public getMedicine(): Medicine {
         return this.medicine;
@@ -64,7 +68,8 @@ export class PrescriptionItems extends Utils {
     public toJson(): any { 
         return {
             id: this.id,
-            prescription: this.prescription,
+            prescriptionId: this.prescriptionId,
+            medicineId: this.medicineId,
             medicine: this.medicine,
             medicineName: this.medicineName,
             strength: this.strength,
@@ -82,9 +87,10 @@ export class PrescriptionItems extends Utils {
     public static fromJson(json: any): PrescriptionItems {
         return new PrescriptionItems(
             json.id,
-            Prescription.fromJson(json.prescription),
+            json.prescription_id,
+            json.medicine_id,
             Medicine.fromJson(json.medicine),
-            json.medicineName,
+            json.medicine_name,
             json.strength,
             json.form,
             json.dosage,
@@ -92,8 +98,27 @@ export class PrescriptionItems extends Utils {
             json.duration,
             json.quantity,
             json.instructions,
-            json.unitPrice,
-            json.createdAt
+            json.unit_price,
+            json.created_at
+        );
+    }
+
+    public static fromPOJO(obj: any): PrescriptionItems {
+        return new PrescriptionItems(
+            obj.id,
+            obj.prescriptionId,
+            obj.medicineId,
+            Medicine.fromPOJO(obj.medicine),
+            obj.medicineName,
+            obj.strength,
+            obj.form,
+            obj.dosage,
+            obj.frequency,
+            obj.duration,
+            obj.quantity,
+            obj.instructions,
+            obj.unitPrice,
+            obj.createdAt
         );
     }
 }

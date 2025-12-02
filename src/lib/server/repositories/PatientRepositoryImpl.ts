@@ -21,7 +21,7 @@ export class PatientRepositoryImpl implements PatientRepository {
         const endIndex = startIndex + itemsPerPage - 1;
         const { data, error } = await this.supabase
             .from('patients')
-            .select('*')
+            .select('*, medical_records(*, prescriptions(*, prescription_items(*)))')
             .order('id', {ascending: true})
             .range(startIndex, endIndex);
         if (error || !data) {       

@@ -5,7 +5,7 @@
 	import PrescriptionItem from './PrescriptionItem.svelte';
 	import type { Prescription } from '../entities';
 
-	export let prescriptions: Prescription[];
+	export let prescriptions: Prescription[] | null;
 
 	const fmtDateTime = (d: string | Date | undefined) => {
 		if (!d) return '-';
@@ -31,8 +31,10 @@
 </script>
 
 <div class="space-y-4">
-	{#if prescriptions.length === 0}
+	{#if prescriptions === null}
 		<div class="text-sm text-slate-500">No prescriptions</div>
+	{:else if prescriptions.length === 0}
+		<div class="text-sm text-slate-500">Prescriptions is empty</div>
 	{:else}
 		<Accordion type="single">
 			{#each prescriptions as p (p.getId())}

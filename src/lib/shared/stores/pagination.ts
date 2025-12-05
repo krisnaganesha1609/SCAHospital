@@ -4,3 +4,8 @@ export const patientPaginationStore = writable<{ currentPage: number; itemsPerPa
     currentPage: 1,
     itemsPerPage: 10,
 });
+
+export const reservationPaginationStore = writable<{ currentPage: number; itemsPerPage: number }>({
+    currentPage: 1,
+    itemsPerPage: 10,
+});

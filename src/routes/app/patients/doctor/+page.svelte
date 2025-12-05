@@ -87,6 +87,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Patients - SCA Hospital</title>
+</svelte:head>
+
 <!-- NAVBAR SECTION ARGH, NEED HELP PLOX -->
 <NavigationMenu.Root
 	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
@@ -120,11 +124,11 @@
 </NavigationMenu.Root>
 <div class="min-h-[calc(100vh-64px)] p-4">
 	<Item.Group>
-		{#each patients as patient}
+		{#each patients as patient (patient.getId())}
 			<Accordion.Root type="single" class="w-full">
 				<Accordion.Item value={patient.getId()} class="w-full">
 					<Accordion.Trigger class="min-w-full">
-						<Item.Root class="mb-4 border border-gray-300 bg-white p-4 shadow-sm hover:shadow-md">
+						<Item.Root class="border border-gray-300 bg-white p-4 shadow-sm hover:shadow-md">
 							<Item.Content>
 								<Item.Title
 									>{patient.getFullName()}
@@ -152,11 +156,8 @@
 							</div>
 							<Item.Content>
 								<Item.Description>Birth Date</Item.Description>
-								<Item.Title
-									>{format(
-										new Date(patient.getDateOfBirth()).toLocaleDateString(),
-										'dd MMMM yyyy'
-									)}</Item.Title
+								<Item.Title>
+									{format(new Date(patient.getDateOfBirth()), 'dd MMMM yyyy')}</Item.Title
 								>
 							</Item.Content>
 							<div class="col-span-0 flex justify-center">
@@ -183,18 +184,18 @@
 						</Item.Root>
 					</Accordion.Trigger>
 					<Accordion.Content class="flex flex-col items-end justify-end space-y-6">
-						<Button class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white"
+						<Button class="mt-5 rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white"
 							>Add Record</Button
 						>
 						<div class="mb-6">
-							{#if patient.getMedicalRecord() == null}
+							{#if patient.getMedicalRecord() === null || patient.getMedicalRecord()[0] === undefined}
 								<div class="p-6 text-center text-sm text-slate-500">
 									No medical record found for this patient.
 								</div>
 							{:else}
 								<MedicalRecordCard
 									record={patient.getMedicalRecord()[0]}
-									prescriptions={patient.getMedicalRecord()[0].getPrescriptions()}
+									prescriptions={patient.getMedicalRecord()[0].getPrescriptions() ?? null}
 								/>
 							{/if}
 						</div>

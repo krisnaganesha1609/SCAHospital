@@ -6,5 +6,5 @@ export abstract class ReservationRepository {
     abstract getReservationById(id: uuid): Promise<any>;
     abstract updateReservation(id: uuid, data: Partial<Reservation>): Promise<any>;
     abstract deleteReservation(id: uuid): Promise<void>;
-    abstract listReservations(filter?: any): Promise<any[]>;
+    abstract listReservations(pageNumber: number, itemsPerPage: number): Promise<Reservation[] | null>;
 }

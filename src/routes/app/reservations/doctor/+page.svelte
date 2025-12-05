@@ -10,20 +10,19 @@
 	import type { Reservation as ReservationClass } from '$lib/shared/entities';
 
 	import { writable, derived, get } from 'svelte/store';
+	import type { reservationStatus } from '$lib/shared/types/type_def';
 
 	/* =========================================================
 	   INITIAL DATA
 	========================================================= */
 	let { data }: PageProps = $props();
-	const reservations: ReservationClass[] = data.reservations.map((r) =>
-		Reservation.fromJson(r)
-	);
+	const reservations: ReservationClass[] = data.reservations.map((r) => Reservation.fromPOJO(r));
 
 	/* =========================================================
 	   FILTER / STATUS TABS
 	========================================================= */
-	const STATUS_TABS = ['Booked', 'Check in', 'Done', 'Cancelled', 'No Show'] as const;
-	type StatusTab = typeof STATUS_TABS[number] | 'All';
+	const STATUS_TABS = ['Booked', 'Check in', 'Done', 'Cancelled', 'No Show'] as reservationStatus[];
+	type StatusTab = reservationStatus | 'All';
 
 	const statusFilter = writable<StatusTab>('Booked');
 
@@ -36,8 +35,8 @@
 	// Filtered list (based on status tab)
 	const filteredReservations = derived(statusFilter, ($status) => {
 		if (!$status || $status === 'All') return reservations;
-		return reservations.filter((r) =>
-			String(r.getStatus()).toLowerCase() === String($status).toLowerCase()
+		return reservations.filter(
+			(r) => String(r.getStatus()).toLowerCase() === String($status).toLowerCase()
 		);
 	});
 
@@ -77,9 +76,8 @@
 		return pages;
 	}
 
-	const pageNumbers = derived(
-		[currentPage, totalPages],
-		([$current, $total]) => getPageNumbers($current, $total)
+	const pageNumbers = derived([currentPage, totalPages], ([$current, $total]) =>
+		getPageNumbers($current, $total)
 	);
 
 	// Go to page
@@ -149,37 +147,39 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Reservations - SCA Hospital</title>
+</svelte:head>
+
 <!-- NAVBAR (copied style from patient.svelte) -->
 <NavigationMenu.Root
-	class={'sticky top-0 z-0 w-full max-w-full bg-white text-black shadow-md transition-transform duration-200 ' +
+	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
-	<NavigationMenu.List class="flex w-full items-center px-4 py-2">
-		<div class="flex-1"></div>
-		<div class="pointer-events-auto flex-none">
-			<NavigationMenu.Item>
-				<NavigationMenu.Link class="cursor-pointer">
-					<div class="h-full w-full">
-						<img src={logo} alt="Logo" class="h-8 object-contain" />
-					</div>
-				</NavigationMenu.Link>
-			</NavigationMenu.Item>
-		</div>
-		<div class="flex flex-1 justify-end">
-			<NavigationMenu.Item>
-				<InputGroup.Root
-					class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-[6px] pr-2 pl-4 shadow-sm sm:flex"
-				>
-					<InputGroup.Input
-						placeholder="Find name, medical record..."
-						class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
-					/>
-					<InputGroup.Addon align="inline-end" class="rounded-full bg-white pr-1">
-						<SearchIcon class="h-5 w-5" />
-					</InputGroup.Addon>
-				</InputGroup.Root>
-			</NavigationMenu.Item>
-		</div>
+	<!-- keep NavigationMenu.List as container (positioning context) -->
+	<NavigationMenu.List class=" px-4 py-4">
+		<!-- ABSOLUTELY CENTERED LOGO (always centered regardless of other items) -->
+		<NavigationMenu.Item class="absolute top-2 left-1/2 -translate-x-1/2">
+			<NavigationMenu.Link class="cursor-pointer">
+				<div class="h-full w-full">
+					<img src={logo} alt="Logo" class="h-10 object-contain" />
+				</div>
+			</NavigationMenu.Link>
+		</NavigationMenu.Item>
+		<!-- RIGHT-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
+		<NavigationMenu.Item>
+			<InputGroup.Root
+				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-1.5 pr-2 pl-4 shadow-sm sm:flex"
+			>
+				<InputGroup.Input
+					placeholder="Find name, medical record..."
+					class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
+				/>
+				<InputGroup.Addon align="inline-end" class="rounded-full bg-white pr-1">
+					<SearchIcon class="h-5 w-5" color="#1D69D1" />
+				</InputGroup.Addon>
+			</InputGroup.Root>
+		</NavigationMenu.Item>
 	</NavigationMenu.List>
 </NavigationMenu.Root>
 
@@ -191,8 +191,8 @@
 			<div class="mb-4 flex items-center justify-center gap-3">
 				{#each STATUS_TABS as tab}
 					<button
-						on:click={() => setTab(tab)}
-						class="rounded-full px-4 py-2 font-semibold border-2 transition"
+						onclick={() => setTab(tab)}
+						class="rounded-full border-2 px-4 py-2 font-semibold transition"
 						class:bg-blue-600={tab === $statusFilter}
 						class:text-white={tab === $statusFilter}
 						class:border-blue-600={tab === $statusFilter}
@@ -210,29 +210,31 @@
 						class="mb-3 rounded-2xl border border-gray-200 bg-white px-6 py-4 shadow-sm transition-shadow hover:shadow-md"
 					>
 						<Item.Content>
-							<div class="grid grid-cols-12 items-center gap-1">
+							<div class="grid grid-cols-14 items-center gap-1">
 								<!-- NAME + MRN -->
-								<div class="col-span-3 flex flex-col">
+								<div class="col-span-2 flex flex-col">
 									<div class="flex items-center">
 										<Item.Title class="text-[17px] font-semibold">
 											{reservation.getPatient().getFullName()}
 											{#if reservation.getPatient().getGender() === 'Male'}
-												<Mars class="ml-1 inline-block" />
+												<Mars class="ml-1 inline-block" color="#0000FF" />
 											{:else}
-												<Venus class="ml-1 inline-block" />
+												<Venus class="ml-1 inline-block" color="#FF1493" />
 											{/if}
 										</Item.Title>
 									</div>
 
 									<div class="mt-1 text-xs leading-tight text-gray-500">
 										Medical Record No.<br />
-										<span class="text-[11px] text-gray-400">{reservation.getPatient().getMedicalRecordNumber()}</span>
+										<span class="text-[11px] text-gray-400"
+											>{reservation.getPatient().getMedicalRecordNumber()}</span
+										>
 									</div>
 								</div>
 
 								<!-- vertical divider -->
 								<div class="col-span-0 flex justify-center">
-									<div class="h-14 border-l w-px border-gray-300"></div>
+									<div class="h-14 w-px border-l border-gray-300"></div>
 								</div>
 
 								<!-- Receptionist -->
@@ -245,7 +247,7 @@
 
 								<!-- divider -->
 								<div class="col-span-0 flex justify-center">
-									<div class="h-14 border-l w-px border-gray-300"></div>
+									<div class="h-14 w-px border-l border-gray-300"></div>
 								</div>
 
 								<!-- Doctor -->
@@ -258,7 +260,7 @@
 
 								<!-- divider -->
 								<div class="col-span-0 flex justify-center">
-									<div class="h-14 border-l w-px border-gray-300"></div>
+									<div class="h-14 w-px border-l border-gray-300"></div>
 								</div>
 
 								<!-- Reservation Time -->
@@ -271,7 +273,7 @@
 
 								<!-- divider -->
 								<div class="col-span-0 flex justify-center">
-									<div class="h-14 border-l w-px border-gray-300"></div>
+									<div class="h-14 w-px border-l border-gray-300"></div>
 								</div>
 
 								<!-- Notes -->
@@ -299,7 +301,7 @@
 				<nav class="inline-flex items-center gap-2" aria-label="Pagination">
 					<button
 						class="rounded-full border-2 border-blue-600 px-4 py-2 font-semibold text-blue-600 hover:bg-blue-50 disabled:opacity-40"
-						on:click={() => goToPage($currentPage - 1)}
+						onclick={() => goToPage($currentPage - 1)}
 						disabled={$currentPage === 1}
 					>
 						Prev
@@ -315,7 +317,7 @@
 								class:text-white={p === $currentPage}
 								class:border-blue-600={p !== $currentPage}
 								class:text-blue-600={p !== $currentPage}
-								on:click={() => goToPage(p as number)}
+								onclick={() => goToPage(p as number)}
 								aria-current={p === $currentPage ? 'page' : undefined}
 							>
 								{p}
@@ -325,7 +327,7 @@
 
 					<button
 						class="rounded-full border-2 border-blue-600 px-4 py-2 font-semibold text-blue-600 hover:bg-blue-50 disabled:opacity-40"
-						on:click={() => goToPage($currentPage + 1)}
+						onclick={() => goToPage($currentPage + 1)}
 						disabled={$currentPage === $totalPages}
 					>
 						Next

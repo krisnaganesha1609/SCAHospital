@@ -18,7 +18,7 @@
 		data-slot="accordion-trigger"
 		bind:ref
 		class={cn(
-			'gap-4 rounded-md py-4 text-start text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',
+			' rounded-md py-2 text-start text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',
 			className
 		)}
 		{...restProps}

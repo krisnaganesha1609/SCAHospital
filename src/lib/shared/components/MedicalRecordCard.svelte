@@ -5,7 +5,7 @@
 	import type { MedicalRecord, Prescription, PrescriptionItems } from '$lib/shared/entities'; // contoh path
 
 	export let record: MedicalRecord; // expect instance of MedicalRecord (or its toJson)
-	export let prescriptions: Prescription[]; // array of Prescription instances
+	export let prescriptions: Prescription[] | null; // array of Prescription instances
 
 	const fmtDate = (d: string | Date | undefined) => {
 		if (!d) return '-';

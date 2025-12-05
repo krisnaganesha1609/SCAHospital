@@ -8,6 +8,10 @@
 	const user = User.fromPOJO(data.profile);
 </script>
 
+<svelte:head>
+	<title>Dashboard - SCA Hospital</title>
+</svelte:head>
+
 <div class="flex w-full flex-col">
 	<!-- HEADER TITLE -->
 	<section class="py-16 text-center">

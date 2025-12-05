@@ -21,7 +21,7 @@
 	/* =========================================================
 	   FILTER / STATUS TABS
 	========================================================= */
-	const STATUS_TABS = ['Booked', 'Check in', 'Done', 'Cancelled', 'No Show'] as reservationStatus[];
+	const STATUS_TABS = ['Booked', 'Checked In', 'Done', 'Cancelled', 'No Show'] as reservationStatus[];
 	type StatusTab = reservationStatus | 'All';
 
 	const statusFilter = writable<StatusTab>('Booked');
@@ -187,16 +187,21 @@
 <div class="flex w-full flex-col">
 	<section id="main-content" class="min-h-screen w-full bg-[#F5F5F5]">
 		<div class="min-h-[calc(100vh-64px)] p-4">
-			<!-- Top status tabs (Booked / Check in / Done / Cancelled / No Show) -->
+			<!-- Top status tabs (Booked / Checked In / Done / Cancelled / No Show) -->
 			<div class="mb-4 flex items-center justify-center gap-3">
 				{#each STATUS_TABS as tab}
 					<button
 						onclick={() => setTab(tab)}
-						class="rounded-full border-2 px-4 py-2 font-semibold transition"
-						class:bg-blue-600={tab === $statusFilter}
+						class="rounded-full px-6 py-3 font-semibold transition"
+
+						class:bg-neutral-600={tab === "Booked" && tab === $statusFilter}
+						class:bg-primary-dark={tab === "Checked In" && tab === $statusFilter}
+						class:bg-success-700={tab === "Done" && tab === $statusFilter}
+						class:bg-danger-600={tab === "Cancelled" && tab === $statusFilter}
+						class:bg-warning-600={tab === "No Show" && tab === $statusFilter}
+
+						class:bg-neutral-300={tab !== $statusFilter}
 						class:text-white={tab === $statusFilter}
-						class:border-blue-600={tab === $statusFilter}
-						class:text-blue-600={tab !== $statusFilter}
 					>
 						{tab}
 					</button>

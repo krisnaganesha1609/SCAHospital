@@ -318,7 +318,7 @@
 								: ''}
 						>
 							<a
-								href="/app/patients"
+								href="/app/patients/admin"
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
 									: 'pl-4'} "

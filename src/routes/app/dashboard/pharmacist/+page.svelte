@@ -12,7 +12,7 @@
 <div class="flex w-full flex-col">
 	<!-- HEADER TITLE -->
 	<section class="py-16 text-center">
-		<p class="text-4xl font-bold">Hi, apt. {user?.getFullName}</p>
+		<p class="text-4xl font-bold">Hi, apt. {user?.getFullName()}</p>
 		<h2 class="text-6xl font-bold">Remember Our Commitment</h2>
 	</section>
 

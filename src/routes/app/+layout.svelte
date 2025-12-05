@@ -209,26 +209,18 @@
 								{/if}
 							</a>
 						</li>
-						<li
-							class={page.url.pathname.includes('/app/logout')
-								? 'rounded-[20px] bg-[#e8f0fa] py-2'
-								: ''}
-						>
-							<a
-								href="/app/logout"
+						<li>
+							<button
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
-									: 'pl-4'} "
+									: 'pl-4'} w-full text-left"
+								onclick={openLogoutModal}
 							>
-								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								<LogOut color={isCollapsed ? 'white' : 'white'} />
 								{#if !isCollapsed}
-									<span
-										class="ms-3 {page.url.pathname.includes('/app/logout')
-											? ' text-[#1754a7]'
-											: 'text-white'}">Log Out</span
-									>
+									<span class="ms-3 text-white">Log Out</span>
 								{/if}
-							</a>
+							</button>
 						</li>
 					{/if}
 					{#if role === 'Pharmacist'}
@@ -282,26 +274,18 @@
 								{/if}
 							</a>
 						</li>
-						<li
-							class={page.url.pathname.includes('/app/logout')
-								? 'rounded-[20px] bg-[#e8f0fa] py-2'
-								: ''}
-						>
-							<a
-								href="/app/logout"
+						<li>
+							<button
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
-									: 'pl-4'} "
+									: 'pl-4'} w-full text-left"
+								onclick={openLogoutModal}
 							>
-								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								<LogOut color={isCollapsed ? 'white' : 'white'} />
 								{#if !isCollapsed}
-									<span
-										class="ms-3 {page.url.pathname.includes('/app/logout')
-											? ' text-[#1754a7]'
-											: 'text-white'}">Log Out</span
-									>
+									<span class="ms-3 text-white">Log Out</span>
 								{/if}
-							</a>
+							</button>
 						</li>
 					{/if}
 					{#if role === 'Admin'}
@@ -401,26 +385,18 @@
 								{/if}
 							</a>
 						</li>
-						<li
-							class={page.url.pathname.includes('/app/logout')
-								? 'rounded-[20px] bg-[#e8f0fa] py-2'
-								: ''}
-						>
-							<a
-								href="/app/logout"
+						<li>
+							<button
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
-									: 'pl-4'} "
+									: 'pl-4'} w-full text-left"
+								onclick={openLogoutModal}
 							>
-								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								<LogOut color={isCollapsed ? 'white' : 'white'} />
 								{#if !isCollapsed}
-									<span
-										class="ms-3 {page.url.pathname.includes('/app/logout')
-											? ' text-[#1754a7]'
-											: 'text-white'}">Log Out</span
-									>
+									<span class="ms-3 text-white">Log Out</span>
 								{/if}
-							</a>
+							</button>
 						</li>
 					{/if}
 				</ul>

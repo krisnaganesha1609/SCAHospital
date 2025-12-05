@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { Toaster } from '$lib/components/ui/sonner';
+	import { Toaster } from 'svelte-sonner';
 	let { children } = $props();
 </script>
 
@@ -10,5 +10,5 @@
 	<title>SCA Hospital</title>
 </svelte:head>
 
-<Toaster />
+<Toaster richColors position="bottom-right" />
 {@render children?.()}

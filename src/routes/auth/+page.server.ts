@@ -10,8 +10,8 @@ export const actions: Actions = {
 
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
     if (signInError) {
-      if (signInError.message === 'Invalid login credentials') {
-        return fail(400, { errors: { message: 'Invalid email or password' } });
+      if (signInError.status === 400) {
+        return fail(400, { message: 'Invalid email or password' });
       }
       throw error(500, { message: 'Internal Server Error' })
     } else {

@@ -36,6 +36,18 @@
 	const layoutBg = $derived(
 		(page?.url?.pathname || '').startsWith('/app/dashboard') ? 'bg-white' : 'bg-[#F5F5F5]'
 	);
+
+	// log out pop-up functions
+	let showLogoutModal = $state(false);
+	function openLogoutModal() {
+		showLogoutModal = true;
+	}
+	function closeLogoutModal() {
+		showLogoutModal = false;
+	}
+	function redirectToLogout() {
+		window.location.href = '/app/logout';
+	}
 </script>
 
 <div class="flex min-h-screen flex-col {layoutBg}">
@@ -132,26 +144,18 @@
 								{/if}
 							</a>
 						</li>
-						<li
-							class={page.url.pathname.includes('/app/logout')
-								? 'rounded-[20px] bg-[#e8f0fa] py-2'
-								: ''}
-						>
-							<a
-								href="/app/logout"
+						<li>
+							<button
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
-									: 'pl-4'} "
+									: 'pl-4'} w-full text-left"
+								onclick={openLogoutModal}
 							>
-								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								<LogOut color={isCollapsed ? 'white' : 'white'} />
 								{#if !isCollapsed}
-									<span
-										class="ms-3 {page.url.pathname.includes('/app/logout')
-											? ' text-[#1754a7]'
-											: 'text-white'}">Log Out</span
-									>
+									<span class="ms-3 text-white">Log Out</span>
 								{/if}
-							</a>
+							</button>
 						</li>
 					{/if}
 					{#if role === 'Receptionist'}
@@ -205,26 +209,18 @@
 								{/if}
 							</a>
 						</li>
-						<li
-							class={page.url.pathname.includes('/app/logout')
-								? 'rounded-[20px] bg-[#e8f0fa] py-2'
-								: ''}
-						>
-							<a
-								href="/app/logout"
+						<li>
+							<button
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
-									: 'pl-4'} "
+									: 'pl-4'} w-full text-left"
+								onclick={openLogoutModal}
 							>
-								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								<LogOut color={isCollapsed ? 'white' : 'white'} />
 								{#if !isCollapsed}
-									<span
-										class="ms-3 {page.url.pathname.includes('/app/logout')
-											? ' text-[#1754a7]'
-											: 'text-white'}">Log Out</span
-									>
+									<span class="ms-3 text-white">Log Out</span>
 								{/if}
-							</a>
+							</button>
 						</li>
 					{/if}
 					{#if role === 'Pharmacist'}
@@ -278,26 +274,18 @@
 								{/if}
 							</a>
 						</li>
-						<li
-							class={page.url.pathname.includes('/app/logout')
-								? 'rounded-[20px] bg-[#e8f0fa] py-2'
-								: ''}
-						>
-							<a
-								href="/app/logout"
+						<li>
+							<button
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
-									: 'pl-4'} "
+									: 'pl-4'} w-full text-left"
+								onclick={openLogoutModal}
 							>
-								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								<LogOut color={isCollapsed ? 'white' : 'white'} />
 								{#if !isCollapsed}
-									<span
-										class="ms-3 {page.url.pathname.includes('/app/logout')
-											? ' text-[#1754a7]'
-											: 'text-white'}">Log Out</span
-									>
+									<span class="ms-3 text-white">Log Out</span>
 								{/if}
-							</a>
+							</button>
 						</li>
 					{/if}
 					{#if role === 'Admin'}
@@ -330,7 +318,7 @@
 								: ''}
 						>
 							<a
-								href="/app/patients"
+								href="/app/patients/admin"
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
 									: 'pl-4'} "
@@ -397,26 +385,18 @@
 								{/if}
 							</a>
 						</li>
-						<li
-							class={page.url.pathname.includes('/app/logout')
-								? 'rounded-[20px] bg-[#e8f0fa] py-2'
-								: ''}
-						>
-							<a
-								href="/app/logout"
+						<li>
+							<button
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
 									? 'justify-center'
-									: 'pl-4'} "
+									: 'pl-4'} w-full text-left"
+								onclick={openLogoutModal}
 							>
-								<LogOut color={page.url.pathname.includes('/app/logout') ? '#1754a7' : 'white'} />
+								<LogOut color={isCollapsed ? 'white' : 'white'} />
 								{#if !isCollapsed}
-									<span
-										class="ms-3 {page.url.pathname.includes('/app/logout')
-											? ' text-[#1754a7]'
-											: 'text-white'}">Log Out</span
-									>
+									<span class="ms-3 text-white">Log Out</span>
 								{/if}
-							</a>
+							</button>
 						</li>
 					{/if}
 				</ul>
@@ -430,3 +410,55 @@
 		<Footer />
 	</div>
 </div>
+
+<!-- log out pop-up -->
+{#if showLogoutModal}
+  <!-- overlay -->
+  <div
+    class="fixed inset-0 z-50 bg-black/50"
+    onclick={closeLogoutModal}
+    onkeydown={(e) => e.key === 'Escape' && closeLogoutModal()}
+    role="button"
+    tabindex="0"
+  ></div>
+
+  <!-- modal container -->
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      class="relative w-full max-w-lg bg-white p-6 shadow-lg"
+      style="border-radius: 32px;"
+    >
+      <!-- header row: icon left, close-X right -->
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8F0FA]">
+          <LogOut color="#1d69d1" size={24} />
+        </div>
+        <button
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-[#F5F5F5] font-bold text-black text-2xl"
+          onclick={closeLogoutModal}
+          aria-label="Close"
+        >
+          X
+        </button>
+      </div>
+
+	  <!-- Log out text -->
+      <div class="flex flex-col space-y-2">
+        <h3 class="text-left text-2xl font-bold">Log out?</h3>
+        <p class="text-left" style="color: #8E8E8E;">You'll be signed out from your account.</p>
+		<!-- Dummy Text -->
+		<p class="text-left" ><br></p>
+      </div>
+
+	  <!-- log out button -->
+      <div class="mt-4 flex w-full justify-end">
+        <button
+          class="rounded-full bg-[#1d69d1] px-6 py-2 font-medium text-white hover:bg-[#155ab8]"
+          onclick={redirectToLogout}
+        >
+          Log Out
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}

@@ -2,14 +2,17 @@
 	import boxblue from '$lib/assets/box-blue.png';
 	import boxred from '$lib/assets/box-red.png';
 	import boxwhitewhite from '$lib/assets/box-white-white.png';
+	import boxwhitenew from '$lib/assets/box-white-white-new.png';
+	import { User } from '$lib/shared/entities/User';
 	let { data } = $props();
-	let { user } = $derived(data);
+
+	const user = User.fromPOJO(data.profile);
 </script>
 
 <div class="flex w-full flex-col">
 	<!-- HEADER TITLE -->
 	<section class="py-16 text-center">
-		<p class="text-4xl font-bold">Hi, apt. {user?.email}</p>
+		<p class="text-4xl font-bold">Hi, apt. {user?.getFullName()}</p>
 		<h2 class="text-6xl font-bold">Remember Our Commitment</h2>
 	</section>
 
@@ -50,7 +53,7 @@
 		<!-- CARD 3 -->
 		<div
 			class="relative flex h-60 flex-col items-center justify-center overflow-hidden rounded p-8 text-center text-gray-900 shadow"
-			style="background-image: url({boxwhitewhite}); background-size: cover; background-position: center;"
+			style="background-image: url({boxwhitenew}); background-size: cover; background-position: center;"
 		>
 			<div class="absolute inset-0 bg-linear-to-b from-white/95 via-white/70 to-transparent"></div>
 			<div class="relative z-10">

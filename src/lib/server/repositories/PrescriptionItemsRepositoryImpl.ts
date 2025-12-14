@@ -23,4 +23,13 @@ export class PrescriptionItemsRepositoryImpl implements PrescriptionItemsReposit
     listPrescriptionItems(filter?: any): Promise<any[]> {
         throw new Error("Method not implemented.");
     }
+    async createPrescriptionItemsBulk(data: any[]): Promise<void> {
+        const { error } = await this.supabase
+            .from('prescription_items')
+            .insert(data);
+        if (error) {
+            throw new Error(error.message);
+        }
+        return Promise.resolve();
+    }
 }

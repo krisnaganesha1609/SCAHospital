@@ -1,9 +1,16 @@
-import type { Medicine } from '$lib/shared/entities/Medicine';
+import type { Medicine } from '$lib/shared/entities';
 import type { uuid } from '$lib/shared/types/type_def';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { MedicineRepositoryImpl } from '../repositories/MedicineRepositoryImpl';
 import { MedicineService } from './interfaces/MedicineService';
 export class MedicineServiceImpl implements MedicineService {
-    listMedicines(): Promise<string[]> {
-        throw new Error('Method not implemented.');
+    private medicineRepository: MedicineRepositoryImpl;
+    constructor(supabase: SupabaseClient) {
+        this.medicineRepository = new MedicineRepositoryImpl(supabase);
+    }
+    async listMedicines(): Promise<Medicine[]> {
+        const data = await this.medicineRepository.listMedicines();
+        return data;
     }
     registerMedicine(medicine: Medicine): Promise<void> {
         throw new Error('Method not implemented.');

@@ -1,7 +1,4 @@
 import type { JsonObject, uuid } from "../types/type_def";
-import { Patient } from "./Patient";
-import { User } from "./User";
-import { Departments } from "./Departments";
 import { Utils } from "../utils/Utils";
 import { Prescription } from "./Prescription";
 
@@ -78,18 +75,17 @@ export class MedicalRecord extends Utils {
     }
     public toJson(): any {
         return {
-            id: this.id,
             patient_id: this.patientId,
             doctor_id: this.doctorId,
-            department_id: this.departmentId,
+            department_id: this.departmentId ?? '',
             visit_date: this.visitDate,
-            visit_type: this.visitType,
+            visit_type: this.visitType ?? '',
             complaints: this.complaints,
             history: this.history,
             physical_exam: this.physicalExam,
             vitals: this.vitals,
-            procedures: this.procedures,
-            attachments: this.attachments,
+            procedures: this.procedures ?? '',
+            attachments: this.attachments ?? '',
             treatment_plan: this.treatmentPlan,
             follow_up_date: this.followUpDate,
             diagnosis: this.diagnosis,

@@ -1,5 +1,4 @@
 import type { uuid } from "../types/type_def";
-import { Prescription } from "./Prescription";
 import { Medicine } from "./Medicine";
 import { Utils } from "../utils/Utils";
 
@@ -18,7 +17,7 @@ export class PrescriptionItems extends Utils {
         private duration: string,
         private quantity: number,
         private instructions: string,
-        private unitPrice: number,
+        private subtotalPrice: number,
         private createdAt: Date
     ) {super(id);}
 
@@ -58,8 +57,8 @@ export class PrescriptionItems extends Utils {
     public getInstructions(): string {
         return this.instructions;
     }
-    public getUnitPrice(): number {
-        return this.unitPrice;
+    public getSubtotalPrice(): number {
+        return this.subtotalPrice;
     }
     public getCreatedAt(): Date {
         return this.createdAt;
@@ -68,10 +67,10 @@ export class PrescriptionItems extends Utils {
     public toJson(): any { 
         return {
             id: this.id,
-            prescriptionId: this.prescriptionId,
-            medicineId: this.medicineId,
+            prescription_id: this.prescriptionId,
+            medicine_id: this.medicineId,
             medicine: this.medicine,
-            medicineName: this.medicineName,
+            medicine_name: this.medicineName,
             strength: this.strength,
             form: this.form,
             dosage: this.dosage,
@@ -79,8 +78,8 @@ export class PrescriptionItems extends Utils {
             duration: this.duration,
             quantity: this.quantity,
             instructions: this.instructions,
-            unitPrice: this.unitPrice,
-            createdAt: this.createdAt
+            subtotal_price: this.subtotalPrice,
+            created_at: this.createdAt
         };
     }
 
@@ -98,7 +97,7 @@ export class PrescriptionItems extends Utils {
             json.duration,
             json.quantity,
             json.instructions,
-            json.unit_price,
+            json.subtotal_price,
             json.created_at
         );
     }
@@ -117,7 +116,7 @@ export class PrescriptionItems extends Utils {
             obj.duration,
             obj.quantity,
             obj.instructions,
-            obj.unitPrice,
+            obj.subtotalPrice,
             obj.createdAt
         );
     }

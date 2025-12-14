@@ -17,8 +17,8 @@ export class MedicalRecordServiceImpl implements MedicalRecordService {
              return null;
          }
     }
-    createMedicalRecordForAPatient(patientId: uuid, payload: MedicalRecord): Promise<void> {
-        throw new Error("Method not implemented.");
+    async createMedicalRecordForAPatient(payload: any): Promise<uuid> {
+       return await this.medicalRecordRepository.createMedicalRecord(payload);
     }
     updateMedicalRecordOfAPatient(patientId: uuid, payload: MedicalRecord): Promise<void> {
         throw new Error("Method not implemented.");

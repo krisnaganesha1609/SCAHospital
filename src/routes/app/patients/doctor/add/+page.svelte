@@ -1,43 +1,64 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { onDestroy } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { selectedPatientStore } from '$lib/shared/stores/selectedPatient';
-	import type { Patient } from '$lib/shared/entities';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Calendar as UiCalendar } from '$lib/components/ui/calendar/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import CalendarIcon from '@lucide/svelte/icons/calendar';
+	import { Medicine, PrescriptionItems, User, type Patient } from '$lib/shared/entities';
+	import { Button } from '$lib/components/ui/button';
+	import { Calendar as UiCalendar } from '$lib/components/ui/calendar';
+	import * as Popover from '$lib/components/ui/popover';
+	import * as Command from '$lib/components/ui/command';
 	import { type DateValue, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
+	import { CalendarDays, CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
+	import { format } from 'date-fns';
+	import type { uuid } from '$lib/shared/types/type_def.js';
+	import { toast } from 'svelte-sonner';
 
 	const df = new DateFormatter('en-US', { dateStyle: 'long' });
 
+	let { data } = $props();
+	const user = User.fromPOJO(data.profile);
+	const medicines: Medicine[] = data.medicines.map((m: any) => Medicine.fromPOJO(m));
+
 	// selected patient
-	let patient: Patient | null = null;
+	let patient: Patient | null = $state(null);
 	const unsubscribe = selectedPatientStore.subscribe((p) => (patient = p));
 
 	// record form fields (no bind:value — we update with on:input)
-	let visitType = '';
-	let complaints = '';
-	let history = '';
-	let physicalExam = '';
-	let treatmentPlan = '';
-	let diagnosis = '';
-	let notes = '';
-	let followUpDate: DateValue | null = null;
+	let visitType = $state('');
+	let complaints = $state('');
+	let history = $state('');
+	let physicalExam = $state('');
+	let treatmentPlan = $state('');
+	let diagnosis = $state('');
+	let notes = $state('');
+	let followUpDate: DateValue | undefined = $state(undefined);
 
-	let bpSystolic = '';
-	let bpDiastolic = '';
-	let o2 = '';
-	let hr = '';
-	let tempC = '';
+	let bpSystolic = $state('');
+	let bpDiastolic = $state('');
+	let o2 = $state('');
+	let hr = $state('');
+	let tempC = $state('');
+
+	let open = $state<boolean[]>([]);
+	let value = $state<Medicine[]>([]);
+	let triggerRef = $state<HTMLButtonElement[]>([]);
+	function selectedValue(idx: number): string {
+		return medicines.find((f) => f === value[idx])?.getName() || '';
+	}
+	function closeAndFocusTrigger(idx: number) {
+		open[idx] = false;
+		tick().then(() => {
+			triggerRef[idx].focus();
+		});
+	}
+
+	let medicalRecordId = $state<uuid | null>(null);
 
 	// prescriptions (dynamic) — initially hidden until record saved
 	type RxForm = {
-		medName: string;
-		strength: string;
-		form: string;
+		medicine: Medicine;
 		dose: string;
 		frequency: string;
 		duration: string;
@@ -45,10 +66,10 @@
 		instruction: string;
 		price: string;
 	};
-	let prescriptions: RxForm[] = [];
+	let prescriptions: RxForm[] = $state([]);
 
 	// UI state
-	let showPrescriptionSection = false;
+	let showPrescriptionSection = $state(false);
 	let recordSaved = false;
 
 	// helpers to update inputs (no bind:value)
@@ -63,13 +84,15 @@
 		prescriptions = prescriptions.map((p, i) => (i === index ? { ...p, [field]: val } : p));
 	}
 
+	function updatePrescriptionMedicine(index: number, medicine: Medicine) {
+		prescriptions = prescriptions.map((p, i) => (i === index ? { ...p, medicine } : p));
+	}
+
 	function addPrescription() {
 		prescriptions = [
 			...prescriptions,
 			{
-				medName: '',
-				strength: '',
-				form: '',
+				medicine: null!,
 				dose: '',
 				frequency: '',
 				duration: '',
@@ -78,10 +101,21 @@
 				price: ''
 			}
 		];
+		open = [...open, false];
+		value = [...value, null!];
+		triggerRef = [...triggerRef, null!];
 	}
 
 	function removePrescription(idx: number) {
-		prescriptions = prescriptions.filter((_, i) => i !== idx);
+		if (idx < 0 || idx >= prescriptions.length) return;
+		if (prescriptions.length === 1) {
+			prescriptions = [];
+			open = [];
+			value = [];
+			triggerRef = [];
+			return;
+		}
+		prescriptions = prescriptions.splice(idx, 1);
 	}
 
 	// Attempt to accept calendar change events in multiple shapes:
@@ -89,7 +123,7 @@
 		// many UI calendar components emit detail or detail.value
 		const d = (e?.detail as any) ?? null;
 		if (!d) {
-			followUpDate = null;
+			followUpDate = undefined;
 			return;
 		}
 		// if calendar returns DateValue directly
@@ -131,30 +165,35 @@
 	// Save record — validate all fields, then reveal prescription section
 	async function saveRecord() {
 		if (!patient) {
-			alert('No patient selected');
+			toast.error('No patient selected', {
+				description: 'Please go back and select a patient first.',
+				closeButton: true
+			});
 			return;
 		}
 
 		const { ok, missing } = isRecordComplete();
 		if (!ok) {
-			alert('Please fill the following fields before saving:\n- ' + missing.join('\n- '));
+			toast.error('Validation Error', {
+				description: 'Please fill the following fields before saving:\n- ' + missing.join('\n- '),
+				closeButton: true
+			});
 			return;
 		}
 
 		// Build vitals object
 		const vitals = {
-			bpSystolic,
-			bpDiastolic,
-			o2,
-			hr,
-			tempC
+			'BP (mmHg)': `${bpSystolic}/${bpDiastolic}`,
+			'O₂ (%)': parseInt(o2),
+			'HR (bpm)': parseInt(hr),
+			'Temp (°C)': parseFloat(tempC)
 		};
 
 		// Build payload (use patient.getId() — per your instruction)
 		const payload = {
 			patient_id: patient.getId(),
-			doctor_id: patient.getId(), // replace with actual doctor id if available
-			department_id: patient.getId(), // replace with real department id if needed
+			doctor_id: user.getUserId(),
+			department_id: null,
 			visit_date: new Date().toISOString(),
 			visit_type: visitType,
 			complaints,
@@ -162,23 +201,39 @@
 			physical_exam: physicalExam,
 			vitals,
 			procedures: '',
-			attachments: {},
 			treatment_plan: treatmentPlan,
 			follow_up_date: followUpDate ? followUpDate.toDate(getLocalTimeZone()).toISOString() : null,
 			diagnosis,
-			notes,
-			prescriptions: [] // will be appended when saving prescriptions
+			notes
 		};
 
-		// TODO: POST payload to backend; here we just simulate success
-		console.log('Record payload (to be sent):', payload);
+		// POST to server endpoint
+		const response = await fetch('/api/doctor/add-record', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		});
+
+		if (!response.ok) {
+			toast.error('Failed to save record. Please try again.', {
+				description: 'Server responded with ' + response.status,
+				closeButton: true
+			});
+			return;
+		}
+
+		const recordData = await response.json();
+		medicalRecordId = recordData.medicalRecordId;
 
 		// mark as saved and reveal prescriptions section
 		recordSaved = true;
 		showPrescriptionSection = true;
 
 		// notify user
-		alert('Record saved (placeholder). You can now add prescriptions.');
+		toast.success('Record saved successfully', {
+			description: 'Now you can add prescriptions.',
+			closeButton: true
+		});
 	}
 
 	// fixup for let:props
@@ -187,57 +242,93 @@
 	// Save prescriptions — same class/size/color as Save Record
 	async function savePrescriptions() {
 		if (!patient) {
-			alert('No patient selected');
+			toast.error('No patient selected', {
+				description: 'Please go back and select a patient first.',
+				closeButton: true
+			});
 			return;
 		}
 
 		if (prescriptions.length === 0) {
-			alert('No prescriptions to save.');
+			toast.error('No prescriptions added', {
+				description: 'Please add at least one medication before saving.',
+				closeButton: true
+			});
 			return;
 		}
 
 		// Validate each prescription row has all fields filled
 		const incompleteRows: number[] = [];
 		prescriptions.forEach((p, idx) => {
-			const required = [
-				p.medName,
-				p.strength,
-				p.form,
-				p.dose,
-				p.frequency,
-				p.duration,
-				p.quantity,
-				p.instruction,
-				p.price
-			];
+			const required = [p.dose, p.frequency, p.duration, p.quantity, p.instruction, p.price];
 			if (required.some((r) => !r || !String(r).trim())) incompleteRows.push(idx + 1);
 		});
 
 		if (incompleteRows.length) {
-			alert(
-				`Please complete all fields for the following prescription rows before saving: ${incompleteRows.join(
+			toast.error('Incomplete prescription entries', {
+				description: `Please complete all fields for the following prescription rows before saving: ${incompleteRows.join(
 					', '
-				)}`
-			);
+				)}`,
+				closeButton: true
+			});
 			return;
 		}
 
 		// Build prescriptions payload
-		const rxList = prescriptions.map((r) => ({
-			medication_name: r.medName,
-			strength: r.strength,
-			form: r.form,
-			dose: r.dose,
-			frequency: r.frequency,
-			duration: r.duration,
-			quantity: r.quantity,
-			instruction: r.instruction,
-			price: r.price
-		}));
+		const prescriptionItems: PrescriptionItems[] = prescriptions.map((r) => {
+			return PrescriptionItems.fromPOJO({
+				id: null,
+				prescription_id: null,
+				medicine_id: r.medicine.getId(),
+				medicine_name: r.medicine.getName(),
+				strength: r.medicine.getStrength(),
+				form: r.medicine.getForm(),
+				dosage: r.dose,
+				frequency: r.frequency,
+				duration: r.duration,
+				quantity: r.quantity,
+				instructions: r.instruction,
+				subtotal_price: parseFloat(r.quantity) * parseFloat(r.price),
+				created_at: new Date().toISOString()
+			});
+		});
+
+		const response = await fetch('/api/doctor/add-prescriptions', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				medical_record_id: medicalRecordId,
+				doctor_id: user.getUserId(),
+				notes: notes,
+				medications: prescriptionItems.map((item) => ({
+					medicine_id: item.getMedicineId(),
+					medicine_name: item.getMedicineName(),
+					strength: item.getStrength(),
+					form: item.getForm(),
+					dosage: item.getDosage(),
+					frequency: item.getFrequency(),
+					duration: item.getDuration(),
+					quantity: item.getQuantity(),
+					instructions: item.getInstructions(),
+					subtotal_price: item.getSubtotalPrice()
+				}))
+			})
+		});
+
+		if (!response.ok) {
+			toast.error('Failed to save prescriptions. Please try again.', {
+				description: 'Server responded with ' + response.status,
+				closeButton: true
+			});
+			return;
+		}
 
 		// TODO: send rxList along with patient id to backend
-		console.log('Saving prescriptions for patient', patient.getId(), rxList);
-		alert('Prescriptions saved (placeholder).');
+		console.log('Saving prescriptions for patient', patient.getId(), prescriptionItems);
+		toast.success('Prescriptions saved successfully', {
+			description: 'The prescriptions have been recorded.',
+			closeButton: true
+		});
 	}
 
 	onMount(() => {
@@ -254,7 +345,7 @@
 
 <div class="min-h-screen bg-gray-50 p-6">
 	{#if patient}
-		<div class="mx-auto max-w-4xl space-y-4">
+		<div class="mx-auto space-y-4">
 			<!-- top bar: back + title -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
@@ -268,19 +359,17 @@
 			</div>
 
 			<!-- TOP: patient summary (non-clickable) -->
-			<div class="rounded-xl bg-white p-6 shadow-md">
+			<div class="rounded-xl border bg-white p-6">
 				<div class="flex items-start justify-between">
-					<div>
-						<h2 class="text-lg font-semibold">{patient.getFullName()}</h2>
-						<div class="mt-2 space-y-1 text-sm text-gray-600">
-							<div><strong>MR No:</strong> {patient.getMedicalRecordNumber()}</div>
-							<div><strong>Phone:</strong> {patient.getPhone()}</div>
-							<div>
-								<strong>First Registered:</strong>
-								{new Date(patient.getCreatedAt()).toLocaleDateString()}
-							</div>
+					<div class="mt-2 space-y-1 text-sm text-gray-600">
+						<div><strong>MR No:</strong> {patient.getMedicalRecordNumber()}</div>
+						<div><strong>Phone:</strong> {patient.getPhone()}</div>
+						<div>
+							<strong>First Registered:</strong>
+							{new Date(patient.getCreatedAt()).toLocaleDateString()}
 						</div>
 					</div>
+
 					<div class="text-sm text-gray-700">
 						<div><strong>Blood Type:</strong> {patient.getBloodType()}</div>
 						<div class="mt-2"><strong>Allergies:</strong> {patient.getAllergies() || '-'}</div>
@@ -289,153 +378,173 @@
 			</div>
 
 			<!-- RECORD FORM -->
-			<div class="rounded-xl bg-white p-6 shadow-md">
-				<div class="grid grid-cols-12 gap-6">
-					<!-- Left -->
-					<div class="col-span-4 space-y-4">
-						<label for="visitType" class="block text-xs text-slate-500">Visit Type</label>
-						<input
-							class="w-full rounded-md border px-3 py-2"
-							value={visitType}
-							on:input={(e) => (visitType = (e.target as HTMLInputElement).value)}
-							placeholder="New / Follow-up"
-						/>
-
-						<label for="complaints" class="block text-xs text-slate-500">Primary Complaint</label>
-						<textarea
-							class="w-full rounded-md border px-3 py-2"
-							rows="3"
-							value={complaints}
-							on:input={(e) => (complaints = (e.target as HTMLTextAreaElement).value)}
-							placeholder="Complaint"
-						></textarea>
-
-						<label for="followUpDate" class="block text-xs text-slate-500">Follow Up Date</label>
-						<Popover.Root>
-							<Popover.Trigger>
-								<Button
-									class={cn(
-										'w-full justify-start text-start font-normal',
-										!followUpDate && 'text-muted-foreground'
-									)}
-								>
-									<CalendarIcon class="mr-2 size-4" />
-									{followUpDate
-										? df.format(followUpDate.toDate(getLocalTimeZone()))
-										: 'Select a date'}
-								</Button>
-							</Popover.Trigger>
-
-							<Popover.Content class="w-auto p-0">
-								<UiCalendar
-									type="single"
-									initialFocus
-									captionLayout="dropdown"
+			<form onsubmit={saveRecord}>
+				<div class="rounded-xl border bg-white p-6">
+					<div class="grid grid-cols-4 gap-6">
+						<!-- Left -->
+						<div class="col-span-1 space-y-4">
+							<h3 class="text-lg font-semibold">Visit - {format(new Date(), 'PP')}</h3>
+							<div>
+								<label for="visitType" class="block pb-2 text-xs text-black">Visit Type</label>
+								<input
+									class="w-full rounded-md border px-3 py-2 text-xs"
+									value={visitType}
+									oninput={(e) => (visitType = (e.target as HTMLInputElement).value)}
+									placeholder="Visit Type"
 								/>
-							</Popover.Content>
-						</Popover.Root>
-					</div>
+							</div>
+							<div>
+								<label for="complaints" class="block pb-2 text-xs text-black"
+									>Primary Complaint</label
+								>
+								<input
+									class="w-full rounded-md border px-3 py-2 text-xs"
+									value={complaints}
+									oninput={(e) => (complaints = (e.target as HTMLInputElement).value)}
+									placeholder="Describe complaints..."
+								/>
+							</div>
 
-					<!-- Middle -->
-					<div class="col-span-4 space-y-4">
-						<label for="history" class="block text-xs text-slate-500">History</label>
-						<textarea
-							class="w-full rounded-md border px-3 py-2"
-							rows="3"
-							value={history}
-							on:input={(e) => (history = (e.target as HTMLTextAreaElement).value)}
-						></textarea>
+							<div>
+								<label for="followUpDate" class="block pb-2 text-xs text-black"
+									>Follow Up Date</label
+								>
+								<Popover.Root>
+									<Popover.Trigger class="w-full">
+										<Button
+											class={cn(
+												'w-full justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-start text-xs font-normal text-black hover:bg-gray-50',
+												!followUpDate && 'text-muted-foreground'
+											)}
+										>
+											{followUpDate
+												? df.format(followUpDate.toDate(getLocalTimeZone()))
+												: 'Select a date'}
 
-						<label for="daignosis" class="block text-xs text-slate-500">Diagnosis</label>
-						<textarea
-							class="w-full rounded-md border px-3 py-2"
-							rows="3"
-							value={diagnosis}
-							on:input={(e) => (diagnosis = (e.target as HTMLTextAreaElement).value)}
-						></textarea>
+											<CalendarDays color="#1D69D1" />
+										</Button>
+									</Popover.Trigger>
 
-						<label for="physicalExam" class="block text-xs text-slate-500">Physical Examination</label>
-						<textarea
-							class="w-full rounded-md border px-3 py-2"
-							rows="3"
-							value={physicalExam}
-							on:input={(e) => (physicalExam = (e.target as HTMLTextAreaElement).value)}
-						></textarea>
+									<Popover.Content class="w-auto p-0">
+										<UiCalendar
+											type="single"
+											initialFocus
+											captionLayout="dropdown"
+											bind:value={followUpDate}
+										/>
+									</Popover.Content>
+								</Popover.Root>
+							</div>
+						</div>
 
-						<label for="treatmentPlan" class="block text-xs text-slate-500">Treatment Plan</label>
-						<textarea
-							class="w-full rounded-md border px-3 py-2"
-							rows="3"
-							value={treatmentPlan}
-							on:input={(e) => (treatmentPlan = (e.target as HTMLTextAreaElement).value)}
-						></textarea>
-					</div>
+						<!-- Middle -->
+						<div class="col-span-1 space-y-4">
+							<div>
+								<label for="history" class="block pb-2 text-xs text-black">History</label>
+								<textarea
+									class="w-full rounded-md border px-3 py-2"
+									rows="3"
+									value={history}
+									oninput={(e) => (history = (e.target as HTMLTextAreaElement).value)}
+									placeholder="Add history..."
+								></textarea>
+							</div>
 
-					<!-- Right -->
-					<div class="col-span-4 space-y-4">
-						<label for="notes" class="block text-xs text-slate-500">Notes</label>
-						<textarea
-							class="h-40 w-full rounded-md border px-3 py-2"
-							value={notes}
-							on:input={(e) => (notes = (e.target as HTMLTextAreaElement).value)}
-						></textarea>
+							<div>
+								<label for="physicalExam" class="block pb-2 text-xs text-black"
+									>Physical Examination</label
+								>
+								<textarea
+									class="w-full rounded-md border px-3 py-2"
+									rows="3"
+									value={physicalExam}
+									oninput={(e) => (physicalExam = (e.target as HTMLTextAreaElement).value)}
+									placeholder="Add physical examination..."
+								></textarea>
+							</div>
+						</div>
 
-						<div class="rounded-md border p-3">
+						<!-- Right -->
+						<div class="col-span-1 space-y-4">
+							<div>
+								<label for="daignosis" class="block pb-2 text-xs text-black">Diagnosis</label>
+								<textarea
+									class="w-full rounded-md border px-3 py-2"
+									rows="3"
+									value={diagnosis}
+									oninput={(e) => (diagnosis = (e.target as HTMLTextAreaElement).value)}
+									placeholder="Add diagnosis..."
+								></textarea>
+							</div>
+							<div>
+								<label for="treatmentPlan" class="block pb-2 text-xs text-black"
+									>Treatment Plan</label
+								>
+								<textarea
+									class="w-full rounded-md border px-3 py-2"
+									rows="3"
+									value={treatmentPlan}
+									oninput={(e) => (treatmentPlan = (e.target as HTMLTextAreaElement).value)}
+									placeholder="Add treatment plan..."
+								></textarea>
+							</div>
+						</div>
+						<div class="col-span-1 p-3">
 							<div class="mb-2 text-sm font-semibold text-slate-600">Vitals</div>
-							<div class="grid grid-cols-2 gap-2 text-sm">
-								<div>
-									<label for="bpSystolic" class="text-xs text-slate-400">BP</label>
+							<div class="grid grid-cols-1 gap-5 text-sm">
+								<div class="flex items-center gap-4">
+									<label for="bpSystolic" class="text-md font-bold text-[#1D69D1]">BP</label>
 									<div class="flex items-center gap-2">
 										<input
-											class="w-16 rounded-md border px-2 py-1"
+											class="w-12 rounded-md border px-2 py-2 text-center"
 											value={bpSystolic}
-											on:input={(e) => (bpSystolic = (e.target as HTMLInputElement).value)}
+											oninput={(e) => (bpSystolic = (e.target as HTMLInputElement).value)}
 											placeholder="120"
 										/>
 										<span>/</span>
 										<input
-											class="w-16 rounded-md border px-2 py-1"
+											class="w-12 rounded-md border px-2 py-2 text-center"
 											value={bpDiastolic}
-											on:input={(e) => (bpDiastolic = (e.target as HTMLInputElement).value)}
+											oninput={(e) => (bpDiastolic = (e.target as HTMLInputElement).value)}
 											placeholder="80"
 										/>
 										<span>mmHg</span>
 									</div>
 								</div>
 
-								<div>
-									<label for="o2" class="text-xs text-slate-400">O₂</label>
+								<div class="flex items-center gap-4">
+									<label for="o2" class="text-md font-bold text-[#1D69D1]">O₂</label>
 									<div class="flex items-center gap-2">
 										<input
-											class="w-20 rounded-md border px-2 py-1"
+											class="w-12 rounded-md border px-2 py-2 text-center"
 											value={o2}
-											on:input={(e) => (o2 = (e.target as HTMLInputElement).value)}
+											oninput={(e) => (o2 = (e.target as HTMLInputElement).value)}
 											placeholder="98"
 										/>
 										<span>%</span>
 									</div>
 								</div>
 
-								<div>
-									<label for="hr" class="text-xs text-slate-400">HR</label>
+								<div class="flex items-center gap-4">
+									<label for="hr" class="text-md font-bold text-[#1D69D1]">HR</label>
 									<div class="flex items-center gap-2">
 										<input
-											class="w-20 rounded-md border px-2 py-1"
+											class="w-12 rounded-md border px-2 py-2 text-center"
 											value={hr}
-											on:input={(e) => (hr = (e.target as HTMLInputElement).value)}
+											oninput={(e) => (hr = (e.target as HTMLInputElement).value)}
 											placeholder="72"
 										/>
 										<span>bpm</span>
 									</div>
 								</div>
 
-								<div>
-									<label for="tempC" class="text-xs text-slate-400">Temp</label>
+								<div class="flex items-center gap-4">
+									<label for="tempC" class="text-md font-bold text-[#1D69D1]">Temp</label>
 									<div class="flex items-center gap-2">
 										<input
-											class="w-20 rounded-md border px-2 py-1"
+											class="w-14 rounded-md border px-2 py-2 text-center"
 											value={tempC}
-											on:input={(e) => (tempC = (e.target as HTMLInputElement).value)}
+											oninput={(e) => (tempC = (e.target as HTMLInputElement).value)}
 											placeholder="36.6"
 										/>
 										<span>°C</span>
@@ -443,32 +552,38 @@
 								</div>
 							</div>
 						</div>
+						<div class="col-start-2 col-end-5">
+							<label for="notes" class="block text-xs text-black">Notes</label>
+							<textarea
+								class=" my-2 w-full rounded-md border px-3 py-2"
+								rows="1"
+								value={notes}
+								oninput={(e) => (notes = (e.target as HTMLTextAreaElement).value)}
+							></textarea>
+						</div>
+					</div>
+
+					<!-- Save Record button (right) -->
+					<div class="mt-6 flex items-center justify-between">
+						<div></div>
+						<div>
+							<Button class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white" type="submit">
+								Save Record
+							</Button>
+						</div>
 					</div>
 				</div>
-
-				<!-- Save Record button (right) -->
-				<div class="mt-6 flex items-center justify-between">
-					<div></div>
-					<div>
-						<Button
-							class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
-							onclick={saveRecord}
-						>
-							Save Record
-						</Button>
-					</div>
-				</div>
-			</div>
-
+			</form>
 			<!-- PRESCRIPTIONS: hidden until record saved -->
 			{#if showPrescriptionSection}
-				<div class="rounded-xl bg-white p-6 shadow-md">
+				<div class="mx-auto h-20 w-10 border-l-8 border-dashed border-gray-300"></div>
+				<div class="rounded-xl border bg-white p-6">
 					<div class="mb-4 flex items-center justify-between">
 						<h3 class="text-lg font-semibold">Prescriptions</h3>
 						<div class="flex gap-2">
 							<button
-								class="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
-								on:click={addPrescription}
+								class="rounded-md border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50"
+								onclick={addPrescription}
 							>
 								+ Add Medication
 							</button>
@@ -482,94 +597,129 @@
 					{/if}
 
 					{#each prescriptions as rx, idx (idx)}
-						<div class="mb-4 space-y-2 rounded-lg bg-white p-4 shadow-md">
-							<div class="grid grid-cols-3 gap-4">
-								<div>
-									<label for="rx.medName" class="text-xs text-slate-400">Medication Name</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.medName}
-										on:input={(e) => updatePrescriptionField(idx, 'medName', e)}
-									/>
-								</div>
-
-								<div>
-									<label for="rx.strength" class="text-xs text-slate-400">Strength</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.strength}
-										on:input={(e) => updatePrescriptionField(idx, 'strength', e)}
-									/>
-								</div>
-
-								<div>
-									<label for="rx.form" class="text-xs text-slate-400">Form</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.form}
-										on:input={(e) => updatePrescriptionField(idx, 'form', e)}
-									/>
-								</div>
-
-								<div>
-									<label for="rx.dose" class="text-xs text-slate-400">Dose</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.dose}
-										on:input={(e) => updatePrescriptionField(idx, 'dose', e)}
-									/>
-								</div>
-
-								<div>
-									<label for="rx.frequency" class="text-xs text-slate-400">Frequency</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.frequency}
-										on:input={(e) => updatePrescriptionField(idx, 'frequency', e)}
-									/>
-								</div>
-
-								<div>
-									<label for="rx.duration" class="text-xs text-slate-400">Duration</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.duration}
-										on:input={(e) => updatePrescriptionField(idx, 'duration', e)}
-									/>
-								</div>
-
-								<div>
-									<label for="rx.quantity" class="text-xs text-slate-400">Quantity</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.quantity}
-										on:input={(e) => updatePrescriptionField(idx, 'quantity', e)}
-									/>
-								</div>
-
-								<div>
-									<label for="rx.instruction" class="text-xs text-slate-400">Instruction</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.instruction}
-										on:input={(e) => updatePrescriptionField(idx, 'instruction', e)}
-									/>
-								</div>
-
-								<div>
-									<label for="rx.price" class="text-xs text-slate-400">Price</label>
-									<input
-										class="w-full rounded-md border px-3 py-2"
-										value={rx.price}
-										on:input={(e) => updatePrescriptionField(idx, 'price', e)}
-									/>
-								</div>
+						<div class="mb-4 space-y-2 rounded-lg border bg-white p-4">
+							<div class="mb-2">
+								<label for="rx.medicinename" class="text-black0 text-xs">Medicine Name</label>
+								<Popover.Root bind:open={open[idx]}>
+									<Popover.Trigger bind:ref={triggerRef[idx]} class="w-full">
+										{#snippet child({ props })}
+											<Button
+												{...props}
+												variant="outline"
+												class="w-full justify-between"
+												role="combobox"
+												aria-expanded={open[idx]}
+											>
+												{selectedValue(idx) || 'Select a medicine...'}
+												<ChevronsUpDownIcon class="opacity-50" />
+											</Button>
+										{/snippet}
+									</Popover.Trigger>
+									<Popover.Content class="w-full p-0">
+										<Command.Root>
+											<Command.Input placeholder="Search medicine..." />
+											<Command.List>
+												<Command.Empty>No medicines found.</Command.Empty>
+												<Command.Group value="medicines">
+													{#each medicines as medicine (medicine.getId())}
+														<Command.Item
+															value={medicine.getName()}
+															onSelect={() => {
+																value[idx] = medicine;
+																closeAndFocusTrigger(idx);
+																updatePrescriptionMedicine(idx, medicine);
+																console.log('Selected medicine for row', idx, medicine);
+															}}
+														>
+															<CheckIcon
+																class={cn(value[idx] !== medicine && 'text-transparent')}
+															/>
+															{medicine.getName()}
+														</Command.Item>
+													{/each}
+												</Command.Group>
+											</Command.List>
+										</Command.Root>
+									</Popover.Content>
+								</Popover.Root>
 							</div>
-
+							{#if rx.medicine !== null && rx.medicine !== undefined}
+								<div class="grid grid-cols-3 gap-4">
+									<div>
+										<label for="rx.strength" class="text-xs text-black">Strength</label>
+										<input
+											class="w-full rounded-md border px-3 py-2"
+											value={rx.medicine === null ? '' : rx.medicine.getStrength()}
+											readonly
+										/>
+									</div>
+									<div>
+										<label for="rx.form" class="text-xs text-black">Form</label>
+										<input
+											class="w-full rounded-md border px-3 py-2"
+											value={rx.medicine === null ? '' : rx.medicine.getForm()}
+											readonly
+										/>
+									</div>
+									<div>
+										<label for="rx.price" class="text-xs text-black">Unit Price</label>
+										<input
+											class="w-full rounded-md border px-3 py-2"
+											value={rx.medicine === null ? 0 : `Rp${rx.medicine.getUnitPrice()}`}
+											readonly
+										/>
+									</div>
+									<div>
+										<label for="rx.dose" class="text-xs text-black">Dose</label>
+										<input
+											class="w-full rounded-md border px-3 py-2"
+											value={rx.dose}
+											oninput={(e) => updatePrescriptionField(idx, 'dose', e)}
+											placeholder="e.g., 1 tablet"
+										/>
+									</div>
+									<div>
+										<label for="rx.frequency" class="text-xs text-black">Frequency</label>
+										<input
+											class="w-full rounded-md border px-3 py-2"
+											value={rx.frequency}
+											oninput={(e) => updatePrescriptionField(idx, 'frequency', e)}
+											placeholder="e.g., 3 x daily"
+										/>
+									</div>
+									<div>
+										<label for="rx.duration" class="text-xs text-black">Duration</label>
+										<input
+											class="w-full rounded-md border px-3 py-2"
+											value={rx.duration}
+											oninput={(e) => updatePrescriptionField(idx, 'duration', e)}
+											placeholder="e.g., 7 days"
+										/>
+									</div>
+									<div>
+										<label for="rx.quantity" class="text-xs text-black">Quantity</label>
+										<input
+											class="w-full rounded-md border px-3 py-2"
+											value={rx.quantity}
+											oninput={(e) => updatePrescriptionField(idx, 'quantity', e)}
+											placeholder="e.g., 21"
+										/>
+									</div>
+									<div class="col-span-2">
+										<label for="rx.instruction" class="text-xs text-black">Instruction</label>
+										<input
+											class="w-full rounded-md border px-3 py-2"
+											value={rx.instruction}
+											oninput={(e) => updatePrescriptionField(idx, 'instruction', e)}
+											placeholder="e.g., After meals"
+										/>
+									</div>
+								</div>
+							{/if}
 							<div class="flex justify-end">
 								<button
-									class="rounded bg-red-500 px-3 py-1 text-sm text-white"
-									on:click={() => removePrescription(idx)}
+									class="mt-4 rounded-md bg-red-500 px-3 py-2 text-sm text-white"
+									onclick={() => removePrescription(idx)}
 								>
 									Remove
 								</button>

@@ -1,14 +1,24 @@
 import { Prescription } from "$lib/shared/entities/Prescription";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { PrescriptionRepository } from "./interfaces/PrescriptionRepository";
+import type { uuid } from "$lib/shared/types/type_def";
 
 export class PrescriptionRepositoryImpl implements PrescriptionRepository {
     private supabase: SupabaseClient;
     constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
     }
-    createPrescription(data: Partial<Prescription>): Promise<void> {
-        throw new Error("Method not implemented.");
+    async createPrescription(payload: any): Promise<uuid> {
+    const { data, error } = await this.supabase
+            .from('prescriptions')
+            .insert(payload).select();
+        if (error) {
+            throw new Error(error.message);
+        }
+        if (!data || data.length === 0) {
+            throw new Error("Failed to create prescription");
+        }
+        return Promise.resolve(data[0].id);
     }
     async getPrescriptionsById(id: string): Promise<Prescription[] | null> {
         const { data } = await this.supabase

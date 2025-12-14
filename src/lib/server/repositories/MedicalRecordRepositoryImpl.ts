@@ -2,14 +2,22 @@ import { MedicalRecord } from "$lib/shared/entities/MedicalRecord";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { MedicalRecordRepository } from "./interfaces/MedicalRecordRepository";
 import { error } from '@sveltejs/kit';
+import type { uuid } from "$lib/shared/types/type_def";
 
 export class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
     private supabase: SupabaseClient;
     constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
     }
-    createMedicalRecord(data: Partial<MedicalRecord>): Promise<void> {
-        throw new Error("Method not implemented.");
+    async createMedicalRecord(payload: any): Promise<uuid> {
+        const { data, error } = await this.supabase.from('medical_records').insert(payload).select();
+        if (error) {
+            throw error;
+        }
+        if (!data || data.length === 0) {
+            throw new Error("Failed to create medical record");
+        }
+        return Promise.resolve(data[0].id);
     }
     async getMedicalRecordsByPatientId(id: string): Promise<MedicalRecord[] | null> {
         const { data, error } = await this.supabase

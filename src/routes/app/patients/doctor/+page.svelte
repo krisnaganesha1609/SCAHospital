@@ -207,10 +207,10 @@
 									No medical record found for this patient.
 								</div>
 							{:else}
-								<MedicalRecordCard
-									record={patient.getMedicalRecord()[0]}
-									prescriptions={patient.getMedicalRecord()[0].getPrescriptions() ?? null}
-								/>
+								{#each patient.getMedicalRecord() as record (record.getId())}
+									<MedicalRecordCard {record} prescriptions={record.getPrescriptions() ?? null} />
+									<div class="mt-5"></div>
+								{/each}
 							{/if}
 						</div>
 					</Accordion.Content>

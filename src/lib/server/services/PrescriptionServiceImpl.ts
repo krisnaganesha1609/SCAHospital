@@ -5,6 +5,7 @@ import { PrescriptionRepositoryImpl } from "../repositories/PrescriptionReposito
 import type { PrescriptionService } from "./interfaces/PrescriptionService";
 import { PrescriptionItemsRepositoryImpl } from "../repositories/PrescriptionItemsRepositoryImpl";
 import { PharmacyApprovalRepositoryImpl } from "../repositories/PharmacyApprovalRepositoryImpl";
+import type { PrescriptionItemsRequest } from "$lib/shared/utils/PrescriptionItems_Request";
 
 export class PrescriptionServiceImpl implements PrescriptionService {
     private prescriptionRepository: PrescriptionRepositoryImpl;
@@ -15,7 +16,8 @@ export class PrescriptionServiceImpl implements PrescriptionService {
             this.prescriptionItemsRepository = new PrescriptionItemsRepositoryImpl(supabase);
             this.pharmacyApprovalRepository = new PharmacyApprovalRepositoryImpl(supabase);
         }
-    async issuePrescription(medicalRecordId: uuid, doctorId: uuid, notes: string, medications: PrescriptionItems[]): Promise<void> {
+    async issuePrescription(medicalRecordId: uuid, doctorId: uuid, notes: string, medications: PrescriptionItemsRequest[]): Promise<void> {
+        console.log("Issuing prescription with medications:", medications);
         let prescriptionPayload: any = {
             medical_record_id: medicalRecordId,
             doctor_id: doctorId,

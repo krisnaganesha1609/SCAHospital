@@ -14,6 +14,8 @@
 	import { format } from 'date-fns';
 	import type { uuid } from '$lib/shared/types/type_def.js';
 	import { toast } from 'svelte-sonner';
+	import { PrescriptionItemsRequest } from '$lib/shared/utils/PrescriptionItems_Request.js';
+	import { redirect } from '@sveltejs/kit';
 
 	const df = new DateFormatter('en-US', { dateStyle: 'long' });
 
@@ -260,7 +262,7 @@
 		// Validate each prescription row has all fields filled
 		const incompleteRows: number[] = [];
 		prescriptions.forEach((p, idx) => {
-			const required = [p.dose, p.frequency, p.duration, p.quantity, p.instruction, p.price];
+			const required = [p.dose, p.frequency, p.duration, p.quantity, p.instruction];
 			if (required.some((r) => !r || !String(r).trim())) incompleteRows.push(idx + 1);
 		});
 
@@ -275,10 +277,8 @@
 		}
 
 		// Build prescriptions payload
-		const prescriptionItems: PrescriptionItems[] = prescriptions.map((r) => {
-			return PrescriptionItems.fromPOJO({
-				id: null,
-				prescription_id: null,
+		const prescriptionItems: PrescriptionItemsRequest[] = prescriptions.map((r) => {
+			return PrescriptionItemsRequest.fromJson({
 				medicine_id: r.medicine.getId(),
 				medicine_name: r.medicine.getName(),
 				strength: r.medicine.getStrength(),
@@ -288,8 +288,7 @@
 				duration: r.duration,
 				quantity: r.quantity,
 				instructions: r.instruction,
-				subtotal_price: parseFloat(r.quantity) * parseFloat(r.price),
-				created_at: new Date().toISOString()
+				subtotal_price: parseFloat(r.quantity) * r.medicine.getUnitPrice(),
 			});
 		});
 
@@ -329,6 +328,7 @@
 			description: 'The prescriptions have been recorded.',
 			closeButton: true
 		});
+		redirect(303, '/app/patients/doctor');
 	}
 
 	onMount(() => {

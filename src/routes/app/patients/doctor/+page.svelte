@@ -186,18 +186,21 @@
 							</Item.Content>
 						</Item.Root>
 					</Accordion.Trigger>
-					<Accordion.Content class="flex flex-col items-end justify-end space-y-6">
-						<Button
-							class="mt-5 rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
-							onclick={() => {
-								// set store and persist to sessionStorage then navigate
-								persistSelectedPatient(patient);
-								// include id in query just in case user wants direct link later
-								goto(`/app/patients/doctor/add?id=${encodeURIComponent(patient.getId())}`);
-							}}
-						>
-							Add Record
-						</Button>
+					<Accordion.Content class="flex flex-col space-y-6">
+						<div class="flex items-center justify-end">
+							<div></div>
+							<Button
+								class="mt-5 rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
+								onclick={() => {
+									// set store and persist to sessionStorage then navigate
+									persistSelectedPatient(patient);
+									// include id in query just in case user wants direct link later
+									goto(`/app/patients/doctor/add?id=${encodeURIComponent(patient.getId())}`);
+								}}
+							>
+								Add Record
+							</Button>
+						</div>
 						<div class="mb-6">
 							{#if patient.getMedicalRecord() === null || patient.getMedicalRecord()[0] === undefined}
 								<div class="p-6 text-center text-sm text-slate-500">

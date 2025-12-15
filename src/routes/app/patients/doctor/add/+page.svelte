@@ -266,9 +266,9 @@
 
 		if (incompleteRows.length) {
 			toast.error('Incomplete prescription entries', {
-				description: `Please complete all fields for the following prescription rows before saving: ${incompleteRows.join(
-					', '
-				)}`,
+				description:
+					'Please complete all fields for the following prescription rows before saving: ' +
+					incompleteRows.join(', '),
 				closeButton: true
 			});
 			return;

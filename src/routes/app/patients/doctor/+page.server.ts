@@ -1,5 +1,5 @@
 import { PatientServiceImpl } from "$lib/server/services/PatientServiceImpl";
-import type { PageServerLoad } from "../$types";
+import type { PageServerLoad } from "./$types";
 import { toPOJO } from '$lib/shared/utils/Utils';
 
 

@@ -7,21 +7,31 @@
 	import * as Item from '$lib/components/ui/item';
 	import { Mars, SearchIcon, Venus } from '@lucide/svelte';
 	import { Reservation } from '$lib/shared/entities';
+	import { MedicalRecord, Patient } from '$lib/shared/entities';
 	import type { Reservation as ReservationClass } from '$lib/shared/entities';
-
+	import * as Accordion from '$lib/components/ui/accordion';
+	import { format } from 'date-fns';
 	import { writable, derived, get } from 'svelte/store';
 	import type { reservationStatus } from '$lib/shared/types/type_def';
+	import MedicalRecordCard from '$lib/shared/components/MedicalRecordCard.svelte';
 
 	/* =========================================================
 	   INITIAL DATA
 	========================================================= */
 	let { data }: PageProps = $props();
 	const reservations: ReservationClass[] = data.reservations.map((r) => Reservation.fromPOJO(r));
+	const patients: Patient[] = data.patients.map((p) => Patient.fromPOJO(p));
 
 	/* =========================================================
 	   FILTER / STATUS TABS
 	========================================================= */
-	const STATUS_TABS = ['Booked', 'Checked In', 'Done', 'Cancelled', 'No Show'] as reservationStatus[];
+	const STATUS_TABS = [
+		'Booked',
+		'Checked In',
+		'Done',
+		'Cancelled',
+		'No Show'
+	] as reservationStatus[];
 	type StatusTab = reservationStatus | 'All';
 
 	const statusFilter = writable<StatusTab>('Booked');
@@ -193,13 +203,11 @@
 					<button
 						onclick={() => setTab(tab)}
 						class="rounded-full px-6 py-3 font-semibold transition"
-
-						class:bg-neutral-600={tab === "Booked" && tab === $statusFilter}
-						class:bg-primary-dark={tab === "Checked In" && tab === $statusFilter}
-						class:bg-success-700={tab === "Done" && tab === $statusFilter}
-						class:bg-danger-600={tab === "Cancelled" && tab === $statusFilter}
-						class:bg-warning-600={tab === "No Show" && tab === $statusFilter}
-
+						class:bg-neutral-600={tab === 'Booked' && tab === $statusFilter}
+						class:bg-primary-dark={tab === 'Checked In' && tab === $statusFilter}
+						class:bg-success-700={tab === 'Done' && tab === $statusFilter}
+						class:bg-danger-600={tab === 'Cancelled' && tab === $statusFilter}
+						class:bg-warning-600={tab === 'No Show' && tab === $statusFilter}
 						class:bg-neutral-300={tab !== $statusFilter}
 						class:text-white={tab === $statusFilter}
 					>
@@ -207,92 +215,80 @@
 					</button>
 				{/each}
 			</div>
+			r.getFu
 
 			<!-- RESERVATION LIST -->
-			<Item.Group>
-				{#each $displayedReservations as reservation (reservation.getId())}
-					<Item.Root
-						class="mb-3 rounded-2xl border border-gray-200 bg-white px-6 py-4 shadow-sm transition-shadow hover:shadow-md"
-					>
-						<Item.Content>
-							<div class="grid grid-cols-14 items-center gap-1">
-								<!-- NAME + MRN -->
-								<div class="col-span-2 flex flex-col">
-									<div class="flex items-center">
-										<Item.Title class="text-[17px] font-semibold">
-											{reservation.getPatient().getFullName()}
-											{#if reservation.getPatient().getGender() === 'Male'}
-												<Mars class="ml-1 inline-block" color="#0000FF" />
-											{:else}
-												<Venus class="ml-1 inline-block" color="#FF1493" />
-											{/if}
-										</Item.Title>
-									</div>
+			{#each reservations as reservation, idx (reservation.getId())}
+				<Accordion.Root type="single" class="w-full">
+					<Accordion.Item value={reservation.getId()} class="w-full">
+						<Accordion.Trigger class="min-w-full">
+							<Item.Root class="border border-gray-300 bg-white p-4 shadow-sm hover:shadow-md">
+								<Item.Content>
+									<Item.Title
+										>{reservation.getPatient().getFullName()}
+										{#if reservation.getPatient().getGender() == 'Male'}
+											<Mars class="ml-1 inline-block" color="#0000FF" />
+										{:else}
+											<Venus class="ml-1 inline-block" color="#FF1493" />
+										{/if}</Item.Title
+									>
 
-									<div class="mt-1 text-xs leading-tight text-gray-500">
-										Medical Record No.<br />
-										<span class="text-[11px] text-gray-400"
-											>{reservation.getPatient().getMedicalRecordNumber()}</span
-										>
-									</div>
-								</div>
-
-								<!-- vertical divider -->
+									<Item.Description
+										>Medical Record No.<br />
+										{reservation.getPatient().getMedicalRecordNumber()}</Item.Description
+									>
+								</Item.Content>
 								<div class="col-span-0 flex justify-center">
-									<div class="h-14 w-px border-l border-gray-300"></div>
+									<div class="h-10 w-px border-l border-gray-300"></div>
 								</div>
-
-								<!-- Receptionist -->
-								<div class="col-span-2">
-									<div class="text-[11px] text-gray-500">Receptionist</div>
-									<div class="mt-1 text-[13px] leading-snug font-medium">
-										{reservation.getReceptionist().getFullName()}
-									</div>
-								</div>
-
-								<!-- divider -->
+								<Item.Content>
+									<Item.Description>Receptionist</Item.Description>
+									<Item.Title>{reservation.getReceptionist()}</Item.Title>
+								</Item.Content>
 								<div class="col-span-0 flex justify-center">
-									<div class="h-14 w-px border-l border-gray-300"></div>
+									<div class="h-10 w-px border-l border-gray-300"></div>
 								</div>
-
-								<!-- Doctor -->
-								<div class="col-span-2">
-									<div class="text-[11px] text-gray-500">Doctor</div>
-									<div class="mt-1 text-[13px] leading-snug font-medium">
-										{reservation.getDoctor().getFullName()}
-									</div>
-								</div>
-
-								<!-- divider -->
+								<Item.Content>
+									<Item.Description>Doctor</Item.Description>
+									<Item.Title>
+										{reservation.getDoctor()}</Item.Title
+									>
+								</Item.Content>
 								<div class="col-span-0 flex justify-center">
-									<div class="h-14 w-px border-l border-gray-300"></div>
+									<div class="h-10 w-px border-l border-gray-300"></div>
 								</div>
-
-								<!-- Reservation Time -->
-								<div class="col-span-2">
-									<div class="text-[11px] text-gray-500">Reservation Time</div>
-									<div class="mt-1 text-[13px] leading-snug font-medium">
-										{formatDateTime(reservation.getReservationTime())}
-									</div>
-								</div>
-
-								<!-- divider -->
+								<Item.Content>
+									<Item.Description>Reservation Time</Item.Description>
+									<Item.Title>{format(new Date(reservation.getReservationTime()), 'dd MMMM yyyy')}</Item.Title>
+								</Item.Content>
 								<div class="col-span-0 flex justify-center">
-									<div class="h-14 w-px border-l border-gray-300"></div>
+									<div class="h-10 w-px border-l border-gray-300"></div>
 								</div>
-
-								<!-- Notes -->
-								<div class="col-span-2">
-									<div class="text-[11px] text-gray-500">Notes</div>
-									<div class="mt-1 text-[13px] leading-snug font-medium text-gray-700">
-										{reservation.getNotes() || '-'}
+								<Item.Content>
+									<Item.Description>Notes</Item.Description>
+									<Item.Title>{reservation.getNotes()}</Item.Title>
+								</Item.Content>
+							</Item.Root>
+						</Accordion.Trigger>
+						{#each patients as patient (patient.getId())}
+						<Accordion.Content class="flex flex-col items-end justify-end space-y-6">
+							<div class="mb-6">
+								{#if patient.getMedicalRecord === null || patient.getMedicalRecord()[0] === undefined}
+									<div class="p-6 text-center text-sm text-slate-500">
+										No medical record found for this patient.
 									</div>
-								</div>
+								{:else}
+									<MedicalRecordCard
+										record={patient.getMedicalRecord()[0]}
+										prescriptions={patient.getMedicalRecord()[0].getPrescriptions() ?? null}
+									/>
+								{/if}
 							</div>
-						</Item.Content>
-					</Item.Root>
-				{/each}
-			</Item.Group>
+						</Accordion.Content>
+						{/each}
+					</Accordion.Item>
+				</Accordion.Root>
+			{/each}
 		</div>
 	</section>
 

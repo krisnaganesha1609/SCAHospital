@@ -13,6 +13,6 @@ export const load: PageServerLoad = async ({ locals }) => {
   } catch (err) {
     console.error("Failed to load reservations:", err);
     // Return an empty list so UI still renders gracefully
-    return { reservations: toPOJO([]) };
+    return { reservations: toPOJO([]), patients: toPOJO([]) };
   }
 };

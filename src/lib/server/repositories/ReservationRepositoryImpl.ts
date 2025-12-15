@@ -24,7 +24,7 @@ export class ReservationRepositoryImpl implements ReservationRepository {
         const endIndex = startIndex + itemsPerPage - 1;
         const {data, error} = await this.supabase
                 .from('reservations')
-                .select('*, patient:patients(*), receptionist:users!reservations_receptionist_id_fkey(*), doctor:users!reservations_doctor_id_fkey(*)')
+                .select('*, patient:patients(*, medical_records(*, prescriptions(*, doctor:users(*), prescription_items(*, medicines(*))) )), receptionist:users!reservations_receptionist_id_fkey(*), doctor:users!reservations_doctor_id_fkey(*)')
                 .order('created_at', { ascending: false })
                 .range(startIndex, endIndex);
         if (error || !data) {

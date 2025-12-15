@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Accordion, AccordionItem, AccordionContent } from '$lib/components/ui/accordion';
+	import * as Accordion from '$lib/components/ui/accordion';
 	import { Separator } from '$lib/components/ui/separator';
 
 	import PrescriptionItem from './PrescriptionItem.svelte';
@@ -36,9 +36,9 @@
 	{:else if prescriptions.length === 0}
 		<div class="text-sm text-slate-500">Prescriptions is empty</div>
 	{:else}
-		<Accordion type="single">
+		<Accordion.Root type="single">
 			{#each prescriptions as p (p.getId())}
-				<AccordionItem value={p.getId()}>
+				<Accordion.Item value={p.getId()}>
 					<div class="w-full">
 						<div class="grid grid-cols-12 items-center gap-4 py-3">
 							<div class="col-span-1">
@@ -49,7 +49,7 @@
 							</div>
 
 							<div class="col-span-3">
-								<div class="text-sm font-medium">Prescribed</div>
+								<div class="text-sm font-medium">Prescribed At</div>
 								<div class="text-xs text-slate-500">{fmtDateTime(p.getPrescribedAt())}</div>
 							</div>
 
@@ -69,17 +69,19 @@
 						<Separator />
 					</div>
 
-					<AccordionContent>
+					<Accordion.Item>
 						<div class="mt-3">
 							<!-- column header -->
 							<div
-								class="grid grid-cols-6 gap-4 border-b pb-2 text-xs font-semibold text-slate-400"
+								class="grid grid-cols-8 gap-4 border-b pb-2 text-xs font-semibold text-slate-400"
 							>
-								<div>Status</div>
 								<div>Medication Name</div>
 								<div>Form</div>
+								<div>Strength</div>
+								<div>Dose</div>
 								<div>Frequency</div>
 								<div>Quantity</div>
+								<div>Instructions</div>
 								<div class="text-right">Price</div>
 							</div>
 
@@ -91,14 +93,14 @@
 
 							{#if p.getNotes()}
 								<div class="mt-4 text-sm text-slate-600">
-									<div class="text-xs text-slate-400">Instructions</div>
+									<div class="text-xs text-slate-400">Notes</div>
 									<div>{p.getNotes()}</div>
 								</div>
 							{/if}
 						</div>
-					</AccordionContent>
-				</AccordionItem>
+					</Accordion.Item>
+				</Accordion.Item>
 			{/each}
-		</Accordion>
+		</Accordion.Root>
 	{/if}
 </div>

@@ -20,7 +20,6 @@
 	========================================================= */
 	let { data }: PageProps = $props();
 	const reservations: ReservationClass[] = data.reservations.map((r) => Reservation.fromPOJO(r));
-	const patients: Patient[] = data.patients.map((p) => Patient.fromPOJO(p));
 
 	/* =========================================================
 	   FILTER / STATUS TABS
@@ -215,10 +214,9 @@
 					</button>
 				{/each}
 			</div>
-			r.getFu
 
 			<!-- RESERVATION LIST -->
-			{#each reservations as reservation, idx (reservation.getId())}
+			{#each $displayedReservations as reservation, idx (reservation.getId())}
 				<Accordion.Root type="single" class="w-full">
 					<Accordion.Item value={reservation.getId()} class="w-full">
 						<Accordion.Trigger class="min-w-full">
@@ -243,7 +241,7 @@
 								</div>
 								<Item.Content>
 									<Item.Description>Receptionist</Item.Description>
-									<Item.Title>{reservation.getReceptionist()}</Item.Title>
+									<Item.Title>{reservation.getReceptionist().getFullName()}</Item.Title>
 								</Item.Content>
 								<div class="col-span-0 flex justify-center">
 									<div class="h-10 w-px border-l border-gray-300"></div>
@@ -251,7 +249,7 @@
 								<Item.Content>
 									<Item.Description>Doctor</Item.Description>
 									<Item.Title>
-										{reservation.getDoctor()}</Item.Title
+										{reservation.getDoctor().getFullName()}</Item.Title
 									>
 								</Item.Content>
 								<div class="col-span-0 flex justify-center">
@@ -259,7 +257,12 @@
 								</div>
 								<Item.Content>
 									<Item.Description>Reservation Time</Item.Description>
-									<Item.Title>{format(new Date(reservation.getReservationTime()), 'dd MMMM yyyy')}</Item.Title>
+									<Item.Title
+										>{format(
+											new Date(reservation.getReservationTime()),
+											'dd MMMM yyyy'
+										)}</Item.Title
+									>
 								</Item.Content>
 								<div class="col-span-0 flex justify-center">
 									<div class="h-10 w-px border-l border-gray-300"></div>
@@ -270,22 +273,23 @@
 								</Item.Content>
 							</Item.Root>
 						</Accordion.Trigger>
-						{#each patients as patient (patient.getId())}
-						<Accordion.Content class="flex flex-col items-end justify-end space-y-6">
-							<div class="mb-6">
-								{#if patient.getMedicalRecord === null || patient.getMedicalRecord()[0] === undefined}
-									<div class="p-6 text-center text-sm text-slate-500">
-										No medical record found for this patient.
-									</div>
-								{:else}
-									<MedicalRecordCard
-										record={patient.getMedicalRecord()[0]}
-										prescriptions={patient.getMedicalRecord()[0].getPrescriptions() ?? null}
-									/>
-								{/if}
-							</div>
-						</Accordion.Content>
-						{/each}
+							<Accordion.Content class="flex flex-col items-end justify-end space-y-6">
+								<div class="mb-6">
+									{#if reservation.getPatient().getMedicalRecord() === null || reservation.getPatient().getMedicalRecord()[0] === undefined}
+										<div class="p-6 text-center text-sm text-slate-500">
+											No medical record found for this patient.
+										</div>
+									{:else}
+										{#each reservation.getPatient().getMedicalRecord() as record (record.getId())}
+											<MedicalRecordCard
+												{record}
+												prescriptions={record.getPrescriptions() ?? null}
+											/>
+											<div class="mt-5"></div>
+										{/each}
+									{/if}
+								</div>
+							</Accordion.Content>
 					</Accordion.Item>
 				</Accordion.Root>
 			{/each}

@@ -3,12 +3,12 @@ import { Medicine } from "./Medicine";
 import { Utils } from "../utils/Utils";
 
 export class PrescriptionItems extends Utils {
-    
+
     constructor(
         id: uuid,
         private prescriptionId: uuid,
         private medicineId: uuid,
-        private medicine: Medicine,
+        private medicines: Medicine,
         private medicineName: string,
         private strength: string,
         private form: string,
@@ -19,7 +19,7 @@ export class PrescriptionItems extends Utils {
         private instructions: string,
         private subtotalPrice: number,
         private createdAt: Date
-    ) {super(id);}
+    ) { super(id); }
 
     public getId(): uuid {
         return this.id;
@@ -31,7 +31,7 @@ export class PrescriptionItems extends Utils {
         return this.medicineId;
     }
     public getMedicine(): Medicine {
-        return this.medicine;
+        return this.medicines;
     }
     public getMedicineName(): string {
         return this.medicineName;
@@ -64,12 +64,11 @@ export class PrescriptionItems extends Utils {
         return this.createdAt;
     }
 
-    public toJson(): any { 
+    public toJson(): any {
         return {
             id: this.id,
             prescription_id: this.prescriptionId,
             medicine_id: this.medicineId,
-            medicine: this.medicine,
             medicine_name: this.medicineName,
             strength: this.strength,
             form: this.form,
@@ -88,7 +87,7 @@ export class PrescriptionItems extends Utils {
             json.id,
             json.prescription_id,
             json.medicine_id,
-            Medicine.fromJson(json.medicine),
+            Medicine.fromJson(json.medicines),
             json.medicine_name,
             json.strength,
             json.form,
@@ -107,7 +106,7 @@ export class PrescriptionItems extends Utils {
             obj.id,
             obj.prescriptionId,
             obj.medicineId,
-            Medicine.fromPOJO(obj.medicine),
+            Medicine.fromPOJO(obj.medicines),
             obj.medicineName,
             obj.strength,
             obj.form,

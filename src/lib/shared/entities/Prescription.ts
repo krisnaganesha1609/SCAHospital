@@ -1,5 +1,5 @@
 import type { prescriptionStatus, uuid } from "../types/type_def";
-import type { User } from "./User";
+import { User } from "./User";
 import type { MedicalRecord } from "./MedicalRecord";
 import { Utils } from "../utils/Utils";
 import { PrescriptionItems } from "./PrescriptionItems";
@@ -15,7 +15,7 @@ export class Prescription extends Utils {
         private notes: string,
         private createdAt: Date,
         private prescriptionItems: PrescriptionItems[]
-    ) {super(id);}
+    ) { super(id); }
 
     public getId(): uuid {
         return this.id;
@@ -62,7 +62,7 @@ export class Prescription extends Utils {
         return new Prescription(
             json.id,
             json.medical_record,
-            json.doctor,
+            User.fromJson(json.doctor),
             json.prescribed_at,
             json.status,
             json.total_cost,
@@ -76,7 +76,7 @@ export class Prescription extends Utils {
         return new Prescription(
             obj.id,
             obj.medicalRecord,
-            obj.doctor,
+            User.fromPOJO(obj.doctor),
             obj.prescribedAt,
             obj.status,
             obj.totalCost,

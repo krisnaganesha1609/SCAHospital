@@ -8,27 +8,29 @@
 	import * as Pagination from '$lib/components/ui/pagination';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { Mars, SearchIcon, Venus } from '@lucide/svelte';
-	import { MedicalRecord, Patient } from '$lib/shared/entities';
+	import { Patient } from '$lib/shared/entities';
 	import { format } from 'date-fns';
 	import { patientPaginationStore } from '$lib/shared/stores/pagination';
 	import MedicalRecordCard from '$lib/shared/components/MedicalRecordCard.svelte';
 	// data transport to add record functionality
 	import { goto } from '$app/navigation';
-	import { selectedPatientStore, persistSelectedPatient } from '$lib/shared/stores/selectedPatient';
+	import { persistSelectedPatient } from '$lib/shared/stores/selectedPatient';
+	import { Button } from '$lib/components/ui/button';
+	import { writable, derived } from 'svelte/store';
 
 	// ---------- INITIAL DATA ----------
 	let { data }: PageProps = $props();
 	const patients: Patient[] = data.patients.map((p) => Patient.fromPOJO(p));
-	let { itemsPerPage } = $patientPaginationStore;
 
-	let perPage = itemsPerPage;
-	let siblingCount = perPage > 1 ? 1 : 0;
+	// REMINDER: PAGINATION INI SEMUANYA DIUBAH
+	// START
+	let { itemsPerPage, currentPage } = $patientPaginationStore;
+	const perPage = itemsPerPage;
+	let siblingCount = 1;
 
 	const totalResults = patients.length;
-	// const totalPages = Math.max(1, Math.ceil(totalResults / perPage));
+	const totalPages = Math.max(1, Math.ceil(totalResults / perPage));
 
-	import { writable, derived } from 'svelte/store';
-	import { Button } from '$lib/components/ui/button';
 
 	// derived store: the patients to show on current page
 	const displayedPatients = derived(patientPaginationStore, ($current) => {
@@ -38,35 +40,32 @@
 	});
 
 	// // helper to create compact page numbers with ellipsis
-	// function getPageNumbers(current: number, total: number): (number | '...')[] {
-	// 	const pages: (number | '...')[] = [];
-	// 	if (total <= 7) {
-	// 		for (let i = 1; i <= total; i++) pages.push(i);
-	// 		return pages;
-	// 	}
-	// 	pages.push(1);
-	// 	if (current > 4) pages.push('...');
-	// 	const start = Math.max(2, current - 1);
-	// 	const end = Math.min(total - 1, current + 1);
-	// 	for (let i = start; i <= end; i++) pages.push(i);
-	// 	if (current + 2 < total - 1) pages.push('...');
-	// 	pages.push(total);
-	// 	return pages;
-	// }
+	function getPageNumbers(current: number, total: number): (number | '...')[] {
+		const pages: (number | '...')[] = [];
+		if (total <= 7) {
+			for (let i = 1; i <= total; i++) pages.push(i);
+			return pages;
+		}
+		pages.push(1);
+		if (current > 4) pages.push('...');
+		const start = Math.max(2, current - 1);
+		const end = Math.min(total - 1, current + 1);
+		for (let i = start; i <= end; i++) pages.push(i);
+		if (current + 2 < total - 1) pages.push('...');
+		pages.push(total);
+		return pages;
+	}
 
-	// const pageNumbers = derived(patientPaginationStore, ($current) =>
-	// 	getPageNumbers($current.currentPage, totalPages)
-	// );
-
-	// // go to page (client-only scroll guard)
-	// function goToPage(n: number) {
-	// 	if (n < 1) n = 1;
-	// 	if (n > totalPages) n = totalPages;
-	// 	patientPaginationStore.update((store) => ({ ...store, currentPage: n }));
-	// 	if (typeof window !== 'undefined') {
-	// 		window.scrollTo({ top: 0, behavior: 'smooth' });
-	// 	}
-	// }
+	// go to page (client-only scroll guard)
+	function goToPage(n: number) {
+		if (n < 1) n = 1;
+		if (n > totalPages) n = totalPages;
+		patientPaginationStore.update((store) => ({ ...store, currentPage: n }));
+		if (typeof window !== 'undefined') {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
+	// END OF PART 1 
 
 	// ---------- NAVBAR HIDE / SHOW (guarded for SSR) ----------
 	const navHidden = writable(false);
@@ -112,7 +111,7 @@
 		<!-- RIGHT-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
 		<NavigationMenu.Item class="flex items-center">
 			<Button
-				class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white shadow-sm hover:opacity-90"
+				class="rounded-full bg-[#1D69D1] px-6 py-4 text-sm text-white shadow-sm hover:opacity-90"
 				onclick={() => goto('/app/patients/admin/addpatient')}
 			>
 				Add New Patient
@@ -122,7 +121,7 @@
 </NavigationMenu.Root>
 <div class="min-h-[calc(100vh-64px)] p-4">
 	<Item.Group>
-		{#each patients as patient (patient.getId())}
+		{#each $displayedPatients as patient (patient.getId())}
 			<Accordion.Root type="single" class="w-full">
 				<Accordion.Item value={patient.getId()} class="w-full">
 					<Accordion.Trigger class="min-w-full">
@@ -190,7 +189,7 @@
 									// set store and persist to sessionStorage then navigate
 									persistSelectedPatient(patient);
 									// include id in query just in case user wants direct link later
-									goto(`/app/patients/admin/add?id=${encodeURIComponent(patient.getId())}`);
+									goto(`/app/patients/doctor/add?id=${encodeURIComponent(patient.getId())}`);
 								}}
 							>
 								Add Record
@@ -213,9 +212,12 @@
 			</Accordion.Root>
 		{/each}
 	</Item.Group>
+	<!-- REMINDER: PAGINATION INI SEMUANYA DIUBAH -->
+	 <!-- START  -->
 	<Pagination.Root
-		count={itemsPerPage}
-		{perPage}
+		count={totalResults}
+		perPage={itemsPerPage}
+		page={currentPage}
 		{siblingCount}
 		class="mt-8 justify-center bg-[#F5F5F5] px-4 pb-8 "
 	>
@@ -224,8 +226,8 @@
 				class="flex w-auto items-center justify-between rounded-full border border-gray-300 bg-white px-2 py-3 shadow-sm"
 			>
 				<Pagination.Item>
-					<Pagination.PrevButton
-						><span
+					<Pagination.PrevButton onclick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
+						<span
 							class="rounded-full border-2 border-[#1D69D1] px-4 py-2 font-semibold text-[#1D69D1] hover:bg-blue-50 disabled:opacity-40"
 							>Prev</span
 						></Pagination.PrevButton
@@ -245,6 +247,7 @@
 								page.value
 									? 'bg-[#1D69D1] text-white'
 									: 'border-[#1D69D1] text-[#1D69D1]'} "
+								onclick={() => goToPage(page.value)}
 							>
 								{page.value}
 							</Pagination.Link>
@@ -252,7 +255,7 @@
 					{/if}
 				{/each}
 				<Pagination.Item>
-					<Pagination.NextButton>
+					<Pagination.NextButton onclick={() => goToPage(currentPage + 1)}>
 						<span
 							class="rounded-full border-2 border-[#1D69D1] px-4 py-2 font-semibold text-[#1D69D1] hover:bg-blue-50 disabled:opacity-40"
 							>Next</span
@@ -266,6 +269,7 @@
 			</Pagination.Content>
 		{/snippet}
 	</Pagination.Root>
+	<!-- END OF PART 2  -->
 </div>
 
 <style>

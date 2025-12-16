@@ -71,7 +71,7 @@
 	let prescriptions: RxForm[] = $state([]);
 
 	// UI state
-	let showPrescriptionSection = $state(false);
+	let showPrescriptionSection = $state(true);
 	let recordSaved = false;
 
 	// helpers to update inputs (no bind:value)
@@ -698,12 +698,15 @@
 									</div>
 									<div>
 										<label for="rx.quantity" class="text-xs text-black">Quantity</label>
-										<input
-											class="w-full rounded-md border px-3 py-2"
+										<div class="flex items-center justify-center">
+											<input
+											class="w-full rounded-l-md border px-3 py-2"
 											value={rx.quantity}
 											oninput={(e) => updatePrescriptionField(idx, 'quantity', e)}
 											placeholder="e.g., 21"
-										/>
+											/>
+											<div class="text-md bg-gray-600 text-white rounded-r-md px-3 py-2">{rx.medicine === null ? '' : rx.medicine.getUnitType()}</div>
+										</div>
 									</div>
 									<div class="col-span-2">
 										<label for="rx.instruction" class="text-xs text-black">Instruction</label>

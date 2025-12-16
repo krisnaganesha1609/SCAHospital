@@ -16,14 +16,11 @@ export class PatientRepositoryImpl implements PatientRepository {
         }
         return Promise.resolve();
     }
-    async fetchPatients( pageNumber: number, itemsPerPage: number): Promise<Patient[] | null> {
-        const startIndex = (pageNumber - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage - 1;
+    async fetchPatients(): Promise<Patient[] | null> {
         const { data, error } = await this.supabase
             .from('patients')
             .select('*, medical_records(*, prescriptions(*, doctor:users(*), prescription_items(*, medicines(*))) )')
-            .order('id', {ascending: true})
-            .range(startIndex, endIndex);
+            .order('medical_record_number', {ascending: true})
         if (error || !data) {       
             console.error('Error fetching patients:', error);
             throw error;

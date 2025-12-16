@@ -34,14 +34,11 @@ export class ReservationRepositoryImpl implements ReservationRepository {
     deleteReservation(id: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    async listReservations(pageNumber: number, itemsPerPage: number): Promise<Reservation[] | null> {
-        const startIndex = (pageNumber - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage - 1;
-        const {data, error} = await this.supabase
-                .from('reservations')
-                .select('*, patient:patients(*, medical_records(*, prescriptions(*, doctor:users(*), prescription_items(*, medicines(*))) )), receptionist:users!reservations_receptionist_id_fkey(*), doctor:users!reservations_doctor_id_fkey(*)')
-                .order('created_at', { ascending: false })
-                .range(startIndex, endIndex);
+    async listReservations(): Promise<Reservation[] | null> {
+        const { data, error } = await this.supabase
+            .from('reservations')
+            .select('*, patient:patients(*, medical_records(*, prescriptions(*, doctor:users(*), prescription_items(*, medicines(*))) )), receptionist:users!reservations_receptionist_id_fkey(*), doctor:users!reservations_doctor_id_fkey(*)')
+            .order('created_at', { ascending: false })
         if (error || !data) {
             console.error('Error fetching reservations:', error);
             throw error;

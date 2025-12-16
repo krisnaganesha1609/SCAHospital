@@ -3,8 +3,6 @@ import type { uuid } from '$lib/shared/types/type_def';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { PatientRepositoryImpl } from '../repositories/PatientRepositoryImpl';
 import { PatientService } from './interfaces/PatientService';
-import { patientPaginationStore } from '$lib/shared/stores/pagination';
-import { get } from 'svelte/store';
 export class PatientServiceImpl implements PatientService {
     private patientRepository: PatientRepositoryImpl;
     constructor(supabase: SupabaseClient) {
@@ -17,7 +15,7 @@ export class PatientServiceImpl implements PatientService {
         return this.patientRepository.updateExistingPatient(patientId, p);
     }
     async listPatients(): Promise<Patient[]> {
-        const patients = await this.patientRepository.fetchPatients(get(patientPaginationStore).currentPage, get(patientPaginationStore).itemsPerPage);
+        const patients = await this.patientRepository.fetchPatients();
         if (patients === null) {
             throw new Error('Failed to fetch patients. Please Contact Admin.');
         }

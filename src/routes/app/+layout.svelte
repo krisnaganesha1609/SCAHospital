@@ -8,6 +8,7 @@
 		HeartPulse,
 		House,
 		LogOut,
+		User,
 		Pill
 	} from '@lucide/svelte';
 	import logo from '$lib/assets/logo-white.svg';
@@ -381,6 +382,31 @@
 										class="ms-3 {page.url.pathname.includes('/app/reservations/admin')
 											? ' text-[#1754a7]'
 											: 'text-white'}">Reservations</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/user/admin')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/user/admin"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} "
+							>
+								<User
+									color={page.url.pathname.includes('/app/user/admin')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/user/admin')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Users</span
 									>
 								{/if}
 							</a>

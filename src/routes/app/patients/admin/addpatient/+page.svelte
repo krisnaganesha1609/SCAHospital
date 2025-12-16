@@ -7,7 +7,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Calendar as UiCalendar } from '$lib/components/ui/calendar';
 	import * as Popover from '$lib/components/ui/popover';
-	import * as Command from '$lib/components/ui/command';
+	import * as Select from '$lib/components/ui/select';
 	import { Mars, SearchIcon, Venus } from '@lucide/svelte';
 	import { type DateValue, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
@@ -44,7 +44,7 @@
 	let treatmentPlan = $state('');
 	let diagnosis = $state('');
 	let notes = $state('');
-	let followUpDate: DateValue | undefined = $state(undefined);
+	let birthDate: DateValue | undefined = $state(undefined);
 
 	let bpSystolic = $state('');
 	let bpDiastolic = $state('');
@@ -66,6 +66,16 @@
 	}
 
 	let medicalRecordId = $state<uuid | null>(null);
+
+	const bloodTypes: { value: string; label: string }[] = [
+		{ value: 'A', label: 'A' },
+		{ value: 'B', label: 'B' },
+		{ value: 'AB', label: 'AB' },
+		{ value: 'O', label: 'O' }
+	];
+	const triggerContentBloodType = $derived(
+		bloodTypes.find((f) => f.value === bloodType)?.label ?? 'Select a blood type'
+	);
 
 	// prescriptions (dynamic) — initially hidden until record saved
 	type RxForm = {
@@ -134,21 +144,21 @@
 		// many UI calendar components emit detail or detail.value
 		const d = (e?.detail as any) ?? null;
 		if (!d) {
-			followUpDate = undefined;
+			birthDate = undefined;
 			return;
 		}
 		// if calendar returns DateValue directly
 		if (typeof (d as DateValue)?.toDate === 'function') {
-			followUpDate = d as DateValue;
+			birthDate = d as DateValue;
 			return;
 		}
 		// if detail.value exists
 		if ((d as any).value) {
-			followUpDate = (d as any).value as DateValue;
+			birthDate = (d as any).value as DateValue;
 			return;
 		}
 		// fallback: set to detail
-		followUpDate = d as DateValue;
+		birthDate = d as DateValue;
 	}
 
 	function isRecordComplete(): { ok: boolean; missing: string[] } {
@@ -161,7 +171,7 @@
 		if (!treatmentPlan.trim()) missing.push('Treatment Plan');
 		if (!diagnosis.trim()) missing.push('Diagnosis');
 		if (!notes.trim()) missing.push('Notes');
-		if (!followUpDate) missing.push('Follow Up Date');
+		if (!birthDate) missing.push('Follow Up Date');
 
 		// vitals
 		if (!bpSystolic.trim()) missing.push('BP (systolic)');
@@ -213,7 +223,7 @@
 			vitals,
 			procedures: '',
 			treatment_plan: treatmentPlan,
-			follow_up_date: followUpDate ? followUpDate.toDate(getLocalTimeZone()).toISOString() : null,
+			follow_up_date: birthDate ? birthDate.toDate(getLocalTimeZone()).toISOString() : null,
 			diagnosis,
 			notes
 		};
@@ -349,7 +359,7 @@
 </script>
 
 <svelte:head>
-	<title>Add Record — {patient?.getFullName ? patient.getFullName() : 'Patient'}</title>
+	<title>Add Patient</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 p-6">
@@ -370,7 +380,7 @@
 			<!-- RECORD FORM -->
 			<!-- PATIENT RESERVATION BLOCK -->
 			<div class="space-y-6 rounded-xl border bg-white p-6">
-				<h3 class="text-lg font-semibold">Patient Reservation</h3>
+				<h3 class="text-lg font-semibold">Patient Data</h3>
 
 				<!-- BASIC INFO -->
 				<div class="grid grid-cols-3 gap-4">
@@ -380,7 +390,7 @@
 						<input
 							class="w-full rounded-md border px-3 py-2 text-xs"
 							bind:value={patientName}
-							placeholder="Full name"
+							placeholder="Enter Full name"
 						/>
 					</div>
 
@@ -397,13 +407,21 @@
 					<!-- Blood Type -->
 					<div>
 						<label for="bloodType" class="block pb-1 text-xs text-black">Blood Type</label>
-						<select class="w-full rounded-md border px-3 py-2 text-xs" bind:value={bloodType}>
-							<option value="">Select blood type</option>
-							<option>A</option>
-							<option>B</option>
-							<option>AB</option>
-							<option>O</option>
-						</select>
+						<Select.Root type="single" name="favoriteFruit" bind:value={bloodType}>
+							<Select.Trigger class="w-full rounded-md border px-3 py-2 text-xs">
+								{triggerContentBloodType}
+							</Select.Trigger>
+							<Select.Content>
+								<Select.Group>
+									<Select.Label>Blood Types</Select.Label>
+									{#each bloodTypes as bl (bl.value)}
+										<Select.Item value={bl.value} label={bl.label}>
+											{bl.label}
+										</Select.Item>
+									{/each}
+								</Select.Group>
+							</Select.Content>
+						</Select.Root>
 					</div>
 				</div>
 
@@ -412,10 +430,10 @@
 					<!-- Gender -->
 					<div>
 						<label for="gender" class="block pb-1 text-xs text-black">Gender</label>
-						<div class="flex gap-2">
+						<div class="grid grid-cols-3 gap-2">
 							<button
 								type="button"
-								class="flex-1 rounded-full px-4 py-3 text-xs font-medium text-white transition"
+								class="text-md flex items-center justify-center rounded-full px-4 py-3 font-medium text-white transition"
 								style="background-color:#1D69D1"
 								class:opacity-100={gender === 'male'}
 								class:opacity-50={gender !== 'male'}
@@ -427,7 +445,10 @@
 
 							<button
 								type="button"
-								class="flex-1 rounded-full px-4 py-3 text-xs font-medium text-white transition"
+								class="text-md flex items-center justify-center rounded-full px-4 py-3 font-medium text-white transition ${gender ===
+								'female'
+									? 'bg-[#DE51A7]'
+									: 'bg-gray-300'}"
 								style="background-color:#DE51A7"
 								class:opacity-100={gender === 'female'}
 								class:opacity-50={gender !== 'female'}
@@ -460,35 +481,31 @@
 							placeholder="e.g., Penicillin, seafood"
 						></textarea>
 					</div>
-				</div>
+					<div>
+						<label for="birthDate" class="block pb-2 text-xs text-black">Birth Date</label>
+						<Popover.Root>
+							<Popover.Trigger class="w-full">
+								<Button
+									class={cn(
+										'w-full justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-start text-xs font-normal text-black hover:bg-gray-50',
+										!birthDate && 'text-muted-foreground'
+									)}
+								>
+									{birthDate ? df.format(birthDate.toDate(getLocalTimeZone())) : 'Select a date'}
+									<CalendarDays color="#1D69D1" />
+								</Button>
+							</Popover.Trigger>
 
-				<!-- THIRD STACK -->
-				<div>
-					<label for="followUpDate" class="block pb-2 text-xs text-black">Follow Up Date</label>
-					<Popover.Root>
-						<Popover.Trigger class="w-full">
-							<Button
-								class={cn(
-									'w-full justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-start text-xs font-normal text-black hover:bg-gray-50',
-									!followUpDate && 'text-muted-foreground'
-								)}
-							>
-								{followUpDate
-									? df.format(followUpDate.toDate(getLocalTimeZone()))
-									: 'Select a date'}
-								<CalendarDays color="#1D69D1" />
-							</Button>
-						</Popover.Trigger>
-
-						<Popover.Content class="w-auto p-0">
-							<UiCalendar
-								type="single"
-								initialFocus
-								captionLayout="dropdown"
-								bind:value={followUpDate}
-							/>
-						</Popover.Content>
-					</Popover.Root>
+							<Popover.Content class="w-auto p-0">
+								<UiCalendar
+									type="single"
+									initialFocus
+									captionLayout="dropdown"
+									bind:value={birthDate}
+								/>
+							</Popover.Content>
+						</Popover.Root>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -504,10 +521,10 @@
 						bloodType,
 						allergies
 					});
-					toast.success('Reservation saved');
+					toast.success('Patient saved');
 				}}
 			>
-				Save Reservation
+				Save Patient
 			</Button>
 		</div>
 	{/if}

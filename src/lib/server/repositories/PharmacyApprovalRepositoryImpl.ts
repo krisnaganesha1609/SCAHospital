@@ -21,8 +21,15 @@ export class PharmacyApprovalRepositoryImpl implements PharmacyApprovalRepositor
     findById(id: string): Promise<any> {
         throw new Error('Method not implemented.');
     }
-    update(id: string, pharmacyApproval: Partial<PharmacyApproval>): Promise<void> {
-        throw new Error('Method not implemented.');
+    async update(id: string, pharmacyApproval: any): Promise<void> {
+        const { error } = await this.supabase
+            .from('pharmacy_approvals')
+            .update(pharmacyApproval)
+            .eq('id', id);
+        if (error) {
+            throw new Error(error.message);
+        }
+        return Promise.resolve();
     }
     delete(id: string): Promise<void> {
         throw new Error('Method not implemented.');

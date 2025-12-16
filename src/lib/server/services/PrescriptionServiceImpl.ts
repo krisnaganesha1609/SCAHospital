@@ -6,6 +6,7 @@ import type { PrescriptionService } from "./interfaces/PrescriptionService";
 import { PrescriptionItemsRepositoryImpl } from "../repositories/PrescriptionItemsRepositoryImpl";
 import { PharmacyApprovalRepositoryImpl } from "../repositories/PharmacyApprovalRepositoryImpl";
 import type { PrescriptionItemsRequest } from "$lib/shared/utils/PrescriptionItems_Request";
+import { MedicineRepositoryImpl } from "../repositories/MedicineRepositoryImpl";
 
 export class PrescriptionServiceImpl implements PrescriptionService {
     private prescriptionRepository: PrescriptionRepositoryImpl;
@@ -51,13 +52,36 @@ export class PrescriptionServiceImpl implements PrescriptionService {
         await this.pharmacyApprovalRepository.createPharmacyApproval(approvalPayload);
         return Promise.resolve();
     }
-    approvePrescription(id: uuid, pharmacistId: uuid): Promise<void> {
-        throw new Error("Method not implemented.");
+    async approvePrescription(prescription_id: uuid, pharmacy_approval_id: uuid, pharmacist_id: uuid): Promise<void> {
+        await this.pharmacyApprovalRepository.update(pharmacy_approval_id, {
+            status: 'Partial',
+            pharmacist_id: pharmacist_id,
+        });
+        await this.prescriptionRepository.updatePrescription(prescription_id, {
+            status: 'Approved',
+            approved_at: new Date(),
+        });
+        return Promise.resolve();
     }
-    rejectPrescription(id: uuid, reason: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async rejectPrescription(prescription_id: uuid, pharmacy_approval_id: uuid, reason: string): Promise<void> {
+        await this.pharmacyApprovalRepository.update(pharmacy_approval_id, {
+            status: 'Cancelled',
+            notes: reason,
+        });
+        await this.prescriptionRepository.updatePrescription(prescription_id, {
+            status: 'Cancelled',
+        });
+        return Promise.resolve();
     }
-    markDispensed(id: uuid): Promise<void> {
-        throw new Error("Method not implemented.");
+    async markDispensed(prescription_id: uuid, pharmacy_approval_id: uuid): Promise<void> {
+        await this.pharmacyApprovalRepository.update(pharmacy_approval_id, {
+            status: 'Dispensed',
+            dispensed_at: new Date(),
+            payment_received: true,
+        });
+        await this.prescriptionRepository.updatePrescription(prescription_id, {
+            status: 'Dispensed',
+        });
+        return Promise.resolve();
     }
 }

@@ -33,8 +33,15 @@ export class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
             return Promise.resolve(null);
         }
     }
-    updateMedicalRecord(id: string, data: Partial<MedicalRecord>): Promise<void> {
-        throw new Error("Method not implemented.");
+    async updateMedicalRecord(id: string, data:any): Promise<void> {
+        const { error } = await this.supabase
+            .from('medical_records')
+            .update(data)
+            .eq('id', id);
+        if (error) {
+            throw error;
+        }
+        return Promise.resolve();
     }
     deleteMedicalRecord(id: string): Promise<void> {
         throw new Error("Method not implemented.");

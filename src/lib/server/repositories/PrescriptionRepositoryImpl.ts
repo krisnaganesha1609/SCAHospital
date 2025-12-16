@@ -31,11 +31,27 @@ export class PrescriptionRepositoryImpl implements PrescriptionRepository {
             return Promise.resolve(null);
         }
     }
-    updatePrescription(id: string, data: Partial<Prescription>): Promise<void> {
-        throw new Error("Method not implemented.");
+    async updatePrescription(id: string, data: any): Promise<void> {
+        const { error } = await this.supabase
+            .from('prescriptions')
+            .update(data)
+            .eq('id', id);
+        if (error) {
+            console.error('Error updating prescription:', error);
+            throw error;
+        }
+        return Promise.resolve();
     }
-    deletePrescription(id: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async deletePrescription(id: string): Promise<void> {
+        const { error } = await this.supabase
+            .from('prescriptions')
+            .delete()
+            .eq('id', id);
+        if (error) {
+            console.error('Error deleting prescription:', error);
+            throw error;
+        }
+        return Promise.resolve();
     }
     listPrescriptions(filter?: any): Promise<any[]> {
         throw new Error("Method not implemented.");

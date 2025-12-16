@@ -5,6 +5,7 @@ import { ReservationRepositoryImpl } from "../repositories/ReservationRepository
 import type { ReservationService } from "./interfaces/ReservationService";
 import { get } from "svelte/store";
 import { reservationPaginationStore } from "$lib/shared/stores/pagination";
+import type { ReservationRequest } from "$lib/shared/utils/Reservation_Request";
 
 export class ReservationServiceImpl implements ReservationService {
     private reservationRepository: ReservationRepositoryImpl;
@@ -21,14 +22,18 @@ export class ReservationServiceImpl implements ReservationService {
         }
         return reservations;
     }
-    registerReservation(reservation: Reservation): Promise<void> {
-        throw new Error("Method not implemented.");
+    registerReservation(reservation: ReservationRequest): Promise<void> {
+        const data = reservation.toJson();
+        return this.reservationRepository.createReservation(data);
     }
     checkIn(reservationId: uuid): Promise<void> {
-        throw new Error("Method not implemented.");
+        return this.reservationRepository.updateReservation(reservationId, { status: 'Checked In' });
     }
     cancel(reservationId: uuid): Promise<void> {
-        throw new Error("Method not implemented.");
+        return this.reservationRepository.updateReservation(reservationId, { status: 'Cancelled' });
+    }
+    done(reservationId: uuid): Promise<void> {
+        return this.reservationRepository.updateReservation(reservationId, { status: 'Done' });
     }
     search(query: string): Promise<Reservation[]> {
         throw new Error("Method not implemented.");

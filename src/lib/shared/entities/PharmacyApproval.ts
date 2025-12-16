@@ -10,7 +10,8 @@ export class PharmacyApproval extends Utils {
         private pharmacist: User,
         private dispensedAt: Date,
         private status: pharmacyApprovalStatus,
-        private totalPrice: number
+        private notes: string,
+        private paymentReceived: boolean
     ) { super(id); }
     public getId(): uuid {
         return this.id;
@@ -27,8 +28,11 @@ export class PharmacyApproval extends Utils {
     public getStatus(): string {
         return this.status;
     }
-    public getTotalPrice(): number {
-        return this.totalPrice;
+    public getNotes(): string {
+        return this.notes;
+    }
+    public getPaymentReceived(): boolean {
+        return this.paymentReceived;
     }
     public toJson(): any {
         return {
@@ -37,7 +41,8 @@ export class PharmacyApproval extends Utils {
             pharmacist: this.pharmacist,
             dispensedAt: this.dispensedAt,
             status: this.status,
-            totalPrice: this.totalPrice
+            notes: this.notes,
+            paymentReceived: this.paymentReceived
         };
     }
     public static fromJson(json: any): PharmacyApproval {
@@ -45,9 +50,21 @@ export class PharmacyApproval extends Utils {
             json.id,
             Prescription.fromJson(json.prescription),
             User.fromJson(json.pharmacist),
-            json.dispensedAt,
+            json.dispensed_at,
             json.status,
-            json.totalPrice
+            json.notes,
+            json.payment_received
+        );
+    }
+    public static fromPOJO(obj: any): PharmacyApproval {
+        return new PharmacyApproval(
+            obj.id,
+            Prescription.fromPOJO(obj.prescription),
+            User.fromPOJO(obj.pharmacist),
+            obj.dispensedAt,
+            obj.status,
+            obj.notes,
+            obj.paymentReceived
         );
     }
 }

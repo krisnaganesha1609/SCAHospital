@@ -1,23 +1,16 @@
 import type { uuid } from "../types/type_def";
-import { Utils } from "../utils/Utils";
 
-export class Medicine extends Utils {
+export class MedicineRequest {
     constructor(
-        id: uuid,
         private code: string,
         private name: string,
         private form: string,
         private strength: string,
         private manufacturer: string,
         private stockQty: number,
-        private unitType: string,
-        private unitPrice: number,
-        private createdAt: Date
-    ) {super(id);}
+        private unitPrice: number
+    ) {}
 
-    public getId(): uuid {
-        return this.id;
-    }
     public getCode(): string {
         return this.code;
     }
@@ -36,56 +29,42 @@ export class Medicine extends Utils {
     public getStockQty(): number {
         return this.stockQty;
     }
-    public getUnitType(): string {
-        return this.unitType;
-    }
     public getUnitPrice(): number {
         return this.unitPrice;
     }
-    public getCreatedAt(): Date {
-        return this.createdAt;
-    }
     public toJson(): any {
         return {
-            id: this.id,
             code: this.code,
             name: this.name,
             form: this.form,
             strength: this.strength,
             manufacturer: this.manufacturer,
             stock_qty: this.stockQty,
-            unit_type: this.unitType,
             unit_price: this.unitPrice,
         };
     }
 
-    public static fromJson(json: any): Medicine {
-        return new Medicine(
-            json.id,
+    public static fromJson(json: any): MedicineRequest {
+        return new MedicineRequest(
             json.code,
             json.name,
             json.form,
             json.strength,
             json.manufacturer,
             json.stock_qty,
-            json.unit_type,
             json.unit_price,
-            json.created_at
         );
     }
     
-    public static fromPOJO(obj: any): Medicine {
-        return new Medicine(
-            obj.id,
+    public static fromPOJO(obj: any): MedicineRequest {
+        return new MedicineRequest(
             obj.code,
             obj.name,
             obj.form,
             obj.strength,
             obj.manufacturer,
             obj.stockQty,
-            obj.unitType,
             obj.unitPrice,
-            obj.createdAt
         );
     }
 }

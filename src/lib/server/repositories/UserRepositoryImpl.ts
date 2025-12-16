@@ -1,18 +1,58 @@
 import { User } from '$lib/shared/entities/User';
 import type { uuid, roles } from '$lib/shared/types/type_def';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { UserRepository } from './interfaces/UserRepository';
-export class UserRepositoryImpl extends User implements UserRepository {
-    createNewUser(u: Partial<User>): Promise<void> {
+export class UserRepositoryImpl implements UserRepository {
+    private supabase: SupabaseClient;
+    constructor(supabase: SupabaseClient) {
+        this.supabase = supabase;
+    }
+    async createNewUser(u: any): Promise<void> {
+        const { data, error } = await this.supabase.auth.signUp({
+            email: u.email,
+            password: u.password,
+        });
+        if (error) {
+            console.error('Error creating user:', error);
+            throw error;
+        }
+        const userData = {
+            id: data?.user?.id,
+            email: data?.user?.email,
+            phone: u.phone,
+            full_name: u.full_name,
+            username: u.username
+        }
+        const { error: insertError } = await this.supabase.from('users').insert(userData);
+        if (insertError) {
+            console.error('Error inserting user into database:', insertError);
+            throw insertError;
+        }
+        this.setRole(data.user?.id as uuid, u.role);
+    }
+    updateExistingUser(u: any): Promise<void> {
         throw new Error('Method not implemented.');
     }
-    updateExistingUser(u: Partial<User>): Promise<void> {
-        throw new Error('Method not implemented.');
+    async fetchUsers(): Promise<User[]> {
+        const { data, error } = await this.supabase
+            .from('users')
+            .select('*');
+        if (error) {
+            console.error('Error fetching users:', error);
+            throw error;
+        }
+        return Promise.resolve(data.map((item) => User.fromJson(item)));
     }
-    fetchUsers(): Promise<any[]> {
-        throw new Error('Method not implemented.');
-    }
-    setRole(userId: uuid, role: roles): Promise<void> {
-        throw new Error('Method not implemented.');
+    async setRole(userId: uuid, role: roles): Promise<void> {
+        const { error } = await this.supabase
+            .from('users')
+            .update({ role: role })
+            .eq('id', userId);
+        if (error) {
+            console.error('Error setting user role:', error);
+            throw error;
+        }
+        return Promise.resolve();
     }
     searchUsers(query: string): Promise<any[]> {
         throw new Error('Method not implemented.');

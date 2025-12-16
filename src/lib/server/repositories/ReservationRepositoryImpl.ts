@@ -7,14 +7,29 @@ export class ReservationRepositoryImpl implements ReservationRepository {
     constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
     }
-    createReservation(data: Partial<Reservation>): Promise<any> {
-        throw new Error("Method not implemented.");
+    async createReservation(data: any): Promise<void> {
+        const { error } = await this.supabase
+            .from('reservations')
+            .insert(data);
+        if (error) {
+            console.error('Error creating reservation:', error);
+            throw error;
+        }
+        return Promise.resolve();
     }
     getReservationById(id: string): Promise<any> {
         throw new Error("Method not implemented.");
     }
-    updateReservation(id: string, data: Partial<Reservation>): Promise<any> {
-        throw new Error("Method not implemented.");
+    async updateReservation(id: string, data: any): Promise<void> {
+        const { error } = await this.supabase
+            .from('reservations')
+            .update(data)
+            .eq('id', id);
+        if (error) {
+            console.error('Error updating reservation:', error);
+            throw error;
+        }
+        return Promise.resolve();
     }
     deleteReservation(id: string): Promise<void> {
         throw new Error("Method not implemented.");

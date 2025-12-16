@@ -7,7 +7,7 @@ export class PatientRepositoryImpl implements PatientRepository {
     constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
     }
-    async updateExistingPatient(id: uuid, payload: Partial<Patient>): Promise<void> {
+    async updateExistingPatient(id: uuid, payload: any): Promise<void> {
         const data = payload;
         const { error } = await this.supabase.from('patients').update(data).eq('id', id);
         if (error) {

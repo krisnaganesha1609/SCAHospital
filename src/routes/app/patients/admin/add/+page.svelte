@@ -328,7 +328,7 @@
 			description: 'The prescriptions have been recorded.',
 			closeButton: true
 		});
-		redirect(303, '/app/patients/doctor');
+		redirect(303, '/app/patients/admin');
 	}
 
 	onMount(() => {
@@ -350,7 +350,7 @@
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
 					<a
-						href="/app/patients/doctor"
+						href="/app/patients/admin"
 						class="inline-block rounded-full border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100"
 						>← Back</a
 					>

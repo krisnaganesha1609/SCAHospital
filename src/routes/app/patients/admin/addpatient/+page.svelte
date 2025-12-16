@@ -8,6 +8,7 @@
 	import { Calendar as UiCalendar } from '$lib/components/ui/calendar';
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Command from '$lib/components/ui/command';
+	import { Mars, SearchIcon, Venus } from '@lucide/svelte';
 	import { type DateValue, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
 	import { CalendarDays, CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
@@ -362,26 +363,7 @@
 						class="inline-block rounded-full border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100"
 						>← Back</a
 					>
-					<h1 class="text-xl font-semibold">Add Record — {patient.getFullName()}</h1>
-				</div>
-			</div>
-
-			<!-- TOP: patient summary (non-clickable) -->
-			<div class="rounded-xl border bg-white p-6">
-				<div class="flex items-start justify-between">
-					<div class="mt-2 space-y-1 text-sm text-gray-600">
-						<div><strong>MR No:</strong> {patient.getMedicalRecordNumber()}</div>
-						<div><strong>Phone:</strong> {patient.getPhone()}</div>
-						<div>
-							<strong>First Registered:</strong>
-							{new Date(patient.getCreatedAt()).toLocaleDateString()}
-						</div>
-					</div>
-
-					<div class="text-sm text-gray-700">
-						<div><strong>Blood Type:</strong> {patient.getBloodType()}</div>
-						<div class="mt-2"><strong>Allergies:</strong> {patient.getAllergies() || '-'}</div>
-					</div>
+					<h1 class="text-xl font-semibold">Add Patient</h1>
 				</div>
 			</div>
 
@@ -391,12 +373,11 @@
 				<h3 class="text-lg font-semibold">Patient Reservation</h3>
 
 				<!-- BASIC INFO -->
-				<div class="grid grid-cols-2 gap-4">
+				<div class="grid grid-cols-3 gap-4">
 					<!-- Patient Name -->
 					<div>
 						<label for="patientName" class="block pb-1 text-xs text-black">Patient Name</label>
 						<input
-							id="patientName"
 							class="w-full rounded-md border px-3 py-2 text-xs"
 							bind:value={patientName}
 							placeholder="Full name"
@@ -407,45 +388,16 @@
 					<div>
 						<label for="phoneNumber" class="block pb-1 text-xs text-black">Phone Number</label>
 						<input
-							id="phoneNumber"
 							class="w-full rounded-md border px-3 py-2 text-xs"
 							bind:value={phoneNumber}
 							placeholder="+62xxxxxxxxxx"
 						/>
 					</div>
 
-					<!-- Gender -->
-					<div>
-						<label for="gender" class="block pb-1 text-xs text-black">Gender</label>
-						<div class="flex gap-2">
-							<button
-								type="button"
-								class="flex-1 rounded-md px-3 py-2 text-xs text-white transition"
-								style="background-color:#1D69D1"
-								class:opacity-100={gender === 'male'}
-								class:opacity-50={gender !== 'male'}
-								onclick={() => (gender = 'male')}
-							>
-								Male
-							</button>
-
-							<button
-								type="button"
-								class="flex-1 rounded-md px-3 py-2 text-xs text-white transition"
-								style="background-color:#DE51A7"
-								class:opacity-100={gender === 'female'}
-								class:opacity-50={gender !== 'female'}
-								onclick={() => (gender = 'female')}
-							>
-								Female
-							</button>
-						</div>
-					</div>
-
 					<!-- Blood Type -->
 					<div>
 						<label for="bloodType" class="block pb-1 text-xs text-black">Blood Type</label>
-						<select id="bloodType" class="w-full rounded-md border px-3 py-2 text-xs" bind:value={bloodType}>
+						<select class="w-full rounded-md border px-3 py-2 text-xs" bind:value={bloodType}>
 							<option value="">Select blood type</option>
 							<option>A</option>
 							<option>B</option>
@@ -455,51 +407,108 @@
 					</div>
 				</div>
 
-				<!-- Address -->
-				<div>
-					<label for="address" class="block pb-1 text-xs text-black">Address</label>
-					<textarea
-						id="address"
-						class="w-full rounded-md border px-3 py-2 text-xs"
-						rows="2"
-						bind:value={address}
-						placeholder="Patient address"
-					></textarea>
+				<!-- SECOND STACK -->
+				<div class="grid grid-cols-3 gap-4">
+					<!-- Gender -->
+					<div>
+						<label for="gender" class="block pb-1 text-xs text-black">Gender</label>
+						<div class="flex gap-2">
+							<button
+								type="button"
+								class="flex-1 rounded-full px-4 py-3 text-xs font-medium text-white transition"
+								style="background-color:#1D69D1"
+								class:opacity-100={gender === 'male'}
+								class:opacity-50={gender !== 'male'}
+								onclick={() => (gender = 'male')}
+							>
+								Male
+								<Mars class="ml-1 inline-block" color="#ffffff" />
+							</button>
+
+							<button
+								type="button"
+								class="flex-1 rounded-full px-4 py-3 text-xs font-medium text-white transition"
+								style="background-color:#DE51A7"
+								class:opacity-100={gender === 'female'}
+								class:opacity-50={gender !== 'female'}
+								onclick={() => (gender = 'female')}
+							>
+								Female
+								<Venus class="ml-1 inline-block" color="#ffffff" />
+							</button>
+						</div>
+					</div>
+
+					<!-- Address -->
+					<div>
+						<label for="address" class="block pb-1 text-xs text-black">Address</label>
+						<textarea
+							class="w-full rounded-md border px-3 py-2 text-xs"
+							rows="2"
+							bind:value={address}
+							placeholder="Patient address"
+						></textarea>
+					</div>
+
+					<!-- Allergies -->
+					<div>
+						<label for="allergies" class="block pb-1 text-xs text-black">Allergies</label>
+						<textarea
+							class="w-full rounded-md border px-3 py-2 text-xs"
+							rows="2"
+							bind:value={allergies}
+							placeholder="e.g., Penicillin, seafood"
+						></textarea>
+					</div>
 				</div>
 
-				<!-- ⚠️ ALLERGIES BOX (PINPOINTED FOR LATER REPLACEMENT) -->
-				<!-- TODO: REPLACE ALLERGIES INPUT WITH TAG SELECTOR / MODAL -->
+				<!-- THIRD STACK -->
 				<div>
-					<label for="allergies" class="block pb-1 text-xs text-black">Allergies</label>
-					<textarea
-						id="allergies"
-						class="w-full rounded-md border px-3 py-2 text-xs"
-						rows="2"
-						bind:value={allergies}
-						placeholder="e.g., Penicillin, seafood"
-					></textarea>
-				</div>
+					<label for="followUpDate" class="block pb-2 text-xs text-black">Follow Up Date</label>
+					<Popover.Root>
+						<Popover.Trigger class="w-full">
+							<Button
+								class={cn(
+									'w-full justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-start text-xs font-normal text-black hover:bg-gray-50',
+									!followUpDate && 'text-muted-foreground'
+								)}
+							>
+								{followUpDate
+									? df.format(followUpDate.toDate(getLocalTimeZone()))
+									: 'Select a date'}
+								<CalendarDays color="#1D69D1" />
+							</Button>
+						</Popover.Trigger>
 
-				<!-- SAVE RESERVATION -->
-				<div class="flex justify-end border-t pt-4">
-					<Button
-						class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
-						onclick={() => {
-							console.log('Reservation data', {
-								patientName,
-								gender,
-								phoneNumber,
-								address,
-								bloodType,
-								allergies
-							});
-							toast.success('Reservation saved');
-						}}
-					>
-						Save Reservation
-					</Button>
+						<Popover.Content class="w-auto p-0">
+							<UiCalendar
+								type="single"
+								initialFocus
+								captionLayout="dropdown"
+								bind:value={followUpDate}
+							/>
+						</Popover.Content>
+					</Popover.Root>
 				</div>
 			</div>
+		</div>
+		<div class="flex justify-end border-t pt-4">
+			<Button
+				class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
+				onclick={() => {
+					console.log('Reservation data', {
+						patientName,
+						gender,
+						phoneNumber,
+						address,
+						bloodType,
+						allergies
+					});
+					toast.success('Reservation saved');
+				}}
+			>
+				Save Reservation
+			</Button>
 		</div>
 	{/if}
 </div>

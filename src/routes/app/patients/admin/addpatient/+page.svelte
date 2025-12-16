@@ -363,7 +363,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 p-6">
-	{#if patient}
 		<div class="mx-auto space-y-4">
 			<!-- top bar: back + title -->
 			<div class="flex items-center justify-between">
@@ -527,7 +526,6 @@
 				Save Patient
 			</Button>
 		</div>
-	{/if}
 </div>
 
 <style>

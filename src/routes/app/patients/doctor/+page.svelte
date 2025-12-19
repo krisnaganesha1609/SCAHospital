@@ -95,23 +95,15 @@
 
 <!-- NAVBAR SECTION ARGH, NEED HELP PLOX -->
 <NavigationMenu.Root
-	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
+	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-center bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
 	<!-- keep NavigationMenu.List as container (positioning context) -->
-	<NavigationMenu.List class=" px-4 py-4">
-		<!-- ABSOLUTELY CENTERED LOGO (always centered regardless of other items) -->
-		<NavigationMenu.Item class="absolute top-2 left-1/2 -translate-x-1/2">
-			<NavigationMenu.Link class="cursor-pointer">
-				<div class="h-full w-full">
-					<img src={logo} alt="Logo" class="h-10 object-contain" />
-				</div>
-			</NavigationMenu.Link>
-		</NavigationMenu.Item>
-		<!-- RIGHT-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
+	<NavigationMenu.List class="flex items-center justify-center px-4 py-5">
+		<!-- CENTER-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
 		<NavigationMenu.Item>
 			<InputGroup.Root
-				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-1.5 pr-2 pl-4 shadow-sm sm:flex"
+				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
 			>
 				<InputGroup.Input
 					placeholder="Find name, medical record..."

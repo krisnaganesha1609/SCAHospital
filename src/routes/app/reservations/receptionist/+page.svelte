@@ -12,6 +12,7 @@
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { format } from 'date-fns';
 	import { writable, derived, get } from 'svelte/store';
+	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import type { reservationStatus } from '$lib/shared/types/type_def';
 	import MedicalRecordCard from '$lib/shared/components/MedicalRecordCard.svelte';

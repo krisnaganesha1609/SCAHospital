@@ -13,6 +13,8 @@
 	import { format } from 'date-fns';
 	import { writable, derived, get } from 'svelte/store';
 	import type { reservationStatus } from '$lib/shared/types/type_def';
+	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
 	import MedicalRecordCard from '$lib/shared/components/MedicalRecordCard.svelte';
 
 	/* =========================================================
@@ -160,15 +162,16 @@
 	<title>Reservations - SCA Hospital</title>
 </svelte:head>
 
-<!-- NAVBAR (copied style from patient.svelte) -->
+<!-- NAVBAR SECTION ARGH, NEED HELP PLOX -->
 <NavigationMenu.Root
-	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-center bg-white text-black shadow-md transition-transform duration-200 ' +
+	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
+
 	<!-- keep NavigationMenu.List as container (positioning context) -->
 	<NavigationMenu.List class="flex items-center justify-center px-4 py-5">
-		<!-- CENTER-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
-		<NavigationMenu.Item>
+		<!-- ABSOLUTELY CENTERED LOGO (always centered regardless of other items) -->
+		<NavigationMenu.Item class="absolute top-4.4 left-1/2 -translate-x-1/2">
 			<InputGroup.Root
 				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
 			>
@@ -180,6 +183,15 @@
 					<SearchIcon class="h-5 w-5" color="#1D69D1" />
 				</InputGroup.Addon>
 			</InputGroup.Root>
+		</NavigationMenu.Item>
+		<!-- RIGHT-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
+		<NavigationMenu.Item class="flex items-center">
+			<Button
+				class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white shadow-sm hover:opacity-90"
+				onclick={() => goto('/app/patients/admin/addpatient')}
+			>
+				Add New Patient
+			</Button>
 		</NavigationMenu.Item>
 	</NavigationMenu.List>
 </NavigationMenu.Root>

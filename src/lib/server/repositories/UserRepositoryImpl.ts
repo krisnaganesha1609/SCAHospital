@@ -21,7 +21,6 @@ export class UserRepositoryImpl implements UserRepository {
             email: data?.user?.email,
             phone: u.phone,
             full_name: u.full_name,
-            username: u.username
         }
         const { error: insertError } = await this.supabase.from('users').insert(userData);
         if (insertError) {

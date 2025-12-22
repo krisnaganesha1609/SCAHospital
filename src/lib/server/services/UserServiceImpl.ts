@@ -9,10 +9,9 @@ export class UserServiceImpl implements UserService {
     constructor(supabase: SupabaseClient) {
         this.userRepository = new UserRepositoryImpl(supabase);
     }
-    async createUser(fullName: string, username: string, password: string, role: roles, phone: string, email: string): Promise<void> {
+    async createUser(fullName: string, password: string, role: roles, phone: string, email: string): Promise<void> {
         const userPayload = {
             full_name: fullName,
-            username: username,
             password: password,
             role: role,
             phone: phone,

@@ -552,7 +552,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-start-2 col-end-5">
+						<div class="col-start-1 col-end-5">
 							<label for="notes" class="block text-xs text-black">Notes</label>
 							<textarea
 								class=" my-2 w-full rounded-md border px-3 py-2"
@@ -567,7 +567,7 @@
 					<div class="mt-6 flex items-center justify-between">
 						<div></div>
 						<div>
-							<Button class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white" type="submit">
+							<Button class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white" type="submit">
 								Save Record
 							</Button>
 						</div>
@@ -733,7 +733,7 @@
 					<!-- Save Prescriptions button (same size/style as Save Record) -->
 					<div class="mt-4 flex justify-end">
 						<Button
-							class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
+							class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white"
 							onclick={savePrescriptions}
 						>
 							Save Prescription

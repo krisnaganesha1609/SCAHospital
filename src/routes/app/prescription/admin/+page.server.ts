@@ -4,7 +4,7 @@ import { toPOJO } from '$lib/shared/utils/Utils';
 
 export const load: PageServerLoad = async ({ locals }) => {
     const service = new PrescriptionServiceImpl(locals.supabase);
-    const listPrescriptions = await service; 
+    const listPrescriptions = await service.getPharmacyApprovalsList(); 
     
     return { 
         prescriptions: toPOJO(listPrescriptions) 

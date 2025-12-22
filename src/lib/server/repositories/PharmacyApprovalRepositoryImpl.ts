@@ -15,8 +15,15 @@ export class PharmacyApprovalRepositoryImpl implements PharmacyApprovalRepositor
         }
         return Promise.resolve();
     }
-    findAll(): Promise<any[]> {
-        throw new Error('Method not implemented.');
+    async findAll(): Promise<any[]> {
+        const { data, error } = await this.supabase
+            .from('pharmacy_approvals')
+            .select('*, prescription:prescriptions(*, doctor:users(*), prescription_items(*, medicines(*))), pharmacist:users(*)');
+        if (error) {
+            throw new Error(error.message);
+        }
+        console.dir(data);
+        return Promise.resolve(data || []);
     }
     findById(id: string): Promise<any> {
         throw new Error('Method not implemented.');

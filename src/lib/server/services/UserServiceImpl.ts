@@ -1,15 +1,32 @@
-import type { User } from "$lib/shared/entities/User";
+import { User } from "$lib/shared/entities/User";
 import type { roles } from "$lib/shared/types/type_def";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { UserRepositoryImpl } from "../repositories/UserRepositoryImpl";
 import type { UserService } from "./interfaces/UserService";
 
 export class UserServiceImpl implements UserService {
-    createUser(fullName: string, username: string, passwordHash: string, role: roles, phone: string, email: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    private userRepository: UserRepositoryImpl;
+    constructor(supabase: SupabaseClient) {
+        this.userRepository = new UserRepositoryImpl(supabase);
     }
-    assignRoleToUser(userId: string, role: roles): Promise<void> {
-        throw new Error("Method not implemented.");
+    async createUser(fullName: string, username: string, password: string, role: roles, phone: string, email: string): Promise<void> {
+        const userPayload = {
+            full_name: fullName,
+            username: username,
+            password: password,
+            role: role,
+            phone: phone,
+            email: email
+        };
+        await this.userRepository.createNewUser(userPayload);
+        return Promise.resolve();
     }
-    listUsers(): Promise<User[]> {
-        throw new Error("Method not implemented.");
+    async assignRoleToUser(userId: string, role: roles): Promise<void> {
+        await this.userRepository.setRole(userId, role);
+        return Promise.resolve();
+    }
+    async listUsers(): Promise<User[]> {
+        const usersData = await this.userRepository.fetchUsers();
+        return usersData;
     }
 }

@@ -1,0 +1,263 @@
+<script lang="ts">
+    import { onMount } from 'svelte';
+    import { enhance } from '$app/forms';
+    import type { PageProps } from './$types';
+    import * as NavigationMenu from '$lib/components/ui/navigation-menu';
+    import * as InputGroup from '$lib/components/ui/input-group';
+    import * as Item from '$lib/components/ui/item';
+    import * as Accordion from '$lib/components/ui/accordion';
+    import { SearchIcon, LogOut, Pill, Calendar, User, Activity } from '@lucide/svelte';
+    import { Prescription } from '$lib/shared/entities/Prescription';
+    import { format } from 'date-fns';
+    import { Button } from '$lib/components/ui/button';
+    import { writable } from 'svelte/store';
+
+    // ---------- INITIAL DATA ----------
+    let { data }: PageProps = $props();
+    
+    // Kita bungkus dalam derived atau state agar UI terupdate saat action selesai
+    let prescriptions = $derived(data.prescriptions.map((p: any) => Prescription.fromPOJO(p)));
+
+    // ---------- CANCEL MODAL LOGIC ----------
+    let showCancelModal = $state(false);
+    let selectedId = $state<string | null>(null);
+
+    function openCancelModal(id: string) {
+        selectedId = id;
+        showCancelModal = true;
+    }
+
+    function closeCancelModal() {
+        showCancelModal = false;
+        selectedId = null;
+    }
+
+    // ---------- NAVBAR HIDE / SHOW ----------
+    const navHidden = writable(false);
+    let lastScrollY = 0;
+
+    onMount(() => {
+        function handleScroll() {
+            const currentY = window.scrollY;
+            if (currentY > lastScrollY && currentY > 50) {
+                navHidden.set(true);
+            } else {
+                navHidden.set(false);
+            }
+            lastScrollY = Math.max(0, currentY);
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    });
+</script>
+
+<svelte:head>
+    <title>Prescriptions Admin - SCA Hospital</title>
+</svelte:head>
+
+{#if showCancelModal}
+    <div
+        class="fixed inset-0 z-100 bg-black/50"
+        onclick={closeCancelModal}
+        role="button"
+        tabindex="0"
+        onkeydown={(e) => e.key === 'Escape' && closeCancelModal()}
+    ></div>
+
+    <div class="fixed inset-0 z-101 flex items-center justify-center p-4 text-black">
+        <div class="relative w-full max-w-lg bg-white p-6 shadow-lg" style="border-radius: 32px;">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
+                    <LogOut color="#EC2D30" size={24} />
+                </div>
+                <button
+                    class="flex h-12 w-12 items-center justify-center rounded-full bg-[#F5F5F5] font-bold text-2xl"
+                    onclick={closeCancelModal}
+                >
+                    X
+                </button>
+            </div>
+
+            <div class="flex flex-col space-y-2">
+                <h3 class="text-left text-2xl font-bold">Cancel Prescription?</h3>
+                <p class="text-left" style="color: #8E8E8E;">You are about to cancel this prescription. This action cannot be reversed.</p>
+            </div>
+
+            <div class="mt-6 flex w-full justify-end space-x-3">
+                <button
+                    class="rounded-full border border-gray-300 px-6 py-2 font-medium hover:bg-gray-50"
+                    onclick={closeCancelModal}
+                >
+                    Keep Prescription
+                </button>
+                
+                <form method="POST" action="?/cancel" use:enhance={() => {
+                    return async ({ update }) => {
+                        await update();
+                        closeCancelModal();
+                    };
+                }}>
+                    <input type="hidden" name="id" value={selectedId} />
+                    <button
+                        type="submit"
+                        class="rounded-full bg-[#EC2D30] px-6 py-2 font-medium text-white hover:opacity-90"
+                    >
+                        Yes, Cancel it
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{/if}
+
+<NavigationMenu.Root
+    class={'sticky top-0 z-50 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
+        ($navHidden ? '-translate-y-full' : 'translate-y-0')}
+>
+    <NavigationMenu.List class="flex items-center justify-center px-4 py-5">
+        <NavigationMenu.Item class="absolute top-4.4 left-1/2 -translate-x-1/2">
+            <InputGroup.Root
+                class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
+            >
+                <InputGroup.Input
+                    placeholder="Search prescription ID..."
+                    class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
+                />
+                <InputGroup.Addon align="inline-end" class="rounded-full bg-white pr-1">
+                    <SearchIcon class="h-5 w-5" color="#1D69D1" />
+                </InputGroup.Addon>
+            </InputGroup.Root>
+        </NavigationMenu.Item>
+        <NavigationMenu.Item class="flex items-center">
+            <div class="font-bold text-[#1D69D1]">Prescription Management</div>
+        </NavigationMenu.Item>
+    </NavigationMenu.List>
+</NavigationMenu.Root>
+
+<div class="min-h-[calc(100vh-64px)] p-4">
+    <Item.Group>
+        {#each prescriptions as presc (presc.getId())}
+            <Accordion.Root type="single" class="w-full mb-4">
+                <Accordion.Item value={presc.getId()} class="w-full border border-gray-300 rounded-lg overflow-hidden">
+                    <Accordion.Trigger class="min-w-full hover:no-underline">
+                        <Item.Root class="bg-white p-4 shadow-sm border-none">
+                            <Item.Content>
+                                <Item.Description>Doctor</Item.Description>
+                                <Item.Title class="flex items-center">
+                                    <User size={16} class="mr-2 text-gray-400" />
+                                    {presc.getDoctor().getFullName()}
+                                </Item.Title>
+                            </Item.Content>
+                            
+                            <div class="col-span-0 flex justify-center">
+                                <div class="h-10 w-px border-l border-gray-300"></div>
+                            </div>
+
+                            <Item.Content>
+                                <Item.Description>Date</Item.Description>
+                                <Item.Title class="flex items-center">
+                                    <Calendar size={16} class="mr-2 text-gray-400" />
+                                    {format(new Date(presc.getPrescribedAt()), 'dd MMM yyyy')}
+                                </Item.Title>
+                            </Item.Content>
+
+                            <div class="col-span-0 flex justify-center">
+                                <div class="h-10 w-px border-l border-gray-300"></div>
+                            </div>
+
+                            <Item.Content>
+                                <Item.Description>Total Cost</Item.Description>
+                                <Item.Title class="text-[#1D69D1]">Rp {presc.getTotalCost().toLocaleString()}</Item.Title>
+                            </Item.Content>
+
+                            <div class="col-span-0 flex justify-center">
+                                <div class="h-10 w-px border-l border-gray-300"></div>
+                            </div>
+
+                            <Item.Content>
+                                <Item.Description>Status</Item.Description>
+                                <Item.Title>
+                                    <span class="rounded-full px-3 py-1 text-[10px] font-black uppercase
+                                        {presc.getStatus() === 'Approved' ? 'bg-blue-100 text-blue-600' : 
+                                         presc.getStatus() === 'Dispensed' ? 'bg-green-100 text-green-600' : 
+                                         presc.getStatus() === 'Cancelled' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}">
+                                        {presc.getStatus()}
+                                    </span>
+                                </Item.Title>
+                            </Item.Content>
+                        </Item.Root>
+                    </Accordion.Trigger>
+
+                    <Accordion.Content class="bg-gray-50 p-6 border-t border-gray-200">
+                        <div class="mb-6 space-y-4">
+                            <h4 class="font-bold text-gray-700 flex items-center">
+                                <Pill size={18} class="mr-2 text-[#1D69D1]"/> Medicines In Prescription
+                            </h4>
+                            {#each presc.getPrescriptionItems() as item}
+                                <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                                    <div>
+                                        <p class="font-bold">{item.getMedicineName()}</p>
+                                        <p class="text-xs text-gray-500">{item.getDosage()} • {item.getFrequency()}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-medium">Qty: {item.getQuantity()}</p>
+                                        <p class="text-xs text-[#1D69D1]">Rp {item.getSubtotalPrice().toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+
+                        <div class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200">
+                            {#if presc.getStatus() !== 'Cancelled' && presc.getStatus() !== 'Dispensed'}
+                                <Button
+                                    variant="outline"
+                                    class="h-12 w-44 rounded-full border-2 border-[#EC2D30] text-[#EC2D30] hover:bg-red-50 hover:text-[#EC2D30] font-bold"
+                                    onclick={() => openCancelModal(presc.getId())}
+                                >
+                                    Cancel
+                                </Button>
+
+                                {#if presc.getStatus() === 'Approved'}
+                                    <form method="POST" action="?/dispense" use:enhance>
+                                        <input type="hidden" name="id" value={presc.getId()} />
+                                        <Button
+                                            type="submit"
+                                            class="h-12 w-44 rounded-full bg-[#0C9D61] text-white hover:bg-[#0a8652] font-bold"
+                                        >
+                                            Dispensed
+                                        </Button>
+                                    </form>
+                                {:else}
+                                    <form method="POST" action="?/approve" use:enhance>
+                                        <input type="hidden" name="id" value={presc.getId()} />
+                                        <Button
+                                            type="submit"
+                                            class="h-12 w-44 rounded-full bg-[#1D69D1] text-white hover:opacity-90 font-bold"
+                                        >
+                                            Approve
+                                        </Button>
+                                    </form>
+                                {/if}
+                            {:else if presc.getStatus() === 'Dispensed'}
+                                <div class="flex items-center text-green-600 font-bold bg-green-50 px-6 py-2 rounded-full border border-green-200">
+                                    <Activity size={20} class="mr-2"/> Status: Fully Dispensed
+                                </div>
+                            {:else}
+                                <div class="text-red-500 font-bold italic">Prescription Cancelled</div>
+                            {/if}
+                        </div>
+                    </Accordion.Content>
+                </Accordion.Item>
+            </Accordion.Root>
+        {/each}
+    </Item.Group>
+</div>
+
+<style>
+    :global(.-translate-y-full) {
+        transform: translateY(-100%);
+    }
+    :global(.translate-y-0) {
+        transform: translateY(0);
+    }
+</style>

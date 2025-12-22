@@ -6,9 +6,6 @@ import type { User } from "$lib/shared/entities";
 export const load: PageServerLoad = async ({ locals }) => {
     // Memanggil listUsers dari service
     const userService = new UserServiceImpl(locals.supabase);
-    
-    // Note: Karena di kode Anda listUsers masih throw Error, 
-    // pastikan di service aslinya sudah melakukan query ke database.
     let users: User[] = [];
     try {
         users = await userService.listUsers();

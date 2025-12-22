@@ -93,7 +93,7 @@
 	<title>Patients - SCA Hospital</title>
 </svelte:head>
 
-<!-- NAVBAR SECTION ARGH, NEED HELP PLOX -->
+<!-- NAVBAR SECTION-->
 <NavigationMenu.Root
 	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}

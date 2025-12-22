@@ -30,8 +30,13 @@ export class UserRepositoryImpl implements UserRepository {
         }
         this.setRole(data.user?.id as uuid, u.role);
     }
-    updateExistingUser(u: any): Promise<void> {
-        throw new Error('Method not implemented.');
+    async updateExistingUser(id: uuid, u: any): Promise<void> {
+        const { error } = await this.supabase.from('users').update(u).eq('id', id);
+        if (error) {
+            console.error('Error updating user:', error);
+            throw error;
+        }
+        return Promise.resolve();
     }
     async fetchUsers(): Promise<User[]> {
         const { data, error } = await this.supabase

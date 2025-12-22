@@ -29,4 +29,8 @@ export class UserServiceImpl implements UserService {
         const usersData = await this.userRepository.fetchUsers();
         return usersData;
     }
+    async updateUser(id: string, userData: any): Promise<void> {
+        await this.userRepository.updateExistingUser(id, userData);
+        return Promise.resolve();
+    }
 }

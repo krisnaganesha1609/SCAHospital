@@ -5,15 +5,16 @@
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
 	import * as InputGroup from '$lib/components/ui/input-group';
 	import * as Item from '$lib/components/ui/item';
+	import * as Pagination from '$lib/components/ui/pagination';
 	import { Mars, SearchIcon, Venus } from '@lucide/svelte';
 	import { Reservation } from '$lib/shared/entities';
-	import { MedicalRecord, Patient } from '$lib/shared/entities';
 	import type { Reservation as ReservationClass } from '$lib/shared/entities';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { format } from 'date-fns';
 	import { writable, derived, get } from 'svelte/store';
 	import type { reservationStatus } from '$lib/shared/types/type_def';
 	import MedicalRecordCard from '$lib/shared/components/MedicalRecordCard.svelte';
+	import { reservationPaginationStore } from '$lib/shared/stores/pagination';
 
 	/* =========================================================
 	   INITIAL DATA
@@ -38,8 +39,14 @@
 	/* =========================================================
 	   PAGINATION (no legacy $: — Svelte 5 compliant)
 	========================================================= */
-	const PAGE_SIZE = 10;
-	const currentPage = writable(1);
+	// const PAGE_SIZE = 10;
+	// const currentPage = writable(1);
+	let { itemsPerPage, currentPage } = $reservationPaginationStore;
+	const perPage = itemsPerPage;
+	let siblingCount = 1;
+
+	const totalResults = reservations.length;
+	const totalPages = Math.max(1, Math.ceil(totalResults / perPage));
 
 	// Filtered list (based on status tab)
 	const filteredReservations = derived(statusFilter, ($status) => {
@@ -49,23 +56,29 @@
 		);
 	});
 
-	// Total pages
-	const totalPages = derived(filteredReservations, ($filtered) =>
-		Math.max(1, Math.ceil($filtered.length / PAGE_SIZE))
-	);
+	const searchQuery = writable('');
 
 	// Paginated + filtered output
 	const displayedReservations = derived(
-		[filteredReservations, currentPage, totalPages],
-		([$filtered, $current]) => {
-			const start = ($current - 1) * PAGE_SIZE;
-			return $filtered.slice(start, start + PAGE_SIZE);
+		[filteredReservations, reservationPaginationStore, searchQuery],
+		([$filtered, $current, $searchQuery]) => {
+			if ($searchQuery.trim() !== '') {
+				const query = $searchQuery.toLowerCase();
+				return $filtered.filter((r) => {
+					const patientName = r.getPatient().getFullName().toLowerCase();
+					const medicalRecordNumber = r.getPatient().getMedicalRecordNumber().toLowerCase();
+					return patientName.includes(query) || medicalRecordNumber.includes(query);
+				});
+			}
+			const start = ($current.currentPage - 1) * perPage;
+			const end = Math.min(start + perPage, totalResults);
+			return $filtered.slice(start, end);
 		}
 	);
 
 	// Reset page to 1 when filter changes
 	statusFilter.subscribe(() => {
-		currentPage.set(1);
+		reservationPaginationStore.update((store) => ({ ...store, currentPage: 1 }));
 	});
 
 	// Generate page numbers (same logic as before)
@@ -85,16 +98,11 @@
 		return pages;
 	}
 
-	const pageNumbers = derived([currentPage, totalPages], ([$current, $total]) =>
-		getPageNumbers($current, $total)
-	);
-
 	// Go to page
 	function goToPage(n: number) {
-		const tot = get(totalPages);
 		if (n < 1) n = 1;
-		if (n > tot) n = tot;
-		currentPage.set(n);
+		if (n > totalPages) n = totalPages;
+		reservationPaginationStore.update((store) => ({ ...store, currentPage: n }));
 
 		// scroll up
 		if (typeof window !== 'undefined') {
@@ -181,6 +189,7 @@
 				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-1.5 pr-2 pl-4 shadow-sm sm:flex"
 			>
 				<InputGroup.Input
+					bind:value={$searchQuery}
 					placeholder="Find name, medical record..."
 					class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
 				/>
@@ -297,55 +306,64 @@
 	</section>
 
 	<!-- PAGINATION (Pill style) -->
-	<section id="pagination" class="bg-[#F5F5F5] px-4 pb-8">
-		<div class="flex justify-center">
-			<div
-				class="flex w-auto items-center justify-between gap-6 rounded-full border border-gray-300 bg-white px-6 py-3 shadow-sm"
+	<Pagination.Root
+		count={totalResults}
+		perPage={itemsPerPage}
+		page={currentPage}
+		{siblingCount}
+		class="mt-8 justify-center bg-[#F5F5F5] px-4 pb-8 "
+	>
+		{#snippet children({ pages, currentPage })}
+			<Pagination.Content
+				class="flex w-auto items-center justify-between rounded-full border border-gray-300 bg-white px-2 py-3 shadow-sm"
 			>
-				<!-- Left: Pagination Buttons -->
-				<nav class="inline-flex items-center gap-2" aria-label="Pagination">
-					<button
-						class="rounded-full border-2 border-blue-600 px-4 py-2 font-semibold text-blue-600 hover:bg-blue-50 disabled:opacity-40"
-						onclick={() => goToPage($currentPage - 1)}
-						disabled={$currentPage === 1}
+				<Pagination.Item>
+					<Pagination.PrevButton
+						onclick={() => goToPage(currentPage - 1)}
+						disabled={currentPage === 1}
 					>
-						Prev
-					</button>
-
-					{#each $pageNumbers as p}
-						{#if p === '...'}
-							<span class="px-2">...</span>
-						{:else}
-							<button
-								class="rounded-full border-2 px-4 py-2 font-semibold hover:shadow-sm"
-								class:bg-blue-600={p === $currentPage}
-								class:text-white={p === $currentPage}
-								class:border-blue-600={p !== $currentPage}
-								class:text-blue-600={p !== $currentPage}
-								onclick={() => goToPage(p as number)}
-								aria-current={p === $currentPage ? 'page' : undefined}
+						<span
+							class="rounded-full border-2 border-[#1D69D1] px-4 py-2 font-semibold text-[#1D69D1] hover:bg-blue-50 disabled:opacity-40"
+							>Prev</span
+						></Pagination.PrevButton
+					>
+				</Pagination.Item>
+				{#each pages as page (page.key)}
+					{#if page.type === 'ellipsis'}
+						<Pagination.Item>
+							<Pagination.Ellipsis />
+						</Pagination.Item>
+					{:else}
+						<Pagination.Item>
+							<Pagination.Link
+								{page}
+								isActive={currentPage === page.value}
+								class="rounded-full border-2 py-2 font-semibold hover:shadow-sm {currentPage ===
+								page.value
+									? 'bg-[#1D69D1] text-white'
+									: 'border-[#1D69D1] text-[#1D69D1]'} "
+								onclick={() => goToPage(page.value)}
 							>
-								{p}
-							</button>
-						{/if}
-					{/each}
-
-					<button
-						class="rounded-full border-2 border-blue-600 px-4 py-2 font-semibold text-blue-600 hover:bg-blue-50 disabled:opacity-40"
-						onclick={() => goToPage($currentPage + 1)}
-						disabled={$currentPage === $totalPages}
-					>
-						Next
-					</button>
-				</nav>
-
-				<!-- Right: Result count -->
-				<div class="text-sm whitespace-nowrap text-gray-600">
-					Showing {$displayedReservations.length} of {$filteredReservations.length} results
+								{page.value}
+							</Pagination.Link>
+						</Pagination.Item>
+					{/if}
+				{/each}
+				<Pagination.Item>
+					<Pagination.NextButton onclick={() => goToPage(currentPage + 1)}>
+						<span
+							class="rounded-full border-2 border-[#1D69D1] px-4 py-2 font-semibold text-[#1D69D1] hover:bg-blue-50 disabled:opacity-40"
+							>Next</span
+						>
+					</Pagination.NextButton>
+				</Pagination.Item>
+				<!-- RIGHT: Result count -->
+				<div class="mr-4 text-sm whitespace-nowrap text-gray-600">
+					Showing {$displayedReservations.length} of {totalResults} results
 				</div>
-			</div>
-		</div>
-	</section>
+			</Pagination.Content>
+		{/snippet}
+	</Pagination.Root>
 </div>
 
 <style>

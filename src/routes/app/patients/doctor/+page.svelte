@@ -31,30 +31,39 @@
 	const totalResults = patients.length;
 	const totalPages = Math.max(1, Math.ceil(totalResults / perPage));
 
+	const searchQuery = writable('');
 
 	// derived store: the patients to show on current page
-	const displayedPatients = derived(patientPaginationStore, ($current) => {
+	const displayedPatients = derived([patientPaginationStore, searchQuery], ([$current, $searchQuery]) => {
+		if ($searchQuery.trim() !== '') {
+			return patients.filter((p) => {
+				const fullName = p.getFullName().toLowerCase();
+				const medicalRecordNumber = p.getMedicalRecordNumber().toLowerCase();
+				const query = $searchQuery.toLowerCase();
+				return fullName.includes(query) || medicalRecordNumber.includes(query);
+			});
+		}
 		const start = ($current.currentPage - 1) * perPage;
 		const end = Math.min(start + perPage, totalResults);
 		return patients.slice(start, end);
 	});
 
 	// // helper to create compact page numbers with ellipsis
-	function getPageNumbers(current: number, total: number): (number | '...')[] {
-		const pages: (number | '...')[] = [];
-		if (total <= 7) {
-			for (let i = 1; i <= total; i++) pages.push(i);
-			return pages;
-		}
-		pages.push(1);
-		if (current > 4) pages.push('...');
-		const start = Math.max(2, current - 1);
-		const end = Math.min(total - 1, current + 1);
-		for (let i = start; i <= end; i++) pages.push(i);
-		if (current + 2 < total - 1) pages.push('...');
-		pages.push(total);
-		return pages;
-	}
+	// function getPageNumbers(current: number, total: number): (number | '...')[] {
+	// 	const pages: (number | '...')[] = [];
+	// 	if (total <= 7) {
+	// 		for (let i = 1; i <= total; i++) pages.push(i);
+	// 		return pages;
+	// 	}
+	// 	pages.push(1);
+	// 	if (current > 4) pages.push('...');
+	// 	const start = Math.max(2, current - 1);
+	// 	const end = Math.min(total - 1, current + 1);
+	// 	for (let i = start; i <= end; i++) pages.push(i);
+	// 	if (current + 2 < total - 1) pages.push('...');
+	// 	pages.push(total);
+	// 	return pages;
+	// }
 
 	// go to page (client-only scroll guard)
 	function goToPage(n: number) {
@@ -65,7 +74,7 @@
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
-	// END OF PART 1 
+	// END OF PART 1
 
 	// ---------- NAVBAR HIDE / SHOW (guarded for SSR) ----------
 	const navHidden = writable(false);
@@ -116,6 +125,7 @@
 				<InputGroup.Input
 					placeholder="Find name, medical record..."
 					class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
+					bind:value={$searchQuery}
 				/>
 				<InputGroup.Addon align="inline-end" class="rounded-full bg-white pr-1">
 					<SearchIcon class="h-5 w-5" color="#1D69D1" />
@@ -218,7 +228,7 @@
 		{/each}
 	</Item.Group>
 	<!-- REMINDER: PAGINATION INI SEMUANYA DIUBAH -->
-	 <!-- START  -->
+	<!-- START  -->
 	<Pagination.Root
 		count={totalResults}
 		perPage={itemsPerPage}
@@ -231,7 +241,10 @@
 				class="flex w-auto items-center justify-between rounded-full border border-gray-300 bg-white px-2 py-3 shadow-sm"
 			>
 				<Pagination.Item>
-					<Pagination.PrevButton onclick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
+					<Pagination.PrevButton
+						onclick={() => goToPage(currentPage - 1)}
+						disabled={currentPage === 1}
+					>
 						<span
 							class="rounded-full border-2 border-[#1D69D1] px-4 py-2 font-semibold text-[#1D69D1] hover:bg-blue-50 disabled:opacity-40"
 							>Prev</span

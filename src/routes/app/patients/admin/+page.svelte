@@ -98,20 +98,27 @@
 	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
+
 	<!-- keep NavigationMenu.List as container (positioning context) -->
-	<NavigationMenu.List class=" px-4 py-4">
+	<NavigationMenu.List class="flex items-center justify-center px-4 py-5">
 		<!-- ABSOLUTELY CENTERED LOGO (always centered regardless of other items) -->
-		<NavigationMenu.Item class="absolute top-2 left-1/2 -translate-x-1/2">
-			<NavigationMenu.Link class="cursor-pointer">
-				<div class="h-full w-full">
-					<img src={logo} alt="Logo" class="h-10 object-contain" />
-				</div>
-			</NavigationMenu.Link>
+		<NavigationMenu.Item class="absolute top-4.4 left-1/2 -translate-x-1/2">
+			<InputGroup.Root
+				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
+			>
+				<InputGroup.Input
+					placeholder="Find name, medical record..."
+					class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
+				/>
+				<InputGroup.Addon align="inline-end" class="rounded-full bg-white pr-1">
+					<SearchIcon class="h-5 w-5" color="#1D69D1" />
+				</InputGroup.Addon>
+			</InputGroup.Root>
 		</NavigationMenu.Item>
 		<!-- RIGHT-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
 		<NavigationMenu.Item class="flex items-center">
 			<Button
-				class="rounded-full bg-[#1D69D1] px-6 py-4 text-sm text-white shadow-sm hover:opacity-90"
+				class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white shadow-sm hover:opacity-90"
 				onclick={() => goto('/app/patients/admin/addpatient')}
 			>
 				Add New Patient

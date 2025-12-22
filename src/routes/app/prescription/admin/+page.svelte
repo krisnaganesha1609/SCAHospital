@@ -7,16 +7,16 @@
     import * as Item from '$lib/components/ui/item';
     import * as Accordion from '$lib/components/ui/accordion';
     import { SearchIcon, LogOut, Pill, Calendar, User, Activity } from '@lucide/svelte';
-    import { Prescription } from '$lib/shared/entities/Prescription';
     import { format } from 'date-fns';
     import { Button } from '$lib/components/ui/button';
     import { writable } from 'svelte/store';
+	import { PharmacyApproval } from '$lib/shared/entities';
 
     // ---------- INITIAL DATA ----------
     let { data }: PageProps = $props();
     
     // Kita bungkus dalam derived atau state agar UI terupdate saat action selesai
-    let prescriptions = $derived(data.prescriptions.map((p: any) => Prescription.fromPOJO(p)));
+    let prescriptions = $derived(data.prescriptions.map((p: any) => PharmacyApproval.fromPOJO(p)));
 
     // ---------- CANCEL MODAL LOGIC ----------
     let showCancelModal = $state(false);
@@ -145,7 +145,7 @@
                                 <Item.Description>Doctor</Item.Description>
                                 <Item.Title class="flex items-center">
                                     <User size={16} class="mr-2 text-gray-400" />
-                                    {presc.getDoctor().getFullName()}
+                                    {presc.getPrescription().getDoctor().getFullName()}
                                 </Item.Title>
                             </Item.Content>
                             
@@ -157,7 +157,7 @@
                                 <Item.Description>Date</Item.Description>
                                 <Item.Title class="flex items-center">
                                     <Calendar size={16} class="mr-2 text-gray-400" />
-                                    {format(new Date(presc.getPrescribedAt()), 'dd MMM yyyy')}
+                                    {format(new Date(presc.getPrescription().getPrescribedAt()), 'dd MMM yyyy')}
                                 </Item.Title>
                             </Item.Content>
 
@@ -167,7 +167,7 @@
 
                             <Item.Content>
                                 <Item.Description>Total Cost</Item.Description>
-                                <Item.Title class="text-[#1D69D1]">Rp {presc.getTotalCost().toLocaleString()}</Item.Title>
+                                <Item.Title class="text-[#1D69D1]">Rp {presc.getPrescription().getTotalCost().toLocaleString()}</Item.Title>
                             </Item.Content>
 
                             <div class="col-span-0 flex justify-center">
@@ -193,7 +193,7 @@
                             <h4 class="font-bold text-gray-700 flex items-center">
                                 <Pill size={18} class="mr-2 text-[#1D69D1]"/> Medicines In Prescription
                             </h4>
-                            {#each presc.getPrescriptionItems() as item}
+                            {#each presc.getPrescription().getPrescriptionItems() as item}
                                 <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                                     <div>
                                         <p class="font-bold">{item.getMedicineName()}</p>

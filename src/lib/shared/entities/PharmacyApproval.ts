@@ -6,8 +6,10 @@ import { User } from "./User";
 export class PharmacyApproval extends Utils {
     constructor(
         id: uuid,
+        private prescriptionId: uuid | null,
         private prescription: Prescription,
-        private pharmacist: User,
+        private pharmacist_id: uuid | null,
+        private pharmacist: User | null,
         private dispensedAt: Date,
         private status: pharmacyApprovalStatus,
         private notes: string,
@@ -16,10 +18,16 @@ export class PharmacyApproval extends Utils {
     public getId(): uuid {
         return this.id;
     }
+    public getPrescriptionId(): uuid | null {
+        return this.prescriptionId;
+    }
     public getPrescription(): Prescription {
         return this.prescription;
     }
-    public getPharmacist(): User {
+    public getPharmacistId(): uuid | null {
+        return this.pharmacist_id;
+    }
+    public getPharmacist(): User | null {
         return this.pharmacist;
     }
     public getDispensedAt(): Date {
@@ -48,8 +56,10 @@ export class PharmacyApproval extends Utils {
     public static fromJson(json: any): PharmacyApproval {
         return new PharmacyApproval(
             json.id,
+            json.prescription_id,
             Prescription.fromJson(json.prescription),
-            User.fromJson(json.pharmacist),
+            json.pharmacist_id,
+            json.pharmacist ? User.fromJson(json.pharmacist) : null,
             json.dispensed_at,
             json.status,
             json.notes,
@@ -59,8 +69,10 @@ export class PharmacyApproval extends Utils {
     public static fromPOJO(obj: any): PharmacyApproval {
         return new PharmacyApproval(
             obj.id,
+            obj.prescriptionId,
             Prescription.fromPOJO(obj.prescription),
-            User.fromPOJO(obj.pharmacist),
+            obj.pharmacistId,
+            obj.pharmacist ? User.fromPOJO(obj.pharmacist) : null,
             obj.dispensedAt,
             obj.status,
             obj.notes,

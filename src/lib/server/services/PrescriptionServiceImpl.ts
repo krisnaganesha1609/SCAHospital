@@ -7,16 +7,22 @@ import { PrescriptionItemsRepositoryImpl } from "../repositories/PrescriptionIte
 import { PharmacyApprovalRepositoryImpl } from "../repositories/PharmacyApprovalRepositoryImpl";
 import type { PrescriptionItemsRequest } from "$lib/shared/utils/PrescriptionItems_Request";
 import { MedicineRepositoryImpl } from "../repositories/MedicineRepositoryImpl";
+import { PharmacyApproval } from "$lib/shared/entities";
 
 export class PrescriptionServiceImpl implements PrescriptionService {
     private prescriptionRepository: PrescriptionRepositoryImpl;
     private prescriptionItemsRepository: PrescriptionItemsRepositoryImpl;
     private pharmacyApprovalRepository: PharmacyApprovalRepositoryImpl;
-        constructor(supabase: SupabaseClient) {
-            this.prescriptionRepository = new PrescriptionRepositoryImpl(supabase);
-            this.prescriptionItemsRepository = new PrescriptionItemsRepositoryImpl(supabase);
-            this.pharmacyApprovalRepository = new PharmacyApprovalRepositoryImpl(supabase);
-        }
+    constructor(supabase: SupabaseClient) {
+        this.prescriptionRepository = new PrescriptionRepositoryImpl(supabase);
+        this.prescriptionItemsRepository = new PrescriptionItemsRepositoryImpl(supabase);
+        this.pharmacyApprovalRepository = new PharmacyApprovalRepositoryImpl(supabase);
+    }
+
+    async getPharmacyApprovalsList(): Promise<PharmacyApproval[]> {
+        const data = await this.pharmacyApprovalRepository.findAll();
+        return data.map((item) => PharmacyApproval.fromJson(item));
+    }
     async issuePrescription(medicalRecordId: uuid, doctorId: uuid, notes: string, medications: PrescriptionItemsRequest[]): Promise<void> {
         console.log("Issuing prescription with medications:", medications);
         let prescriptionPayload: any = {
@@ -47,7 +53,7 @@ export class PrescriptionServiceImpl implements PrescriptionService {
             pharmacist_id: null,
             status: 'Pending',
             dispensed_at: null,
-            notes:'',
+            notes: '',
         };
         await this.pharmacyApprovalRepository.createPharmacyApproval(approvalPayload);
         return Promise.resolve();

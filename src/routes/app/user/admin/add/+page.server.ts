@@ -33,7 +33,7 @@ export const actions: Actions = {
 		const userService = new UserServiceImpl(locals.supabase);
 
 		try {
-			await userService.createUser(fullName, '', password, role, phone, email);
+			await userService.createUser(fullName, password, role, phone, email);
 			return { success: true };
 		} catch (e) {
 			console.error('createUser failed', e);

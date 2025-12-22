@@ -57,27 +57,38 @@
     <title>User Management - SCA Hospital</title>
 </svelte:head>
 
+<!-- NAVBAR SECTION ARGH, NEED HELP PLOX -->
 <NavigationMenu.Root
-    class={'sticky top-0 z-50 flex w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
-        ($navHidden ? '-translate-y-full' : 'translate-y-0')}
+	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
+		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
-    <NavigationMenu.List class="flex w-full items-center justify-between px-6 py-5">
-        <div class="absolute left-1/2 -translate-x-1/2">
-            <InputGroup.Root class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-2 px-4 shadow-sm sm:flex">
-                <InputGroup.Input placeholder="Search user..." class="border-none bg-transparent text-sm outline-none" />
-                <SearchIcon class="h-5 w-5 text-[#1D69D1]" />
-            </InputGroup.Root>
-        </div>
 
-        <NavigationMenu.Item class="ml-auto">
-            <Button
-                class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white shadow-sm hover:opacity-90"
-                onclick={() => goto('/app/user/admin/adduser')}
-            >
-                Add New User
-            </Button>
-        </NavigationMenu.Item>
-    </NavigationMenu.List>
+	<!-- keep NavigationMenu.List as container (positioning context) -->
+	<NavigationMenu.List class="flex items-center justify-center px-4 py-5">
+		<!-- ABSOLUTELY CENTERED LOGO (always centered regardless of other items) -->
+		<NavigationMenu.Item class="absolute top-4.4 left-1/2 -translate-x-1/2">
+			<InputGroup.Root
+				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
+			>
+				<InputGroup.Input
+					placeholder="Find name, medical record..."
+					class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
+				/>
+				<InputGroup.Addon align="inline-end" class="rounded-full bg-white pr-1">
+					<SearchIcon class="h-5 w-5" color="#1D69D1" />
+				</InputGroup.Addon>
+			</InputGroup.Root>
+		</NavigationMenu.Item>
+		<!-- RIGHT-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
+		<NavigationMenu.Item class="flex items-center">
+			<Button
+				class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white shadow-sm hover:opacity-90"
+				onclick={() => goto('/app/user/admin/add')}
+			>
+				Add New User
+			</Button>
+		</NavigationMenu.Item>
+	</NavigationMenu.List>
 </NavigationMenu.Root>
 
 <div class="min-h-screen p-4">
@@ -85,7 +96,7 @@
         {#each $displayedUsers as user (user.getUserId())}
             <Accordion.Root type="single" class="w-full mb-3">
                 <Accordion.Item value={user.getUserId()} class="w-full border border-gray-300 bg-white rounded-lg shadow-sm">
-                    <Accordion.Trigger class="w-full hover:no-underline" onclick={() => goto('/app/user/admin/edit')}>
+                    <Accordion.Trigger class="w-full hover:no-underline" onclick={() => goto(`/app/user/admin/edit?id=${encodeURIComponent(user.getUserId())}`)}>
                         <Item.Root class="border-none shadow-none p-4 grid grid-cols-7 gap-2">
                             <Item.Content class="col-span-2">
                                 <Item.Description class="flex items-center gap-1">
@@ -168,8 +179,3 @@
         {/snippet}
     </Pagination.Root>
 </div>
-
-<style>
-    :global(.-translate-y-full) { transform: translateY(-100%); }
-    :global(.translate-y-0) { transform: translateY(0); }
-</style>

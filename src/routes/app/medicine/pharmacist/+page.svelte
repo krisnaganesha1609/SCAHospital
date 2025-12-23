@@ -188,7 +188,10 @@
 							>Unit Price</span
 						>
 						<span class="text-sm font-bold text-gray-900"
-							>Rp{medicine.getUnitPrice().toLocaleString()}</span
+							>{medicine.getUnitPrice().toLocaleString('id-ID', {
+								style: 'currency',
+								currency: 'IDR' // Indonesian Rupiah
+							})}</span
 						>
 					</div>
 

@@ -72,7 +72,7 @@
 	let prescriptions: RxForm[] = $state([]);
 
 	// UI state
-	let showPrescriptionSection = $state(true);
+	let showPrescriptionSection = $state(false);
 	let recordSaved = false;
 
 	// helpers to update inputs (no bind:value)

@@ -39,6 +39,12 @@
 			toast.error('Password required', { description: 'Password wajib diisi.' });
 			return false;
 		}
+		if (password.length < 6) {
+            toast.error('Password too short', { 
+                description: 'Password minimal harus 6 karakter.' 
+            });
+            return false;
+        }
 		if (password !== confirmPassword) {
 			toast.error('Password Mismatch', {
 				description: 'Password and Confirm Password do not match.'

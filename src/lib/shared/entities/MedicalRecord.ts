@@ -1,13 +1,14 @@
 import type { JsonObject, uuid } from "../types/type_def";
 import { Utils } from "../utils/Utils";
+import { Patient } from "./Patient";
 import { Prescription } from "./Prescription";
 
 export class MedicalRecord extends Utils {
     constructor(
         id: uuid,
         private patientId: uuid,
+        private patient: Patient | null,
         private doctorId: uuid,
-        private departmentId: uuid,
         private visitDate: Date,
         private visitType: string,
         private complaints: string,
@@ -28,11 +29,11 @@ export class MedicalRecord extends Utils {
     public getPatientId(): uuid {
         return this.patientId;
     }
+    public getPatient(): Patient | null {
+        return this.patient;
+    }
     public getDoctorId(): uuid {
         return this.doctorId;
-    }
-    public getDepartmentId(): uuid {
-        return this.departmentId;
     }
     public getVisitDate(): Date {
         return this.visitDate;
@@ -77,7 +78,6 @@ export class MedicalRecord extends Utils {
         return {
             patient_id: this.patientId,
             doctor_id: this.doctorId,
-            department_id: this.departmentId ?? '',
             visit_date: this.visitDate,
             visit_type: this.visitType ?? '',
             complaints: this.complaints,
@@ -97,8 +97,8 @@ export class MedicalRecord extends Utils {
         return new MedicalRecord(
             json.id,
             json.patient_id,
+            json.patient ? Patient.fromJson(json.patient) : null,
             json.doctor_id,
-            json.department_id,
             json.visit_date,
             json.visit_type,
             json.complaints,
@@ -111,15 +111,15 @@ export class MedicalRecord extends Utils {
             json.follow_up_date,
             json.diagnosis,
             json.notes,
-            json.prescriptions.map((prescription: any) => Prescription.fromJson(prescription))
+            json.prescriptions ? json.prescriptions.map((prescription: any) => Prescription.fromJson(prescription)) : null
         );
     }
     public static fromPOJO(obj: any): MedicalRecord {
         return new MedicalRecord(
             obj.id,
             obj.patientId,
+            obj.patient ? Patient.fromPOJO(obj.patient) : null,
             obj.doctorId,
-            obj.departmentId,
             obj.visitDate,
             obj.visitType,
             obj.complaints,
@@ -132,7 +132,7 @@ export class MedicalRecord extends Utils {
             obj.followUpDate,
             obj.diagnosis,
             obj.notes,
-            obj.prescriptions.map((prescription: any) => Prescription.fromPOJO(prescription))
+            obj.prescriptions ? obj.prescriptions.map((prescription: any) => Prescription.fromPOJO(prescription)) : null
         );
     }
 }

@@ -1,13 +1,13 @@
 import type { prescriptionStatus, uuid } from "../types/type_def";
 import { User } from "./User";
-import type { MedicalRecord } from "./MedicalRecord";
+import { MedicalRecord } from "./MedicalRecord";
 import { Utils } from "../utils/Utils";
 import { PrescriptionItems } from "./PrescriptionItems";
 
 export class Prescription extends Utils {
     constructor(
         id: uuid,
-        private medicalRecord: MedicalRecord,
+        private medicalRecord: MedicalRecord | null,
         private doctor: User,
         private prescribedAt: Date,
         private status: prescriptionStatus,
@@ -20,7 +20,7 @@ export class Prescription extends Utils {
     public getId(): uuid {
         return this.id;
     }
-    public getMedicalRecord(): MedicalRecord {
+    public getMedicalRecord(): MedicalRecord | null {
         return this.medicalRecord;
     }
     public getDoctor(): User {
@@ -61,7 +61,7 @@ export class Prescription extends Utils {
     public static fromJson(json: any): Prescription {
         return new Prescription(
             json.id,
-            json.medical_record,
+            json.medical_record ? MedicalRecord.fromJson(json.medical_record) : null,
             User.fromJson(json.doctor),
             json.prescribed_at,
             json.status,
@@ -75,7 +75,7 @@ export class Prescription extends Utils {
     public static fromPOJO(obj: any): Prescription {
         return new Prescription(
             obj.id,
-            obj.medicalRecord,
+            obj.medicalRecord ? MedicalRecord.fromPOJO(obj.medicalRecord) : null,
             User.fromPOJO(obj.doctor),
             obj.prescribedAt,
             obj.status,

@@ -18,7 +18,7 @@ export class PharmacyApprovalRepositoryImpl implements PharmacyApprovalRepositor
     async findAll(): Promise<any[]> {
         const { data, error } = await this.supabase
             .from('pharmacy_approvals')
-            .select('*, prescription:prescriptions(*, doctor:users(*), prescription_items(*, medicines(*))), pharmacist:users(*)');
+            .select('*, prescription:prescriptions(*, medical_record:medical_records(*, patient:patients(*)), doctor:users(*), prescription_items(*, medicines(*))), pharmacist:users(*)');
         if (error) {
             throw new Error(error.message);
         }

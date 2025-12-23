@@ -117,7 +117,7 @@
 </svelte:head>
 
 <NavigationMenu.Root
-	class={'sticky top-0 z-50 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
+	class={'sticky top-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
 	<NavigationMenu.List class="flex items-center justify-center px-4 py-5">
@@ -150,7 +150,7 @@
 <div class="min-h-[calc(100vh-64px)] bg-[#F3F5F7] p-8">
 	<div class="mx-auto flex max-w-7xl flex-col gap-4">
 		{#each $displayedMedicines as medicine (medicine.getId())}
-			<div
+			<button
 				class="group relative flex w-full cursor-pointer items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md"
 				onclick={() => {
 					persistSelectedMedicine(medicine);
@@ -210,7 +210,7 @@
 						<span class="text-sm font-bold text-gray-900">{medicine.getStockQty()}</span>
 					</div>
 				</div>
-			</div>
+			</button>
 		{/each}
 
 		{#if $displayedMedicines.length === 0}

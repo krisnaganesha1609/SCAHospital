@@ -117,7 +117,7 @@
 </svelte:head>
 
 <NavigationMenu.Root
-	class={'sticky top-0 z-50 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
+	class={'sticky top-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
 	<NavigationMenu.List class="flex items-center justify-center px-4 py-5">

@@ -208,14 +208,14 @@
 				variant="ghost"
 				type="submit"
 				disabled={isSubmitting}
-				class="flex h-11 min-w-[140px] items-center justify-center gap-2 rounded-full bg-[#FFAD0D] text-base font-bold text-white transition-all"
+				class="flex h-11 min-w-[140px] items-center justify-center gap-2 rounded-full bg-[#1D69D1] text-base font-bold text-white transition-all"
 			>
 				{#if isSubmitting}
 					<div
 						class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
 					></div>
 				{:else}
-					<span>Edit</span>
+					<span>Save</span>
 				{/if}
 			</Button>
 		</div>

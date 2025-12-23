@@ -14,6 +14,7 @@
 	let password = $state('');
 	let confirmPassword = $state('');
 	let showPassword = $state(false);
+	let showConfirmPassword = $state(false);
 	let isSubmitting = $state(false);
 
 	const roles = [
@@ -178,15 +179,18 @@
 					<div class="relative">
 						<input
 							name="password"
+							id="password"
 							type={showPassword ? 'text' : 'password'}
-							class="h-12 rounded-xl border border-gray-300 bg-white px-4 pr-12 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-[#1D69D1] focus:ring-2 focus:ring-[#1D69D1]/10 focus:outline-none"
+							autocomplete="new-password"
+							class="h-12 w-full rounded-xl border border-gray-300 bg-white px-4 pr-12 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-[#1D69D1] focus:ring-2 focus:ring-[#1D69D1]/10 focus:outline-none"
 							bind:value={password}
 							placeholder="••••••••"
 						/>
 						<button
 							type="button"
-							class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-[#1D69D1]"
+							class="absolute top-1/2 right-0 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-gray-500 hover:text-[#1D69D1]"
 							onclick={() => (showPassword = !showPassword)}
+							tabindex="-1"
 						>
 							{#if showPassword}
 								<EyeOff size={18} />
@@ -197,7 +201,6 @@
 					</div>
 				</div>
 
-				<!-- Confirm -->
 				<div class="flex flex-col gap-2">
 					<label for="confirmPassword" class="px-1 text-xs font-semibold text-gray-600"
 						>Confirm Password</label
@@ -205,14 +208,25 @@
 					<div class="relative">
 						<input
 							name="confirmPassword"
-							type={showPassword ? 'text' : 'password'}
-							class="h-12 rounded-xl border border-gray-300 bg-white px-4 pr-12 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-[#1D69D1] focus:ring-2 focus:ring-[#1D69D1]/10 focus:outline-none"
+							id="confirmPassword"
+							type={showConfirmPassword ? 'text' : 'password'}
+							autocomplete="new-password"
+							class="h-12 w-full rounded-xl border border-gray-300 bg-white px-4 pr-12 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-[#1D69D1] focus:ring-2 focus:ring-[#1D69D1]/10 focus:outline-none"
 							bind:value={confirmPassword}
 							placeholder="••••••••"
 						/>
-						<div class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400">
-							<EyeOff size={18} class="opacity-60" />
-						</div>
+						<button
+							type="button"
+							class="absolute top-1/2 right-0 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-gray-500 hover:text-[#1D69D1]"
+							onclick={() => (showConfirmPassword = !showConfirmPassword)}
+							tabindex="-1"
+						>
+							{#if showConfirmPassword}
+								<EyeOff size={18} />
+							{:else}
+								<Eye size={18} />
+							{/if}
+						</button>
 					</div>
 				</div>
 				<button type="submit" class="hidden" aria-hidden="true" bind:this={hiddenSubmitEl}></button>

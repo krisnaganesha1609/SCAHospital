@@ -4,6 +4,5 @@ export * from './PrescriptionItems';
 export * from './MedicalRecord';
 export * from './Prescription';
 export * from './User';
-export * from './Departments';
 export * from './PharmacyApproval';
 export * from './Reservation';

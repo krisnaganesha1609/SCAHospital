@@ -196,7 +196,6 @@
 		const payload = {
 			patient_id: patient.getId(),
 			doctor_id: user.getUserId(),
-			department_id: null,
 			visit_date: new Date().toISOString(),
 			visit_type: visitType,
 			complaints,

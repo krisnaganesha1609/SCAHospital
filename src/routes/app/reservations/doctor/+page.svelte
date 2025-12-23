@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import logo from '$lib/assets/logo.svg';
 	import type { PageProps } from './$types';
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
 	import * as InputGroup from '$lib/components/ui/input-group';
@@ -11,7 +10,7 @@
 	import type { Reservation as ReservationClass } from '$lib/shared/entities';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { format } from 'date-fns';
-	import { writable, derived, get } from 'svelte/store';
+	import { writable, derived } from 'svelte/store';
 	import type { reservationStatus } from '$lib/shared/types/type_def';
 	import MedicalRecordCard from '$lib/shared/components/MedicalRecordCard.svelte';
 	import { reservationPaginationStore } from '$lib/shared/stores/pagination';

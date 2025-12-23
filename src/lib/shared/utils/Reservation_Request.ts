@@ -6,7 +6,6 @@ export class ReservationRequest {
         private receptionistId: uuid,
         private doctorId: uuid,
         private reservationTime: Date,
-        private status: reservationStatus | null,
         private source: string | null,
         private notes: string,
     ) {}
@@ -22,9 +21,6 @@ export class ReservationRequest {
     public getReservationTime(): Date {
         return this.reservationTime;
     }
-    public getStatus(): reservationStatus | null {
-        return this.status;
-    }
     public getSource(): string | null {
         return this.source;
     }
@@ -37,7 +33,6 @@ export class ReservationRequest {
             receptionist_id: this.receptionistId,
             doctor_id: this.doctorId,
             reservation_time: this.reservationTime,
-            status: this.status,
             source: this.source,
             notes: this.notes,
         };
@@ -48,7 +43,6 @@ export class ReservationRequest {
             json.receptionist_id,
             json.doctor_id,
             json.reservation_time,
-            json.status,
             json.source,
             json.notes,);
     }
@@ -58,7 +52,6 @@ export class ReservationRequest {
             obj.receptionistId,
             obj.doctorId,
             new Date(obj.reservationTime),
-            obj.status,
             obj.source,
             obj.notes,
         );

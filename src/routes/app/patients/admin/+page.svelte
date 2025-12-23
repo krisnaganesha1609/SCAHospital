@@ -31,9 +31,17 @@
 	const totalResults = patients.length;
 	const totalPages = Math.max(1, Math.ceil(totalResults / perPage));
 
+	const searchQuery = writable('');
 
 	// derived store: the patients to show on current page
-	const displayedPatients = derived(patientPaginationStore, ($current) => {
+	const displayedPatients = derived([patientPaginationStore, searchQuery], ([$current, $searchQuery]) => {
+		if ($searchQuery.trim() !== '') {
+			const filtered = patients.filter(patient =>
+				patient.getFullName().toLowerCase().includes($searchQuery.trim().toLowerCase()) ||
+				patient.getMedicalRecordNumber().toLowerCase().includes($searchQuery.trim().toLowerCase())
+			);
+			return filtered;
+		}
 		const start = ($current.currentPage - 1) * perPage;
 		const end = Math.min(start + perPage, totalResults);
 		return patients.slice(start, end);
@@ -107,6 +115,7 @@
 				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
 			>
 				<InputGroup.Input
+					bind:value={$searchQuery}
 					placeholder="Find name, medical record..."
 					class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
 				/>

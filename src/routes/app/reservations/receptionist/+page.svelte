@@ -196,7 +196,7 @@
 		<NavigationMenu.Item>
 			<Button
 				class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white shadow-sm hover:opacity-90"
-				onclick={() => goto('/app/patients/admin/addpatient')}
+				onclick={() => goto('/app/reservations/receptionist/addreservation')}
 			>
 				New Reservation
 			</Button>

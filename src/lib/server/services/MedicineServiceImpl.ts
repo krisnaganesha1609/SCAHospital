@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { MedicineRepositoryImpl } from '../repositories/MedicineRepositoryImpl';
 import { MedicineService } from './interfaces/MedicineService';
 import type { MedicineRequest } from '$lib/shared/utils/Medicine_Request';
+import { includeIfNotEmpty } from '$lib/shared/utils/Utils';
 export class MedicineServiceImpl implements MedicineService {
     private medicineRepository: MedicineRepositoryImpl;
     constructor(supabase: SupabaseClient) {
@@ -25,6 +26,18 @@ export class MedicineServiceImpl implements MedicineService {
         await this.medicineRepository.updateMedicine(id, {
             stock_qty: qty,
         });
+        return Promise.resolve();
+    }
+    async updateMedicine(id: uuid, data: any): Promise<void> {
+        const payload = {
+            ...includeIfNotEmpty('name', data.name),
+            ...includeIfNotEmpty('form', data.form),
+            ...includeIfNotEmpty('strength', data.strength),
+            ...includeIfNotEmpty('unit_price', data.unit_price),
+            ...includeIfNotEmpty('unit_type', data.unit_type),
+            ...includeIfNotEmpty('stock_qty', data.stock_qty),
+        }
+        await this.medicineRepository.updateMedicine(id, payload);
         return Promise.resolve();
     }
 }

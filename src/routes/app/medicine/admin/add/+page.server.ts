@@ -10,29 +10,23 @@ export const actions: Actions = {
     createMedicine: async ({ request, locals }) => {
         const formData = await request.formData();
         
-        // Bungkus semua variabel menjadi satu objek (MedicineRequest)
-        const medicineRequest:MedicineRequest = new MedicineRequest(
-            name: (formData.get('name') || '').toString().trim(),
-            form: (formData.get('form') || '').toString().trim(),
-            strength: (formData.get('strength') || '').toString().trim(),
-            unitPrice: Number(formData.get('unitPrice')),
-            unitType: (formData.get('unitType') || '').toString().trim(),
-            stockQty: Number(formData.get('stockQty'))
-        );
-
-        // Server-side validation dasar
-        if (!medicineRequest.name || !medicineRequest.form || isNaN(medicineRequest.unitPrice) || isNaN(medicineRequest.stockQty)) {
-            return { success: false, message: 'Missing required fields' };
-        }
+        const medicineRequest: MedicineRequest = new MedicineRequest(
+            formData.get('code') as string,
+            formData.get('name') as string,
+            formData.get('form') as string,
+            formData.get('strength') as string,
+            formData.get('manufacturer') as string,
+            Number(formData.get('stockQty')),
+            Number(formData.get('unitPrice')),
+            formData.get('unitType') as string
+        )
 
         const medicineService = new MedicineServiceImpl(locals.supabase);
 
         try {
-            // Panggil method dengan mengirim satu objek sesuai permintaan backend
             await medicineService.registerMedicine(medicineRequest);
             return { success: true };
         } catch (e) {
-            console.error('createMedicine failed', e);
             return { success: false, message: 'Create medicine failed' };
         }
     }

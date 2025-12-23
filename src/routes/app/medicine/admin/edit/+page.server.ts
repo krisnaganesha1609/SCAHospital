@@ -29,18 +29,14 @@ export const actions: Actions = {
             form: formData.get('form'),
             strength: formData.get('strength'),
             unit_price: Number(formData.get('unitPrice')),
-            unit_type: formData.get('unitType'), // Packaging
+            unit_type: formData.get('unitType'),
             stock_qty: Number(formData.get('stockQty'))
         };
 
         const medicineService = new MedicineServiceImpl(locals.supabase);
         
         try {
-            // Menggunakan update (sesuaikan dengan method di MedicineServiceImpl kamu)
-            // Jika method update belum ada, pastikan Repository sudah mendukung updateMedicine
-            await medicineService.updateStock(id, medicineData.stock_qty); 
-            // Catatan: Anda mungkin perlu menambahkan method updateMedicine(id, data) 
-            // di Service jika ingin mengubah field selain stock.
+            await medicineService.updateMedicine(id, medicineData);
             return { success: true };
         } catch (e) {
             console.error(e);

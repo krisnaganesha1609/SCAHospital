@@ -197,8 +197,18 @@
 						</Item.Root>
 					</Accordion.Trigger>
 					<Accordion.Content class="flex flex-col space-y-6">
-						<div class="flex items-center justify-end">
-							<div></div>
+						<div class="flex items-center justify-end gap-4">
+							<Button
+								class="mt-5 rounded-full bg-[#FE9B0E] px-6 py-6 text-sm text-white"
+								onclick={() => {
+									// set store and persist to sessionStorage then navigate
+									persistSelectedPatient(patient);
+									// include id in query just in case user wants direct link later
+									goto(`/app/patients/admin/editpatient?id=${encodeURIComponent(patient.getId())}`);
+								}}
+							>
+								Edit Patient
+							</Button>
 							<Button
 								class="mt-5 rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white"
 								onclick={() => {

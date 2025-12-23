@@ -15,12 +15,13 @@ export class PatientServiceImpl implements PatientService {
     }
     update(patientId: uuid, p: any): Promise<void> {
         const data = {
-            ...includeIfNotEmpty('medical_record_number', p.medicalRecordNumber),
             ...includeIfNotEmpty('full_name', p.fullName),
             ...includeIfNotEmpty('date_of_birth', p.dateOfBirth),
             ...includeIfNotEmpty('gender', p.gender),
             ...includeIfNotEmpty('address', p.address),
             ...includeIfNotEmpty('phone', p.phone),
+            ...includeIfNotEmpty('blood_type', p.bloodType),
+            ...includeIfNotEmpty('allergies', p.allergies)
         }
         return this.patientRepository.updateExistingPatient(patientId, data);
     }

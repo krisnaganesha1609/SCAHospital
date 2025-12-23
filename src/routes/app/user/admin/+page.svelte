@@ -6,7 +6,7 @@
     import * as Item from '$lib/components/ui/item';
     import * as Pagination from '$lib/components/ui/pagination';
     import * as Accordion from '$lib/components/ui/accordion';
-    import { SearchIcon, User as UserIcon, Mail, ShieldCheck, Phone } from '@lucide/svelte';
+    import { SearchIcon } from '@lucide/svelte';
     import { User } from '$lib/shared/entities/User';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/components/ui/button';
@@ -26,7 +26,16 @@
     const totalResults = allUsers.length;
     const totalPages = Math.max(1, Math.ceil(totalResults / itemsPerPage));
 
-    const displayedUsers = derived(userPaginationStore, ($store) => {
+    const searchQuery = writable('');
+
+    const displayedUsers = derived([userPaginationStore, searchQuery], ([$store, $searchQuery]) => {
+        if ($searchQuery.trim() !== '') {
+            const filtered = allUsers.filter(user =>
+                user.getFullName().toLowerCase().includes($searchQuery.trim().toLowerCase()) ||
+                user.getEmail().toLowerCase().includes($searchQuery.trim().toLowerCase())
+            );
+            return filtered;
+        }
         const start = ($store.currentPage - 1) * itemsPerPage;
         const end = Math.min(start + itemsPerPage, totalResults);
         return allUsers.slice(start, end);
@@ -71,7 +80,8 @@
 				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
 			>
 				<InputGroup.Input
-					placeholder="Find name, medical record..."
+                    bind:value={$searchQuery}
+					placeholder="Find by name"
 					class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
 				/>
 				<InputGroup.Addon align="inline-end" class="rounded-full bg-white pr-1">
@@ -97,20 +107,19 @@
             <Accordion.Root type="single" class="w-full mb-3">
                 <Accordion.Item value={user.getUserId()} class="w-full border border-gray-300 bg-white rounded-lg shadow-sm">
                     <Accordion.Trigger class="w-full hover:no-underline" onclick={() => goto(`/app/user/admin/edit?id=${encodeURIComponent(user.getUserId())}`)}>
-                        <Item.Root class="border-none shadow-none p-4 grid grid-cols-7 gap-2">
-                            <Item.Content class="col-span-2">
-                                <Item.Description class="flex items-center gap-1">
-                                    <Mail size={12}/> Email (Username)
+                        <Item.Root class="border-none shadow-none p-4 grid grid-cols-10 gap-2">
+                            <Item.Content class="col-span-4">
+                                <Item.Title class="text-xl truncate">{user.getEmail()}</Item.Title>
+                                <Item.Description class="flex items-center gap-1 text-xs">
+                                    Email (Username)
                                 </Item.Description>
-                                <Item.Title class="text-xs truncate">{user.getEmail()}</Item.Title>
-                                <Item.Title class="text-[#1D69D1]">{user.getUsername()}</Item.Title>
                             </Item.Content>
 
-                            <div class="flex justify-center items-center"><div class="h-10 w-px bg-gray-200"></div></div>
+                            
 
-                            <Item.Content class="col-span-1">
+                            <Item.Content class="col-span-2">
                                 <Item.Description class="flex items-center gap-1">
-                                    <UserIcon size={12}/> Full Name
+                                     Full Name
                                 </Item.Description>
                                 <Item.Title>{user.getFullName()}</Item.Title>
                             </Item.Content>
@@ -118,8 +127,8 @@
                             <div class="flex justify-center items-center"><div class="h-10 w-px bg-gray-200"></div></div>
 
                             <Item.Content class="col-span-1">
-                                <Item.Description class="flex items-center gap-1">
-                                    <ShieldCheck size={12}/> Role
+                                <Item.Description class="flex items-center gap-1 text-xs">
+                                    Role
                                 </Item.Description>
                                 <Item.Title class="capitalize">{user.getRole()}</Item.Title>
                             </Item.Content>
@@ -127,10 +136,10 @@
                             <div class="flex justify-center items-center"><div class="h-10 w-px bg-gray-200"></div></div>
 
                             <Item.Content class="col-span-1">
-                                <Item.Description class="flex items-center gap-1">
-                                    <Phone size={12}/> Phone Number
+                                <Item.Description class="flex items-center gap-1 text-xs">
+                                    Phone Number
                                 </Item.Description>
-                                <Item.Title>{user.getPhone()}</Item.Title>
+                                <Item.Title>{user.getPhone() || '-'}</Item.Title>
                             </Item.Content>
                         </Item.Root>
                     </Accordion.Trigger>
@@ -143,13 +152,13 @@
         count={totalResults}
         perPage={itemsPerPage}
         page={$userPaginationStore.currentPage}
-        class="mt-8 flex justify-center pb-8"
+        class="mt-8 justify-center bg-[#F5F5F5] px-4 pb-8"
     >
         {#snippet children({ pages, currentPage })}
-            <Pagination.Content class="flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 shadow-sm">
+            <Pagination.Content class="flex w-auto items-center justify-between rounded-full border border-gray-300 bg-white px-4 py-2 shadow-sm">
                 <Pagination.Item>
                     <Pagination.PrevButton onclick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
-                        <span class="px-3 text-[#1D69D1] font-bold disabled:opacity-40">Prev</span>
+                        <span class="rounded-full border-2 border-[#1D69D1] px-4 py-2 font-semibold text-[#1D69D1] hover:bg-blue-50 disabled:opacity-40">Prev</span>
                     </Pagination.PrevButton>
                 </Pagination.Item>
 
@@ -172,9 +181,12 @@
 
                 <Pagination.Item>
                     <Pagination.NextButton onclick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>
-                        <span class="px-3 text-[#1D69D1] font-bold disabled:opacity-40">Next</span>
+                        <span class="rounded-full border-2 border-[#1D69D1] px-4 py-2 font-semibold text-[#1D69D1] hover:bg-blue-50 disabled:opacity-40">Next</span>
                     </Pagination.NextButton>
                 </Pagination.Item>
+                <div class="mr-4 text-sm whitespace-nowrap text-gray-600">
+					Showing {$displayedUsers.length} of {totalResults} results
+				</div>
             </Pagination.Content>
         {/snippet}
     </Pagination.Root>

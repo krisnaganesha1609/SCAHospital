@@ -34,7 +34,7 @@
 			</p>
 
 			<a
-				href="#get-started"
+				href="#beyond-medicine"
 				class="inline-block rounded-[40px] bg-[#1D69D1] px-6 py-3 text-white transition hover:bg-blue-700"
 			>
 				Discover Our Values.
@@ -43,7 +43,7 @@
 	</section>
 
 	<!-- HERO 2 -->
-	<section
+	<section id="beyond-medicine"
 		class="relative flex h-[340px] w-full items-center justify-center overflow-hidden text-white"
 	>
 		<!-- IMAGE RIGHT SIDE -->
@@ -77,7 +77,7 @@
 	</section>
 
 	<!-- COMMITMENT TITLE -->
-	<section class="py-16 text-center">
+	<section id="our-commitment" class="py-16 text-center">
 		<h2 class="text-3xl font-bold">Our Commitment</h2>
 	</section>
 

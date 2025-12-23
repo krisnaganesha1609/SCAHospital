@@ -19,16 +19,15 @@
 			<NavigationMenu.Link href="/" class="cursor-pointer">Home</NavigationMenu.Link>
 		</NavigationMenu.Item>
 		<NavigationMenu.Item
-			><NavigationMenu.Link class="cursor-pointer">Values</NavigationMenu.Link></NavigationMenu.Item
+			><NavigationMenu.Link href="#beyond-medicine" class="cursor-pointer">Values</NavigationMenu.Link></NavigationMenu.Item
 		>
 		<NavigationMenu.Item
-			><NavigationMenu.Link class="cursor-pointer">Announcements</NavigationMenu.Link
+			><NavigationMenu.Link href="#our-commitment" class="cursor-pointer">Commitments</NavigationMenu.Link
 			></NavigationMenu.Item
 		>
 		<NavigationMenu.Item
 			><NavigationMenu.Link href="/auth" class="cursor-pointer">Sign In</NavigationMenu.Link
 			></NavigationMenu.Item
 		>
-		<NavigationMenu.Item><Search color="#ffffff" /></NavigationMenu.Item>
 	</NavigationMenu.List>
 </NavigationMenu.Root>

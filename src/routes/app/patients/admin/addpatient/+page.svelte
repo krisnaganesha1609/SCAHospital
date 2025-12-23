@@ -252,7 +252,7 @@
 	</div>
 	<div class="flex justify-end border-t pt-4">
 		<Button
-			class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
+			class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white"
 			onclick={() => {
 				saveRecord();
 			}}

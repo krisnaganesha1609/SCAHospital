@@ -356,7 +356,7 @@
 					<ArrowLeft size={18} class="text-gray-600" />
 				</Button>
 				<div>
-					<h1 class="text-lg leading-tight font-bold text-gray-900">Edit Patient Details</h1>
+					<h1 class="text-lg leading-tight font-bold text-gray-900">Add Record - {patient?.getFullName ? patient.getFullName() : 'Patient'}</h1>
 					<p class="font-mono text-[11px] text-gray-400">ID: {user.getUserId()}</p>
 				</div>
 			</div>

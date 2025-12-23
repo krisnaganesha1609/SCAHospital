@@ -6,7 +6,7 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Command from '$lib/components/ui/command';
     import * as InputGroup from "$lib/components/ui/input-group";
-	import { Clock } from '@lucide/svelte';
+	import { ArrowLeft, Clock } from '@lucide/svelte';
 	import { type DateValue, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
 	import { CalendarDays, CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
@@ -131,14 +131,17 @@
 <div class="min-h-screen bg-gray-50 p-6">
 	<div class="mx-auto space-y-4">
 		<!-- top bar: back + title -->
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-3">
-				<a
-					href="/app/reservations/admin"
-					class="inline-block rounded-full border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100"
-					>← Back</a
-				>
-				<h1 class="text-xl font-semibold">Add Reservation</h1>
+		<div class="mb-6 flex items-center gap-4">
+			<Button
+				variant="ghost"
+				class="h-10 w-10 rounded-full border border-gray-200 bg-white p-0 shadow-sm hover:bg-gray-50"
+				onclick={() => history.back()}
+			>
+				<ArrowLeft size={18} class="text-gray-600" />
+			</Button>
+			<div>
+				<h1 class="text-lg leading-tight font-bold text-gray-900">Add Reservation</h1>
+				<p class="font-mono text-[11px] text-gray-400">Add a user to the clinic system</p>
 			</div>
 		</div>
 
@@ -307,7 +310,7 @@
 	</div>
 	<div class="flex justify-end border-t pt-4">
 		<Button
-			class="rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
+			class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white"
 			onclick={() => {
 				saveRecord();
 			}}

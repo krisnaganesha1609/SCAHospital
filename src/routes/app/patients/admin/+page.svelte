@@ -200,7 +200,7 @@
 						<div class="flex items-center justify-end">
 							<div></div>
 							<Button
-								class="mt-5 rounded-full bg-[#1D69D1] px-6 py-3 text-sm text-white"
+								class="mt-5 rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white"
 								onclick={() => {
 									// set store and persist to sessionStorage then navigate
 									persistSelectedPatient(patient);

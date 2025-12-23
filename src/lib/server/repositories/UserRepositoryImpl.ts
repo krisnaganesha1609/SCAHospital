@@ -35,6 +35,16 @@ export class UserRepositoryImpl implements UserRepository {
             console.error('Error updating user:', error);
             throw error;
         }
+
+        if (u.password) {
+            const { error: authError } = await this.supabase.auth.admin.updateUserById(id, {
+                password: u.password,
+            });
+            if (authError) {
+                console.error('Error updating user password:', authError);
+                throw authError;
+            }
+        }
         return Promise.resolve();
     }
     async fetchUsers(): Promise<User[]> {
@@ -61,7 +71,20 @@ export class UserRepositoryImpl implements UserRepository {
     searchUsers(query: string): Promise<any[]> {
         throw new Error('Method not implemented.');
     }
-    deleteUser(userId: uuid): Promise<void> {
-        throw new Error('Method not implemented.');
+    async deleteUser(userId: uuid): Promise<void> {
+        const { error} = await this.supabase
+            .from('users')
+            .delete()
+            .eq('id', userId);
+        if (error) {
+            console.error('Error deleting user:', error);
+            throw error;
+        }
+        const { error: authError } = await this.supabase.auth.admin.deleteUser(userId);
+        if (authError) {
+            console.error('Error deleting user from auth:', authError);
+            throw authError;
+        }
+        return Promise.resolve();
     }
 }

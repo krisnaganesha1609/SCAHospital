@@ -3,6 +3,7 @@ import type { roles } from "$lib/shared/types/type_def";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { UserRepositoryImpl } from "../repositories/UserRepositoryImpl";
 import type { UserService } from "./interfaces/UserService";
+import { includeIfNotEmpty } from "$lib/shared/utils/Utils";
 
 export class UserServiceImpl implements UserService {
     private userRepository: UserRepositoryImpl;
@@ -29,7 +30,18 @@ export class UserServiceImpl implements UserService {
         return usersData;
     }
     async updateUser(id: string, userData: any): Promise<void> {
-        await this.userRepository.updateExistingUser(id, userData);
+        const data = {
+            ...includeIfNotEmpty('full_name', userData.full_name),
+            ...includeIfNotEmpty('email', userData.email),
+            ...includeIfNotEmpty('role', userData.role),
+            ...includeIfNotEmpty('phone', userData.phone),
+            ...includeIfNotEmpty('password', userData.password),
+        }
+        await this.userRepository.updateExistingUser(id, data);
+        return Promise.resolve();
+    }
+    async deleteUser(id: string): Promise<void> {
+        await this.userRepository.deleteUser(id);
         return Promise.resolve();
     }
 }

@@ -178,21 +178,18 @@
 	</div>
 {/if}
 
-<!-- NAVBAR SECTION-->
 <NavigationMenu.Root
-	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
+	class={'sticky top-0 flex w-full max-w-full items-center justify-center bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
 >
-	<!-- keep NavigationMenu.List as container (positioning context) -->
 	<NavigationMenu.List class="flex items-center justify-center px-4 py-5">
-		<!-- ABSOLUTELY CENTERED LOGO (always centered regardless of other items) -->
-		<NavigationMenu.Item class="top-4.4 absolute left-1/2 -translate-x-1/2">
+		<NavigationMenu.Item class="top-4.4 left-1/2 -translate-x-1/2">
 			<InputGroup.Root
-				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
+				class="hidden w-96 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
 			>
 				<InputGroup.Input
 					bind:value={searchQuery}
-					placeholder="Find name, medical record..."
+					placeholder="Find medicine name, code..."
 					class="border-none bg-transparent text-sm outline-none placeholder:text-[#9CA3AF]"
 				/>
 				<InputGroup.Addon align="inline-end" class="rounded-full bg-white pr-1">
@@ -203,7 +200,7 @@
 	</NavigationMenu.List>
 </NavigationMenu.Root>
 
-<div class="min-h-[calc(100vh-64px)] p-4">
+<div class="mx-auto max-w-6xl">
 	<Item.Group>
 		{#each displayedPrescriptions as presc (presc.getId())}
 			<Accordion.Root type="single" class="mb-4 w-full">
@@ -212,7 +209,7 @@
 					class="w-full overflow-hidden rounded-lg border border-gray-300"
 				>
 					<Accordion.Trigger class="min-w-full hover:no-underline">
-						<Item.Root class="border-none bg-white p-4 shadow-sm">
+						<Item.Root class="border-none bg-white p-6 shadow-sm">
 							<Item.Content>
 								<Item.Description>Doctor</Item.Description>
 								<Item.Title class="flex items-center">
@@ -268,27 +265,31 @@
 						</Item.Root>
 					</Accordion.Trigger>
 
-					<Accordion.Content class="border-t border-gray-200 bg-gray-50 p-6">
-						<div class="mb-6 space-y-4">
-							<h4 class="flex items-center font-bold text-gray-700">
+					<Accordion.Content class="border-t border-gray-200 bg-gray-50 p-8">
+						<div class="mb-6">
+							<h4 class="mb-4 flex items-center text-sm font-bold tracking-tight text-gray-900">
 								<Pill size={18} class="mr-2 text-[#1D69D1]" /> Medicines In Prescription
 							</h4>
-							{#each presc.getPrescription().getPrescriptionItems() as item}
-								<div
-									class="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
-								>
-									<div>
-										<p class="font-bold">{item.getMedicineName()}</p>
-										<p class="text-xs text-gray-500">{item.getDosage()} • {item.getFrequency()}</p>
+							<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+								{#each presc.getPrescription().getPrescriptionItems() as item}
+									<div
+										class="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
+									>
+										<div>
+											<p class="font-bold">{item.getMedicineName()}</p>
+											<p class="text-xs text-gray-500">
+												{item.getDosage()} • {item.getFrequency()}
+											</p>
+										</div>
+										<div class="text-right">
+											<p class="text-sm font-medium">Qty: {item.getQuantity()}</p>
+											<p class="text-xs text-[#1D69D1]">
+												Rp {item.getSubtotalPrice().toLocaleString()}
+											</p>
+										</div>
 									</div>
-									<div class="text-right">
-										<p class="text-sm font-medium">Qty: {item.getQuantity()}</p>
-										<p class="text-xs text-[#1D69D1]">
-											Rp {item.getSubtotalPrice().toLocaleString()}
-										</p>
-									</div>
-								</div>
-							{/each}
+								{/each}
+							</div>
 						</div>
 
 						<div class="flex items-center justify-end space-x-4 border-t border-gray-200 pt-4">

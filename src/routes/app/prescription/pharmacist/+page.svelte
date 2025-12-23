@@ -219,10 +219,7 @@
 		<Item.Group>
 			{#each displayedPrescriptions as presc (presc.getId())}
 				<Accordion.Root type="single" class=" w-full">
-					<Accordion.Item
-						value={presc.getId()}
-						class="w-full rounded-lg border border-gray-300"
-					>
+					<Accordion.Item value={presc.getId()} class="w-full rounded-lg">
 						<Accordion.Trigger class="min-w-full hover:no-underline">
 							<Item.Root class="border-none bg-white p-6 shadow-sm">
 								<Item.Content>
@@ -264,7 +261,10 @@
 								<Item.Content>
 									<Item.Description>Total Cost</Item.Description>
 									<Item.Title class="text-[#1D69D1]"
-										>Rp {presc.getPrescription().getTotalCost().toLocaleString()}</Item.Title
+										>{presc.getPrescription().getTotalCost().toLocaleString('id-ID', {
+											style: 'currency',
+											currency: 'IDR' // Indonesian Rupiah
+										})}</Item.Title
 									>
 								</Item.Content>
 
@@ -292,10 +292,10 @@
 							</Item.Root>
 						</Accordion.Trigger>
 
-						<Accordion.Content class="border-t border-gray-200 bg-gray-50 p-8">
+						<Accordion.Content class="rounded-lg border border-gray-200 bg-white p-8">
 							<div class="mb-6">
 								<h4 class="mb-4 flex items-center text-sm font-bold tracking-tight text-gray-900">
-									<Pill size={18} class="mr-2 text-[#1D69D1]" /> Medicines In Prescription
+									<Pill size={18} class="mr-2 text-[#1D69D1]" /> Medicines Prescripted
 								</h4>
 								<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 									{#each presc.getPrescription().getPrescriptionItems() as item}
@@ -309,9 +309,15 @@
 												</p>
 											</div>
 											<div class="text-right">
-												<p class="text-sm font-medium">Qty: {item.getQuantity()}</p>
+												<p class="text-sm font-medium">
+													Qty: {item.getQuantity()}
+													{item.getMedicine().getUnitType()}
+												</p>
 												<p class="text-xs text-[#1D69D1]">
-													Rp {item.getSubtotalPrice().toLocaleString()}
+													{item.getSubtotalPrice().toLocaleString('id-ID', {
+														style: 'currency',
+														currency: 'IDR' // Indonesian Rupiah
+													})}
 												</p>
 											</div>
 										</div>

@@ -139,7 +139,7 @@
 		<NavigationMenu.Item class="flex items-center">
 			<Button
 				class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white shadow-sm hover:opacity-90"
-				onclick={() => goto('/app/medicine/admin/add')}
+				onclick={() => goto('/app/medicine/pharmacist/add')}
 			>
 				Add Medicine
 			</Button>
@@ -154,7 +154,7 @@
 				class="group relative flex w-full cursor-pointer items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md"
 				onclick={() => {
 					persistSelectedMedicine(medicine);
-					goto(`/app/medicine/admin/edit?id=${encodeURIComponent(medicine.getId())}`);
+					goto(`/app/medicine/pharmacist/edit?id=${encodeURIComponent(medicine.getId())}`);
 				}}
 			>
 				<div class="grid w-full grid-cols-1 gap-4 md:grid-cols-6 md:gap-2">

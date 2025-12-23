@@ -97,21 +97,30 @@
 			method="POST"
 			action="?/createUser"
 			use:enhance={() => {
-				// tetap pakai enhance; behaviour yang sama seperti sebelumnya
-				if (!validateForm()) return;
 				isSubmitting = true;
 				return async ({ result, update }) => {
 					isSubmitting = false;
+
 					if (result.type === 'success') {
 						toast.success('User created successfully');
-						goto('/app/user/admin');
-					} else {
-						toast.error('Create failed');
+						await goto('/app/user/admin');
+					} else if (result.type === 'redirect') {
+						// Type narrowing untuk redirect
+						await goto(result.location);
+					} else if (result.type === 'failure') {
+						// DI SINI TYPE NARROWING TERJADI
+						// Sekarang TypeScript tahu result.data itu ada
+						toast.error('Create failed', {
+							description: result.data?.message?.toString() || 'Check your input'
+						});
+					} else if (result.type === 'error') {
+						// Type narrowing untuk error tak terduga (500)
+						toast.error('Server error occurred');
 					}
+
 					await update();
 				};
 			}}
-			class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
 		>
 			<!-- no hidden id for create -->
 			<div class="grid grid-cols-3 gap-6">

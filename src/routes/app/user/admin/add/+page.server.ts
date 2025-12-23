@@ -3,12 +3,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { toPOJO } from '$lib/shared/utils/Utils';
 import type { roles } from '$lib/shared/types/type_def';
-
-// Untuk halaman create biasanya tidak butuh load user tertentu.
-// Namun jika mau mengirim data lain (mis. daftar role dari server) bisa di-return di load.
+import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async () => {
-	// nothing required for now; keep for future additions
 	return {};
 };
 
@@ -22,22 +19,19 @@ export const actions: Actions = {
 		const password = (formData.get('password') || '').toString();
 		const confirmPassword = (formData.get('confirmPassword') || '').toString();
 
-		// basic server-side validation
-		if (!email || !fullName || !role || !password) {
-			return { success: false, message: 'Missing required fields' };
-		}
-		if (password !== confirmPassword) {
-			return { success: false, message: 'Password mismatch' };
-		}
-
 		const userService = new UserServiceImpl(locals.supabase);
+        let isSuccess = false;
 
-		try {
-			await userService.createUser(fullName, password, role, phone, email);
-			return { success: true };
-		} catch (e) {
-			console.error('createUser failed', e);
-			return { success: false, message: 'Create user failed' };
-		}
+        try {
+            await userService.createUser(fullName, password, role, phone, email);
+            isSuccess = true;
+        } catch (e) {
+            console.error('createUser failed', e);
+            return { success: false, message: 'Create user failed' };
+        }
+
+        if (isSuccess) {
+            throw redirect(303, '/app/user/admin');
+        }
 	}
 };

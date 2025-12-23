@@ -8,7 +8,8 @@ export class MedicineRequest {
         private strength: string,
         private manufacturer: string,
         private stockQty: number,
-        private unitPrice: number
+        private unitPrice: number,
+        private unitType: string
     ) {}
 
     public getCode(): string {
@@ -32,6 +33,9 @@ export class MedicineRequest {
     public getUnitPrice(): number {
         return this.unitPrice;
     }
+    public getUnitType(): string {
+        return this.unitType;
+    }
     public toJson(): any {
         return {
             code: this.code,
@@ -41,6 +45,7 @@ export class MedicineRequest {
             manufacturer: this.manufacturer,
             stock_qty: this.stockQty,
             unit_price: this.unitPrice,
+            unit_type: this.unitType
         };
     }
 
@@ -53,6 +58,7 @@ export class MedicineRequest {
             json.manufacturer,
             json.stock_qty,
             json.unit_price,
+            json.unit_type
         );
     }
     
@@ -65,6 +71,7 @@ export class MedicineRequest {
             obj.manufacturer,
             obj.stockQty,
             obj.unitPrice,
+            obj.unitType
         );
     }
 }

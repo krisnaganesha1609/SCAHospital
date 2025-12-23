@@ -17,6 +17,7 @@
 	import { toast } from 'svelte-sonner';
 	import { PrescriptionItemsRequest } from '$lib/shared/utils/PrescriptionItems_Request.js';
 	import { redirect } from '@sveltejs/kit';
+	import { Eye, EyeOff, ArrowLeft, Save } from '@lucide/svelte';
 
 	const df = new DateFormatter('en-US', { dateStyle: 'long' });
 
@@ -39,7 +40,7 @@
 	// record form fields (no bind:value — we update with on:input)
 	let visitType = $state('');
 	let complaints = $state('');
-	let history = $state('');
+	let historyy = $state('');
 	let physicalExam = $state('');
 	let treatmentPlan = $state('');
 	let diagnosis = $state('');
@@ -166,7 +167,7 @@
 
 		if (!visitType.trim()) missing.push('Visit Type');
 		if (!complaints.trim()) missing.push('Primary Complaint');
-		if (!history.trim()) missing.push('History');
+		if (!historyy.trim()) missing.push('History');
 		if (!physicalExam.trim()) missing.push('Physical Examination');
 		if (!treatmentPlan.trim()) missing.push('Treatment Plan');
 		if (!diagnosis.trim()) missing.push('Diagnosis');
@@ -218,7 +219,7 @@
 			visit_date: new Date().toISOString(),
 			visit_type: visitType,
 			complaints,
-			history,
+			history: historyy,
 			physical_exam: physicalExam,
 			vitals,
 			procedures: '',
@@ -365,16 +366,19 @@
 <div class="min-h-screen bg-gray-50 p-6">
 		<div class="mx-auto space-y-4">
 			<!-- top bar: back + title -->
-			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-3">
-					<a
-						href="/app/patients/admin"
-						class="inline-block rounded-full border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100"
-						>← Back</a
-					>
-					<h1 class="text-xl font-semibold">Add Patient</h1>
-				</div>
+			<div class="mb-6 flex items-center gap-4">
+			<Button
+				variant="ghost"
+				class="h-10 w-10 rounded-full border border-gray-200 bg-white p-0 shadow-sm hover:bg-gray-50"
+				onclick={() => history.back()}
+			>
+				<ArrowLeft size={18} class="text-gray-600" />
+			</Button>
+			<div>
+				<h1 class="text-lg leading-tight font-bold text-gray-900">Create New Patient</h1>
+				<p class="font-mono text-[11px] text-gray-400">Add a patient to the clinic system</p>
 			</div>
+		</div>
 
 			<!-- RECORD FORM -->
 			<!-- PATIENT RESERVATION BLOCK -->

@@ -205,7 +205,7 @@
 									// set store and persist to sessionStorage then navigate
 									persistSelectedPatient(patient);
 									// include id in query just in case user wants direct link later
-									goto(`/app/patients/doctor/add?id=${encodeURIComponent(patient.getId())}`);
+									goto(`/app/patients/admin/add?id=${encodeURIComponent(patient.getId())}`);
 								}}
 							>
 								Add Record

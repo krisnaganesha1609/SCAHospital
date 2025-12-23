@@ -16,6 +16,7 @@
 	import { toast } from 'svelte-sonner';
 	import { PrescriptionItemsRequest } from '$lib/shared/utils/PrescriptionItems_Request.js';
 	import { redirect } from '@sveltejs/kit';
+	import { Eye, EyeOff, ArrowLeft, Save } from '@lucide/svelte';
 
 	const df = new DateFormatter('en-US', { dateStyle: 'long' });
 
@@ -30,7 +31,7 @@
 	// record form fields (no bind:value — we update with on:input)
 	let visitType = $state('');
 	let complaints = $state('');
-	let history = $state('');
+	let historyy = $state('');
 	let physicalExam = $state('');
 	let treatmentPlan = $state('');
 	let diagnosis = $state('');
@@ -147,7 +148,7 @@
 
 		if (!visitType.trim()) missing.push('Visit Type');
 		if (!complaints.trim()) missing.push('Primary Complaint');
-		if (!history.trim()) missing.push('History');
+		if (!historyy.trim()) missing.push('History');
 		if (!physicalExam.trim()) missing.push('Physical Examination');
 		if (!treatmentPlan.trim()) missing.push('Treatment Plan');
 		if (!diagnosis.trim()) missing.push('Diagnosis');
@@ -199,7 +200,7 @@
 			visit_date: new Date().toISOString(),
 			visit_type: visitType,
 			complaints,
-			history,
+			history: historyy,
 			physical_exam: physicalExam,
 			vitals,
 			procedures: '',
@@ -288,7 +289,7 @@
 				duration: r.duration,
 				quantity: r.quantity,
 				instructions: r.instruction,
-				subtotal_price: parseFloat(r.quantity) * r.medicine.getUnitPrice(),
+				subtotal_price: parseFloat(r.quantity) * r.medicine.getUnitPrice()
 			});
 		});
 
@@ -346,15 +347,17 @@
 <div class="min-h-screen bg-gray-50 p-6">
 	{#if patient}
 		<div class="mx-auto space-y-4">
-			<!-- top bar: back + title -->
-			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-3">
-					<a
-						href="/app/patients/doctor"
-						class="inline-block rounded-full border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100"
-						>← Back</a
-					>
-					<h1 class="text-xl font-semibold">Add Record — {patient.getFullName()}</h1>
+			<div class="mb-6 flex items-center gap-4">
+				<Button
+					variant="ghost"
+					class="h-10 w-10 rounded-full border border-gray-200 bg-white p-0 shadow-sm hover:bg-gray-50"
+					onclick={() => history.back()}
+				>
+					<ArrowLeft size={18} class="text-gray-600" />
+				</Button>
+				<div>
+					<h1 class="text-lg leading-tight font-bold text-gray-900">Edit Patient Details</h1>
+					<p class="font-mono text-[11px] text-gray-400">ID: {user.getUserId()}</p>
 				</div>
 			</div>
 
@@ -440,12 +443,12 @@
 						<!-- Middle -->
 						<div class="col-span-1 space-y-4">
 							<div>
-								<label for="history" class="block pb-2 text-xs text-black">History</label>
+								<label for="historyy" class="block pb-2 text-xs text-black">History</label>
 								<textarea
 									class="w-full rounded-md border px-3 py-2"
 									rows="3"
-									value={history}
-									oninput={(e) => (history = (e.target as HTMLTextAreaElement).value)}
+									value={historyy}
+									oninput={(e) => (historyy = (e.target as HTMLTextAreaElement).value)}
 									placeholder="Add history..."
 								></textarea>
 							</div>
@@ -700,12 +703,14 @@
 										<label for="rx.quantity" class="text-xs text-black">Quantity</label>
 										<div class="flex items-center justify-center">
 											<input
-											class="w-full rounded-l-md border px-3 py-2"
-											value={rx.quantity}
-											oninput={(e) => updatePrescriptionField(idx, 'quantity', e)}
-											placeholder="e.g., 21"
+												class="w-full rounded-l-md border px-3 py-2"
+												value={rx.quantity}
+												oninput={(e) => updatePrescriptionField(idx, 'quantity', e)}
+												placeholder="e.g., 21"
 											/>
-											<div class="text-md bg-gray-600 text-white rounded-r-md px-3 py-2">{rx.medicine === null ? '' : rx.medicine.getUnitType()}</div>
+											<div class="text-md rounded-r-md bg-gray-600 px-3 py-2 text-white">
+												{rx.medicine === null ? '' : rx.medicine.getUnitType()}
+											</div>
 										</div>
 									</div>
 									<div class="col-span-2">

@@ -273,7 +273,7 @@
 								</Item.Content>
 							</Item.Root>
 						</Accordion.Trigger>
-							<Accordion.Content class="flex flex-col items-end justify-end space-y-6">
+							<Accordion.Content class="flex flex-col justify-end space-y-6">
 								<div class="mb-6">
 									{#if reservation.getPatient().getMedicalRecord() === null || reservation.getPatient().getMedicalRecord()[0] === undefined}
 										<div class="p-6 text-center text-sm text-slate-500">

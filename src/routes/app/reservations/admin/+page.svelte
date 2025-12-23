@@ -167,7 +167,7 @@
 		}
 		toast.success('Reservation checked in successfully.');
 		// Refresh the page or update the reservation list accordingly
-		refreshAll();
+		window.location.reload();
 	}
 
 	async function cancelReservation(reservationId: string) {
@@ -182,7 +182,7 @@
 		}
 		toast.success('Reservation cancelled successfully.');
 		// Refresh the page or update the reservation list accordingly
-		refreshAll();
+		window.location.reload();
 	}
 
 	async function markAsDone(reservationId: string) {
@@ -197,7 +197,7 @@
 		}
 		toast.success('Reservation marked as done successfully.');
 		// Refresh the page or update the reservation list accordingly
-		refreshAll();
+		window.location.reload();
 	}
 </script>
 

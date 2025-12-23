@@ -6,17 +6,18 @@
 	import * as InputGroup from '$lib/components/ui/input-group';
 	import * as Item from '$lib/components/ui/item';
 	import * as Pagination from '$lib/components/ui/pagination';
-	import { Mars, SearchIcon, Venus } from '@lucide/svelte';
+	import { Info, Mars, SearchIcon, Venus } from '@lucide/svelte';
 	import { Reservation } from '$lib/shared/entities';
 	import type { Reservation as ReservationClass } from '$lib/shared/entities';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { format } from 'date-fns';
-	import { writable, derived, get } from 'svelte/store';
-	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
+	import { writable, derived } from 'svelte/store';
 	import type { reservationStatus } from '$lib/shared/types/type_def';
+	import { goto, refreshAll } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
 	import MedicalRecordCard from '$lib/shared/components/MedicalRecordCard.svelte';
 	import { reservationPaginationStore } from '$lib/shared/stores/pagination';
+	import { toast } from 'svelte-sonner';
 
 	/* =========================================================
 	   INITIAL DATA
@@ -41,8 +42,6 @@
 	/* =========================================================
 	   PAGINATION (no legacy $: — Svelte 5 compliant)
 	========================================================= */
-	// const PAGE_SIZE = 10;
-	// const currentPage = writable(1);
 	let { itemsPerPage, currentPage } = $reservationPaginationStore;
 	const perPage = itemsPerPage;
 	let siblingCount = 1;
@@ -82,23 +81,6 @@
 	statusFilter.subscribe(() => {
 		reservationPaginationStore.update((store) => ({ ...store, currentPage: 1 }));
 	});
-
-	// Generate page numbers (same logic as before)
-	// function getPageNumbers(current: number, total: number): (number | '...')[] {
-	// 	const pages: (number | '...')[] = [];
-	// 	if (total <= 7) {
-	// 		for (let i = 1; i <= total; i++) pages.push(i);
-	// 		return pages;
-	// 	}
-	// 	pages.push(1);
-	// 	if (current > 4) pages.push('...');
-	// 	const start = Math.max(2, current - 1);
-	// 	const end = Math.min(total - 1, current + 1);
-	// 	for (let i = start; i <= end; i++) pages.push(i);
-	// 	if (current + 2 < total - 1) pages.push('...');
-	// 	pages.push(total);
-	// 	return pages;
-	// }
 
 	// Go to page
 	function goToPage(n: number) {
@@ -164,13 +146,66 @@
 	function setTab(tab: StatusTab) {
 		statusFilter.set(tab);
 	}
+
+	let showCancelModal = $state(false);
+	function openCancelModal() {
+		showCancelModal = true;
+	}
+	function closeCancelModal() {
+		showCancelModal = false;
+	}
+
+	async function checkIn(reservationId: string) {
+		const response = await fetch('/api/receptionist/check-in', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ reservationId })
+		});
+		if (!response.ok) {
+			toast.error('Failed to check in reservation.');
+			return;
+		}
+		toast.success('Reservation checked in successfully.');
+		// Refresh the page or update the reservation list accordingly
+		window.location.reload();
+	}
+
+	async function cancelReservation(reservationId: string) {
+		const response = await fetch('/api/receptionist/cancel', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ reservationId })
+		});
+		if (!response.ok) {
+			toast.error('Failed to cancel reservation.');
+			return;
+		}
+		toast.success('Reservation cancelled successfully.');
+		// Refresh the page or update the reservation list accordingly
+		window.location.reload();
+	}
+
+	async function markAsDone(reservationId: string) {
+		const response = await fetch('/api/receptionist/done', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ reservationId })
+		});
+		if (!response.ok) {
+			toast.error('Failed to mark reservation as done.');
+			return;
+		}
+		toast.success('Reservation marked as done successfully.');
+		// Refresh the page or update the reservation list accordingly
+		window.location.reload();
+	}
 </script>
 
 <svelte:head>
 	<title>Reservations - SCA Hospital</title>
 </svelte:head>
 
-<!-- NAVBAR (copied style from patient.svelte) -->
+<!-- NAVBAR SECTION ARGH, NEED HELP PLOX -->
 <NavigationMenu.Root
 	class={'sticky top-0 z-0 flex w-full max-w-full items-center justify-end bg-white text-black shadow-md transition-transform duration-200 ' +
 		($navHidden ? '-translate-y-full' : 'translate-y-0')}
@@ -178,7 +213,7 @@
 	<!-- keep NavigationMenu.List as container (positioning context) -->
 	<NavigationMenu.List class="flex items-center justify-center px-4 py-5">
 		<!-- ABSOLUTELY CENTERED LOGO (always centered regardless of other items) -->
-		<NavigationMenu.Item class="absolute top-4.4 left-1/2 -translate-x-1/2">
+		<NavigationMenu.Item class="top-4.4 absolute left-1/2 -translate-x-1/2">
 			<InputGroup.Root
 				class="hidden w-72 rounded-full border border-[#E5E7EB] bg-white py-6 pr-3 pl-2 shadow-sm sm:flex"
 			>
@@ -193,12 +228,12 @@
 			</InputGroup.Root>
 		</NavigationMenu.Item>
 		<!-- RIGHT-ALIGNED SEARCH (kept inside NavigationMenu.Item) -->
-		<NavigationMenu.Item>
+		<NavigationMenu.Item class="flex items-center">
 			<Button
 				class="rounded-full bg-[#1D69D1] px-6 py-6 text-sm text-white shadow-sm hover:opacity-90"
-				onclick={() => goto('/app/reservations/receptionist/addreservation')}
+				onclick={() => goto('/app/reservations/admin/addreservation')}
 			>
-				New Reservation
+				Add New Reservation
 			</Button>
 		</NavigationMenu.Item>
 	</NavigationMenu.List>
@@ -267,12 +302,13 @@
 								<div class="col-span-0 flex justify-center">
 									<div class="h-10 w-px border-l border-gray-300"></div>
 								</div>
+
 								<Item.Content>
 									<Item.Description>Reservation Time</Item.Description>
 									<Item.Title
 										>{format(
 											new Date(reservation.getReservationTime()),
-											'dd MMMM yyyy'
+											'dd MMMM yyyy — HH:mm'
 										)}</Item.Title
 									>
 								</Item.Content>
@@ -286,21 +322,91 @@
 							</Item.Root>
 						</Accordion.Trigger>
 						<Accordion.Content class="flex flex-col items-end justify-end space-y-6">
-							<div class="mb-6">
-								{#if reservation.getPatient().getMedicalRecord() === null || reservation
-										.getPatient()
-										.getMedicalRecord()[0] === undefined}
-									<div class="p-6 text-center text-sm text-slate-500">
-										No medical record found for this patient.
-									</div>
-								{:else}
-									{#each reservation.getPatient().getMedicalRecord() as record (record.getId())}
-										<MedicalRecordCard {record} prescriptions={record.getPrescriptions() ?? null} />
-										<div class="mt-5"></div>
-									{/each}
-								{/if}
-							</div>
+							{#if reservation.getStatus() === 'Booked'}
+								<div class="mt-4 gap-2">
+									<Button
+										variant="destructive"
+										class="rounded-full border-3 border-red-600 bg-white px-5 py-5 text-red-600 hover:bg-gray-100"
+										onclick={openCancelModal}>Cancelled</Button
+									>
+									<Button
+										variant="default"
+										class="ml-3 rounded-full bg-[#164F9D] px-7 py-5"
+										onclick={() => checkIn(reservation.getId())}>Check In</Button
+									>
+								</div>
+							{:else if reservation.getStatus() === 'Checked In'}
+								<div class="mt-4 gap-2">
+									<Button
+										variant="default"
+										class="rounded-full bg-[#0C9D61] px-7 py-5"
+										onclick={() => markAsDone(reservation.getId())}>Done</Button
+									>
+								</div>
+							{/if}
 						</Accordion.Content>
+						{#if showCancelModal}
+							<!-- overlay -->
+							<div
+								class="fixed inset-0 z-50 bg-black/50"
+								onclick={closeCancelModal}
+								onkeydown={(e) => e.key === 'Escape' && closeCancelModal()}
+								role="button"
+								tabindex="0"
+							></div>
+
+							<!-- modal container -->
+							<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+								<div
+									class="relative w-full max-w-lg bg-white p-6 shadow-lg"
+									style="border-radius: 32px;"
+								>
+									<!-- header row: icon left, close-X right -->
+									<div class="mb-4 flex items-center justify-between">
+										<div
+											class="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8F0FA]"
+										>
+											<Info color="#1d69d1" size={24} />
+										</div>
+										<button
+											class="flex h-12 w-12 items-center justify-center rounded-full bg-[#F5F5F5] text-2xl font-bold text-black"
+											onclick={closeCancelModal}
+											aria-label="Close"
+										>
+											X
+										</button>
+									</div>
+
+									<!-- Log out text -->
+									<div class="flex flex-col space-y-2">
+										<h3 class="text-left text-2xl font-bold">Cancel this reservation?</h3>
+										<p class="text-left" style="color: #8E8E8E;">
+											This action will mark the reservation as Cancelled. It cannot be undone.
+										</p>
+										<!-- Dummy Text -->
+										<p class="text-left"><br /></p>
+									</div>
+
+									<!-- log out button -->
+									<div class="mt-4 flex w-full justify-end gap-5">
+										<button
+											class="rounded-full bg-[#1d69d1] px-6 py-2 font-medium text-white hover:bg-[#155ab8]"
+											onclick={closeCancelModal}
+										>
+											Keep Reservation
+										</button>
+										<button
+											class="rounded-full bg-[#EC2D30] px-6 py-2 font-medium text-white hover:bg-[#B22222]"
+											onclick={() => {
+												cancelReservation(reservation.getId());
+											}}
+										>
+											Yes, Cancel It
+										</button>
+									</div>
+								</div>
+							</div>
+						{/if}
 					</Accordion.Item>
 				</Accordion.Root>
 			{/each}
@@ -367,6 +473,8 @@
 		{/snippet}
 	</Pagination.Root>
 </div>
+
+<!-- log out pop-up -->
 
 <style>
 	:global(.-translate-y-full) {

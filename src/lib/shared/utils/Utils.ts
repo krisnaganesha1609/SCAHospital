@@ -16,3 +16,23 @@ export abstract class Utils {
 export function toPOJO<T>(value: T): T {
   return JSON.parse(JSON.stringify(value))
 }
+
+export const includeIfNotEmpty = <T>(key: string, value?: T) =>
+    value !== undefined && value !== '' ? { [key]: value } : {};
+
+export function generateSCAMedRec(): string {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const digits = '0123456789';
+
+    let result = 'SCA-';
+
+    for (let i = 0; i < 10; i++) {
+        result += digits[Math.floor(Math.random() * digits.length)];
+
+        if ((i + 1) % 2 === 0 && i !== 9) {
+            result += letters[Math.floor(Math.random() * letters.length)];
+        }
+    }
+
+    return result;
+}

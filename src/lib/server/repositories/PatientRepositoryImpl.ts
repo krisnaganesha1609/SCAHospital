@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { Patient } from '../../shared/entities/Patient';
 import type { PatientRepository } from './interfaces/PatientRepository';
 import type { uuid } from '$lib/shared/types/type_def';
+import { generateSCAMedRec } from '$lib/shared/utils/Utils';
 export class PatientRepositoryImpl implements PatientRepository {
     private supabase: SupabaseClient;
     constructor(supabase: SupabaseClient) {
@@ -39,19 +40,19 @@ export class PatientRepositoryImpl implements PatientRepository {
         }
         return Promise.resolve(Patient.fromJson(data));
     }
-    async createNewPatient( p: Patient): Promise<void> {
+    async createNewPatient(p: Patient): Promise<void> {
         const payload = {
-            medicalRecordNumber: p.getMedicalRecordNumber() ?? '',
-            fullName: p.getFullName() ?? '',
-            dateOfBirth: p.getDateOfBirth() ?? null,
+            medical_record_number: generateSCAMedRec(),
+            full_name: p.getFullName() ?? '',
+            date_of_birth: p.getDateOfBirth() ?? null,
             gender: p.getGender() ?? '',
             address: p.getAddress() ?? '',
             phone: p.getPhone() ?? '',
-            bloodType: p.getBloodType() ?? '',
+            blood_type: p.getBloodType() ?? '',
             allergies: p.getAllergies() ?? '',
-            emergencyContact: p.getEmergencyContact() ?? {},
+            emergency_contact: p.getEmergencyContact() ?? null,
         }
-        const { error } = await this.supabase.from('patients').insert([payload]);
+        const { error } = await this.supabase.from('patients').insert(payload);
         if (error) {
             console.error('Error creating new patient:', error);
             throw error;

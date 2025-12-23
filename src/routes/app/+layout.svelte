@@ -9,7 +9,8 @@
 		House,
 		LogOut,
 		User,
-		Pill
+		Pill,
+		PillBottle
 	} from '@lucide/svelte';
 	import logo from '$lib/assets/logo-white.svg';
 	import { page } from '$app/state';
@@ -275,6 +276,31 @@
 								{/if}
 							</a>
 						</li>
+						<li
+							class={page.url.pathname.includes('/app/medicine/pharmacist')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/medicine/pharmacist"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} flex items-center px-2 py-1.5"
+							>
+								<PillBottle
+									color={page.url.pathname.includes('/app/medicine/pharmacist')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/medicine/pharmacist')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Medicine</span
+									>
+								{/if}
+							</a>
+						</li>
 						<li>
 							<button
 								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group flex items-center px-2 py-1.5 {isCollapsed
@@ -357,6 +383,31 @@
 										class="ms-3 {page.url.pathname.includes('/app/prescription/admin')
 											? ' text-[#1754a7]'
 											: 'text-white'}">Prescription</span
+									>
+								{/if}
+							</a>
+						</li>
+						<li
+							class={page.url.pathname.includes('/app/medicine/admin')
+								? 'rounded-[20px] bg-[#e8f0fa] py-2'
+								: ''}
+						>
+							<a
+								href="/app/medicine/admin"
+								class="text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group {isCollapsed
+									? 'justify-center'
+									: 'pl-4'} flex items-center px-2 py-1.5"
+							>
+								<PillBottle
+									color={page.url.pathname.includes('/app/medicine/admin')
+										? '#1754a7'
+										: 'white'}
+								/>
+								{#if !isCollapsed}
+									<span
+										class="ms-3 {page.url.pathname.includes('/app/medicine/admin')
+											? ' text-[#1754a7]'
+											: 'text-white'}">Medicine</span
 									>
 								{/if}
 							</a>

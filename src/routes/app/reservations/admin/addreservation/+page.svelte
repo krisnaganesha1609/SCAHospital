@@ -134,7 +134,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<a
-					href="/app/patients/admin"
+					href="/app/reservations/admin"
 					class="inline-block rounded-full border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100"
 					>← Back</a
 				>

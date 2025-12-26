@@ -6,7 +6,7 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Select from '$lib/components/ui/select';
 	import { Mars, Venus } from '@lucide/svelte';
-	import { type DateValue, DateFormatter, getLocalTimeZone } from '@internationalized/date';
+	import { type DateValue, CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
 	import { CalendarDays } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
@@ -242,6 +242,7 @@
 								type="single"
 								initialFocus
 								captionLayout="dropdown"
+								maxValue={new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate())}
 								bind:value={birthDate}
 							/>
 						</Popover.Content>

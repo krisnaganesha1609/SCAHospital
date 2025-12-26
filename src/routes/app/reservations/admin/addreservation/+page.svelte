@@ -7,7 +7,7 @@
 	import * as Command from '$lib/components/ui/command';
     import * as InputGroup from "$lib/components/ui/input-group";
 	import { ArrowLeft, Clock } from '@lucide/svelte';
-	import { type DateValue, DateFormatter, getLocalTimeZone } from '@internationalized/date';
+	import { type DateValue, CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
 	import { CalendarDays, CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
 	import { format } from 'date-fns';
@@ -263,6 +263,7 @@
 									type="single"
 									initialFocus
 									captionLayout="dropdown"
+									minValue={new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate() + 1)}
 									bind:value={reservationDate}
 								/>
 							</Popover.Content>

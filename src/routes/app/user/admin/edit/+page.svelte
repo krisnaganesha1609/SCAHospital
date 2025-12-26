@@ -14,6 +14,10 @@
 	let email = $state(user.getEmail());
 	let role = $state(user.getRole() as string);
 	let phoneNumber = $state(user.getPhone());
+	let password = $state('');
+	let confirmPassword = $state('');
+	let showPassword = $state(false);
+	let showConfirmPassword = $state(false);
 
 	let isSubmitting = $state(false);
 	let isDeleting = $state(false);
@@ -51,6 +55,20 @@
 			method="POST"
 			action="?/updateUser"
 			use:enhance={() => {
+				if (password !== '' || confirmPassword !== '') {
+					if (password.length < 6) {
+						toast.error('Password too short', {
+							description: 'Password minimal harus 6 karakter.'
+						});
+						return;
+					}
+					if (password !== confirmPassword) {
+						toast.error('Password Mismatch', {
+							description: 'Password and Confirm Password do not match.'
+						});
+						return;
+					}
+				}
 				isSubmitting = true;
 				return async ({ result, update }) => {
 					isSubmitting = false;
@@ -109,6 +127,62 @@
 						bind:value={phoneNumber}
 						class="h-12 rounded-xl border border-gray-300 px-4 text-sm focus:border-[#1D69D1] focus:outline-none"
 					/>
+				</div>
+				<!-- Password -->
+				<div class="flex flex-col gap-2">
+					<label for="password" class="px-1 text-xs font-semibold text-gray-600">Password</label>
+					<div class="relative">
+						<input
+							name="password"
+							id="password"
+							type={showPassword ? 'text' : 'password'}
+							autocomplete="new-password"
+							class="h-12 w-full rounded-xl border border-gray-300 bg-white px-4 pr-12 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-[#1D69D1] focus:ring-2 focus:ring-[#1D69D1]/10 focus:outline-none"
+							bind:value={password}
+							placeholder="••••••••"
+						/>
+						<button
+							type="button"
+							class="absolute top-1/2 right-0 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-gray-500 hover:text-[#1D69D1]"
+							onclick={() => (showPassword = !showPassword)}
+							tabindex="-1"
+						>
+							{#if showPassword}
+								<EyeOff size={18} />
+							{:else}
+								<Eye size={18} />
+							{/if}
+						</button>
+					</div>
+				</div>
+
+				<div class="flex flex-col gap-2">
+					<label for="confirmPassword" class="px-1 text-xs font-semibold text-gray-600"
+						>Confirm Password</label
+					>
+					<div class="relative">
+						<input
+							name="confirmPassword"
+							id="confirmPassword"
+							type={showConfirmPassword ? 'text' : 'password'}
+							autocomplete="new-password"
+							class="h-12 w-full rounded-xl border border-gray-300 bg-white px-4 pr-12 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-[#1D69D1] focus:ring-2 focus:ring-[#1D69D1]/10 focus:outline-none"
+							bind:value={confirmPassword}
+							placeholder="••••••••"
+						/>
+						<button
+							type="button"
+							class="absolute top-1/2 right-0 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center text-gray-500 hover:text-[#1D69D1]"
+							onclick={() => (showConfirmPassword = !showConfirmPassword)}
+							tabindex="-1"
+						>
+							{#if showConfirmPassword}
+								<EyeOff size={18} />
+							{:else}
+								<Eye size={18} />
+							{/if}
+						</button>
+					</div>
 				</div>
 			</div>
 		</form>

@@ -15,13 +15,11 @@ export class UserServiceImpl implements UserService {
     async createUser(fullName: string, password: string, role: roles, phone: string, email: string): Promise<uuid> {
         const userPayload = {
             full_name: fullName,
-            password: password, // Pastikan Repository menghandle auth.signup jika ini password
+            password: password,
             role: role,
             phone: phone,
             email: email
         };
-
-        // Pastikan tidak ada pemanggilan .single() yang dipaksakan jika data belum tentu ada
         const userId = await this.userRepository.createNewUser(userPayload);
         return Promise.resolve(userId);
     }
@@ -34,23 +32,15 @@ export class UserServiceImpl implements UserService {
         return usersData;
     }
     async updateUser(id: string, userData: any): Promise<void> {
-
-        // Logic Metadata (Pastikan KEY sesuai dengan kolom di DB)
         const data = {
-            full_name: userData.full_name,
-            email: userData.email,
-            role: userData.role,
-            phone: userData.phone,
+            ...includeIfNotEmpty('full_name', userData.full_name),
+            ...includeIfNotEmpty('email', userData.email),
+            ...includeIfNotEmpty('role', userData.role),
+            ...includeIfNotEmpty('phone', userData.phone),
+            ...includeIfNotEmpty('password', userData.password),
         };
+        await this.userRepository.updateExistingUser(id, data);
 
-        // Bersihkan data yang undefined/empty agar tidak menimpa data lama dengan NULL
-        const cleanData = Object.fromEntries(
-            Object.entries(data).filter(([_, v]) => v !== undefined && v !== '')
-        );
-
-        if (Object.keys(cleanData).length > 0) {
-            await this.userRepository.updateExistingUser(id, cleanData);
-        }
     }
     async deleteUser(id: string): Promise<void> {
         await this.userRepository.deleteUser(id);

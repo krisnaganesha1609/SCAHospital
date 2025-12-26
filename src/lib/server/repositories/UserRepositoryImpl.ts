@@ -7,7 +7,7 @@ export class UserRepositoryImpl implements UserRepository {
     constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
     }
-    async createNewUser(u: any): Promise<void> {
+    async createNewUser(u: any): Promise<uuid> {
         const { data, error } = await this.supabase.auth.signUp({
             email: u.email,
             password: u.password,
@@ -28,6 +28,7 @@ export class UserRepositoryImpl implements UserRepository {
             throw insertError;
         }
         this.setRole(data.user?.id as uuid, u.role);
+        return data.user?.id as uuid;
     }
     async updateExistingUser(id: uuid, u: any): Promise<void> {
         const { error } = await this.supabase.from('users').update(u).eq('id', id);

@@ -1,5 +1,5 @@
 import { User } from "$lib/shared/entities/User";
-import type { roles } from "$lib/shared/types/type_def";
+import type { roles, uuid } from "$lib/shared/types/type_def";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { UserRepositoryImpl } from "../repositories/UserRepositoryImpl";
 import type { UserService } from "./interfaces/UserService";
@@ -12,7 +12,7 @@ export class UserServiceImpl implements UserService {
         this.supabase = supabase;
         this.userRepository = new UserRepositoryImpl(supabase);
     }
-    async createUser(fullName: string, password: string, role: roles, phone: string, email: string): Promise<void> {
+    async createUser(fullName: string, password: string, role: roles, phone: string, email: string): Promise<uuid> {
         const userPayload = {
             full_name: fullName,
             password: password, // Pastikan Repository menghandle auth.signup jika ini password
@@ -22,7 +22,8 @@ export class UserServiceImpl implements UserService {
         };
 
         // Pastikan tidak ada pemanggilan .single() yang dipaksakan jika data belum tentu ada
-        await this.userRepository.createNewUser(userPayload);
+        const userId = await this.userRepository.createNewUser(userPayload);
+        return Promise.resolve(userId);
     }
     async assignRoleToUser(userId: string, role: roles): Promise<void> {
         await this.userRepository.setRole(userId, role);

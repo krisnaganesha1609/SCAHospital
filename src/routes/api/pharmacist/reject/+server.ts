@@ -1,4 +1,5 @@
 import { PrescriptionServiceImpl } from '$lib/server/services/PrescriptionServiceImpl';
+import { AuditLogsRequest } from '$lib/shared/utils/AuditLogs_Request';
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 
@@ -24,6 +25,26 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
             console.error(`Failed to update stock for medicine ${medicine.name}:`, error);
         }
     });
+
+    const logs: AuditLogsRequest = new AuditLogsRequest(
+        locals.user?.id || '',
+        'rejecting',
+        'prescriptions',
+        prescription_id,
+        ''
+    );
+
+    const auditResponse = await fetch('/api/log', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(logs)
+    });
+
+    if (!auditResponse.ok) {
+        console.error('Failed to record audit log for rejecting prescription');
+    }
 
     return json({ success: true });
 };

@@ -14,7 +14,7 @@ export class MedicineServiceImpl implements MedicineService {
         const data = await this.medicineRepository.listMedicines();
         return data;
     }
-    async registerMedicine(medicine: MedicineRequest): Promise<void> {
+    async registerMedicine(medicine: MedicineRequest): Promise<uuid> {
         const payload: MedicineRequest = new MedicineRequest(
             generateMedicineCode(),
             medicine.getName(),
@@ -25,8 +25,8 @@ export class MedicineServiceImpl implements MedicineService {
             medicine.getUnitPrice(),
             medicine.getUnitType()
         );
-        await this.medicineRepository.createMedicine(payload.toJson());
-        return Promise.resolve();
+        const id = await this.medicineRepository.createMedicine(payload.toJson());
+        return Promise.resolve(id);
     }
     async deleteMedicine(id: uuid): Promise<void> {
         await this.medicineRepository.deleteMedicine(id);

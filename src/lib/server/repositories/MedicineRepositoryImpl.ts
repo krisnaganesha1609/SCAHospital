@@ -1,20 +1,22 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { Medicine } from '../../shared/entities/Medicine';
 import type { MedicineRepository } from './interfaces/MedicineRepository';
+import type { uuid } from '$lib/shared/types/type_def';
 export class MedicineRepositoryImpl implements MedicineRepository {
     private supabase: SupabaseClient;
     constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
     }
-    async createMedicine(data: any): Promise<void> {
-        const { error } = await this.supabase
+    async createMedicine(payload: any): Promise<uuid> {
+        const { data, error } = await this.supabase
             .from('medicines')
-            .insert(data);
+            .insert(payload)
+            .select();
         if (error) {
             console.error('Error creating medicine:', error);
             throw error;
         }
-        return Promise.resolve();
+        return Promise.resolve(data[0].id);
     }
     getMedicineById(id: string): Promise<any> {
         throw new Error('Method not implemented.');

@@ -4,7 +4,7 @@ import type { uuid } from "$lib/shared/types/type_def";
 export abstract class PatientService {
     abstract register(
         data: Patient
-    ): Promise<void>;
+    ): Promise<uuid>;
 
     abstract update(
         patientId: uuid,

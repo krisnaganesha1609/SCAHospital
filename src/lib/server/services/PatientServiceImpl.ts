@@ -9,7 +9,7 @@ export class PatientServiceImpl implements PatientService {
     constructor(supabase: SupabaseClient) {
         this.patientRepository = new PatientRepositoryImpl(supabase);
     }
-    register(data: any): Promise<void> {
+    register(data: any): Promise<uuid> {
         const patient: Patient = Patient.fromJson(data);
         return this.patientRepository.createNewPatient(patient);
     }

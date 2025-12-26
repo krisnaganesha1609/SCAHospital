@@ -2,6 +2,7 @@ import { UserServiceImpl } from "$lib/server/services/UserServiceImpl";
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 import { toPOJO } from '$lib/shared/utils/Utils';
+import { AuditLogsRequest } from "$lib/shared/utils/AuditLogs_Request";
 
 export const load: PageServerLoad = async ({ url, locals }) => {
     const id = url.searchParams.get('id');
@@ -20,7 +21,7 @@ export const actions: Actions = {
     updateUser: async ({ request, locals }) => {
         const formData = await request.formData();
         const id = formData.get('id') as string;
-        
+
         const userData = {
             // Sesuaikan key dengan yang diharapkan UserServiceImpl (snake_case)
             full_name: formData.get('fullName')?.toString(),
@@ -30,9 +31,28 @@ export const actions: Actions = {
         };
 
         const userService = new UserServiceImpl(locals.supabase);
-        
+
         try {
             await userService.updateUser(id, userData);
+            const logs: AuditLogsRequest = new AuditLogsRequest(
+                locals.user?.id || '',
+                'update',
+                'users',
+                id,
+                ''
+            );
+
+            const auditResponse = await fetch('/api/log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(logs)
+            });
+
+            if (!auditResponse.ok) {
+                console.error('Failed to record audit log for updating user');
+            }
             return { success: true }; // Berhasil
         } catch (e) {
             console.error("Server Action Error:", e);
@@ -49,6 +69,25 @@ export const actions: Actions = {
         try {
             await userService.deleteUser(id);
             isSuccess = true;
+            const logs: AuditLogsRequest = new AuditLogsRequest(
+                locals.user?.id || '',
+                'delete',
+                'users',
+                id,
+                ''
+            );
+
+            const auditResponse = await fetch('/api/log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(logs)
+            });
+
+            if (!auditResponse.ok) {
+                console.error('Failed to record audit log for deleting user');
+            }
         } catch (e) {
             console.error("Delete Error:", e);
             return { success: false, message: "Delete failed" };

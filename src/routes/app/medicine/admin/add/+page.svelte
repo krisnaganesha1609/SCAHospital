@@ -5,6 +5,10 @@
     import { toast } from 'svelte-sonner';
     import { enhance } from '$app/forms';
     import { goto } from '$app/navigation';
+	import { AuditLogsRequest } from '$lib/shared/utils/AuditLogs_Request';
+
+    let { data } = $props();
+    let { user } = $derived(data);
 
     // State menggunakan Svelte 5 runes
     let name = $state('');

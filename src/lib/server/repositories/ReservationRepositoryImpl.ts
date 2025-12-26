@@ -1,4 +1,5 @@
 import { Reservation } from "$lib/shared/entities/Reservation";
+import type { uuid } from "$lib/shared/types/type_def";
 import type { ReservationRepository } from "./interfaces/ReservationRepository";
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -7,15 +8,15 @@ export class ReservationRepositoryImpl implements ReservationRepository {
     constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
     }
-    async createReservation(data: any): Promise<void> {
-        const { error } = await this.supabase
+    async createReservation(payload: any): Promise<uuid> {
+        const { data, error } = await this.supabase
             .from('reservations')
-            .insert(data);
+            .insert(payload).select('id');
         if (error) {
             console.error('Error creating reservation:', error);
             throw error;
         }
-        return Promise.resolve();
+        return Promise.resolve(data[0].id);
     }
     getReservationById(id: string): Promise<any> {
         throw new Error("Method not implemented.");

@@ -4,7 +4,7 @@ import type { AuditLogsService } from "./interfaces/AuditLogsService";
 import type { AuditLogsRequest } from "$lib/shared/utils/AuditLogs_Request";
 import { AuditLogsRepositoryImpl } from "../repositories/AuditLogsRepositoryImpl";
 
-class AuditLogsServiceImpl implements AuditLogsService {
+export class AuditLogsServiceImpl implements AuditLogsService {
     private auditLogsRepository: AuditLogsRepository;
     constructor(supabase: SupabaseClient) {
         this.auditLogsRepository = new AuditLogsRepositoryImpl(supabase);

@@ -13,7 +13,6 @@ export class Patient extends Utils{
         private phone: string,
         private bloodType: string,
         private allergies: string,
-        private emergencyContact: JsonObject,
         private createdAt: Date,
         private updatedAt: Date,
         private medicalRecord: MedicalRecord[]
@@ -46,9 +45,6 @@ export class Patient extends Utils{
     public getAllergies(): string {
         return this.allergies;
     }
-    public getEmergencyContact(): JsonObject {
-        return this.emergencyContact;
-    }
     public getCreatedAt(): Date {
         return this.createdAt;
     }
@@ -70,7 +66,6 @@ export class Patient extends Utils{
             phone: this.phone,
             blood_type: this.bloodType,
             allergies: this.allergies,
-            emergency_contact: this.emergencyContact,
             created_at: this.createdAt
         };
     }
@@ -86,7 +81,6 @@ export class Patient extends Utils{
             json.phone,
             json.blood_type,
             json.allergies,
-            json.emergency_contact,
             json.created_at,
             json.updated_at,
             json.medical_records ? json.medical_records.map((record: any) => MedicalRecord.fromJson(record)) : []
@@ -104,7 +98,6 @@ export class Patient extends Utils{
             obj.phone,
             obj.bloodType,
             obj.allergies,
-            obj.emergencyContact,
             obj.createdAt,
             obj.updatedAt,
             obj.medicalRecord ? obj.medicalRecord.map((record: any) => MedicalRecord.fromPOJO(record)) : []

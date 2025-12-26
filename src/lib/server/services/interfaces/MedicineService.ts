@@ -4,7 +4,7 @@ import type { MedicineRequest } from "$lib/shared/utils/Medicine_Request";
 
 export abstract class MedicineService {
     abstract listMedicines(): Promise<Medicine[]>;
-    abstract registerMedicine(medicine: MedicineRequest): Promise<void>;
+    abstract registerMedicine(medicine: MedicineRequest): Promise<uuid>;
     abstract deleteMedicine(id: uuid): Promise<void>;
     abstract updateStock(id: uuid, qty: number): Promise<void>;
 }

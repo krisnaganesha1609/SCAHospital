@@ -4,35 +4,72 @@ import { toPOJO } from '$lib/shared/utils/Utils';
 
 export const load: PageServerLoad = async ({ locals }) => {
     const service = new PrescriptionServiceImpl(locals.supabase);
-    const listPrescriptions = await service.getPharmacyApprovalsList(); 
-    
-    return { 
-        prescriptions: toPOJO(listPrescriptions) 
+    const listPrescriptions = await service.getPharmacyApprovalsList();
+
+    return {
+        prescriptions: toPOJO(listPrescriptions)
     };
 };
 
 export const actions: Actions = {
     approve: async ({ request, locals }) => {
         const formData = await request.formData();
-        const prescriptionId = formData.get('prescriptionId') as string; 
+        const prescriptionId = formData.get('prescriptionId') as string;
         const pharmacyApprovalId = formData.get('pharmacyApprovalId') as string;
         const pharmacistId = formData.get('pharmacistId') as string;
-        const service = new PrescriptionServiceImpl(locals.supabase);
-        await service.approvePrescription(prescriptionId, pharmacyApprovalId, pharmacistId);
+
+        const response = await fetch('/api/pharmacist/approve', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prescriptionId,
+                pharmacyApprovalId,
+                pharmacistId
+            })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to approve prescription');
+        }
     },
     dispense: async ({ request, locals }) => {
         const formData = await request.formData();
-        const prescriptionId = formData.get('prescriptionId') as string; 
+        const prescriptionId = formData.get('prescriptionId') as string;
         const pharmacyApprovalId = formData.get('pharmacyApprovalId') as string;
-        const service = new PrescriptionServiceImpl(locals.supabase);
-        await service.markDispensed(prescriptionId, pharmacyApprovalId);
+
+        const response = await fetch('/api/pharmacist/dispense', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prescriptionId,
+                pharmacyApprovalId
+            })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to dispense prescription');
+        }
     },
     cancel: async ({ request, locals }) => {
         const formData = await request.formData();
         const prescriptionId = formData.get('prescriptionId') as string;
         const pharmacyApprovalId = formData.get('pharmacyApprovalId') as string;
         const cancelReason = formData.get('cancelReason') as string || 'No reason provided';
-        const service = new PrescriptionServiceImpl(locals.supabase);
-        await service.rejectPrescription(prescriptionId, pharmacyApprovalId, cancelReason);
+        const response = await fetch('/api/pharmacist/cancel', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prescriptionId,
+                pharmacyApprovalId,
+                cancelReason
+            })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to cancel prescription');
+        }
     }
 };

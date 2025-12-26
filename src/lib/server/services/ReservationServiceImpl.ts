@@ -20,7 +20,7 @@ export class ReservationServiceImpl implements ReservationService {
         }
         return reservations;
     }
-    registerReservation(reservation: ReservationRequest): Promise<void> {
+    registerReservation(reservation: ReservationRequest): Promise<uuid> {
         const data = reservation.toJson();
         return this.reservationRepository.createReservation(data);
     }

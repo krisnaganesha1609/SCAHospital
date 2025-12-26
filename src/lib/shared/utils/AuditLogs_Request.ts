@@ -1,5 +1,4 @@
 import type { uuid } from "../types/type_def";
-import type { MedicineRequest } from "./Medicine_Request";
 
 export class AuditLogsRequest {
     constructor(

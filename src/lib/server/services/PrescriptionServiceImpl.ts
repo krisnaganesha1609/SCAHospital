@@ -1,4 +1,3 @@
-import type { PrescriptionItems } from "$lib/shared/entities/PrescriptionItems";
 import type { uuid } from "$lib/shared/types/type_def";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { PrescriptionRepositoryImpl } from "../repositories/PrescriptionRepositoryImpl";
@@ -6,7 +5,6 @@ import type { PrescriptionService } from "./interfaces/PrescriptionService";
 import { PrescriptionItemsRepositoryImpl } from "../repositories/PrescriptionItemsRepositoryImpl";
 import { PharmacyApprovalRepositoryImpl } from "../repositories/PharmacyApprovalRepositoryImpl";
 import type { PrescriptionItemsRequest } from "$lib/shared/utils/PrescriptionItems_Request";
-import { MedicineRepositoryImpl } from "../repositories/MedicineRepositoryImpl";
 import { PharmacyApproval } from "$lib/shared/entities";
 
 export class PrescriptionServiceImpl implements PrescriptionService {
@@ -23,7 +21,7 @@ export class PrescriptionServiceImpl implements PrescriptionService {
         const data = await this.pharmacyApprovalRepository.findAll();
         return data.map((item) => PharmacyApproval.fromJson(item));
     }
-    async issuePrescription(medicalRecordId: uuid, doctorId: uuid, notes: string, medications: PrescriptionItemsRequest[]): Promise<void> {
+    async issuePrescription(medicalRecordId: uuid, doctorId: uuid, notes: string, medications: PrescriptionItemsRequest[]): Promise<uuid> {
         console.log("Issuing prescription with medications:", medications);
         let prescriptionPayload: any = {
             medical_record_id: medicalRecordId,
@@ -56,7 +54,7 @@ export class PrescriptionServiceImpl implements PrescriptionService {
             notes: '',
         };
         await this.pharmacyApprovalRepository.createPharmacyApproval(approvalPayload);
-        return Promise.resolve();
+        return Promise.resolve(prescriptionId);
     }
     async approvePrescription(prescription_id: uuid, pharmacy_approval_id: uuid, pharmacist_id: uuid): Promise<void> {
         await this.pharmacyApprovalRepository.update(pharmacy_approval_id, {

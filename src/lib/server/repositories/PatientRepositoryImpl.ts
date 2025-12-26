@@ -40,7 +40,7 @@ export class PatientRepositoryImpl implements PatientRepository {
         }
         return Promise.resolve(Patient.fromJson(data));
     }
-    async createNewPatient(p: Patient): Promise<void> {
+    async createNewPatient(p: Patient): Promise<uuid> {
         const payload = {
             medical_record_number: generateSCAMedRec(),
             full_name: p.getFullName() ?? '',
@@ -50,13 +50,12 @@ export class PatientRepositoryImpl implements PatientRepository {
             phone: p.getPhone() ?? '',
             blood_type: p.getBloodType() ?? '',
             allergies: p.getAllergies() ?? '',
-            emergency_contact: p.getEmergencyContact() ?? null,
         }
-        const { error } = await this.supabase.from('patients').insert(payload);
+        const { data, error } = await this.supabase.from('patients').insert(payload).select();
         if (error) {
             console.error('Error creating new patient:', error);
             throw error;
         }
-        return Promise.resolve();
+        return Promise.resolve(data[0].id);
     }
 }

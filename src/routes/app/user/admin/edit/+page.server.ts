@@ -27,7 +27,8 @@ export const actions: Actions = {
             full_name: formData.get('fullName')?.toString(),
             phone: formData.get('phone')?.toString(),
             email: formData.get('email')?.toString(),
-            role: formData.get('role')?.toString()
+            role: formData.get('role')?.toString(),
+            password: formData.get('password')?.toString() || undefined,
         };
 
         const userService = new UserServiceImpl(locals.supabase);

@@ -16,7 +16,6 @@ export class MedicalRecord extends Utils {
         private physicalExam: string,
         private vitals: JsonObject,
         private procedures: string,
-        private attachments: JsonObject,
         private treatmentPlan: string,
         private followUpDate: Date,
         private diagnosis: string,
@@ -56,9 +55,6 @@ export class MedicalRecord extends Utils {
     public getProcedures(): string {
         return this.procedures;
     }
-    public getAttachments(): JsonObject {
-        return this.attachments;
-    }
     public getTreatmentPlan(): string {
         return this.treatmentPlan;
     }
@@ -85,7 +81,6 @@ export class MedicalRecord extends Utils {
             physical_exam: this.physicalExam,
             vitals: this.vitals,
             procedures: this.procedures ?? '',
-            attachments: this.attachments ?? '',
             treatment_plan: this.treatmentPlan,
             follow_up_date: this.followUpDate,
             diagnosis: this.diagnosis,
@@ -106,7 +101,6 @@ export class MedicalRecord extends Utils {
             json.physical_exam,
             json.vitals,
             json.procedures,
-            json.attachments,
             json.treatment_plan,
             json.follow_up_date,
             json.diagnosis,
@@ -127,7 +121,6 @@ export class MedicalRecord extends Utils {
             obj.physicalExam,
             obj.vitals,
             obj.procedures,
-            obj.attachments,
             obj.treatmentPlan,
             obj.followUpDate,
             obj.diagnosis,

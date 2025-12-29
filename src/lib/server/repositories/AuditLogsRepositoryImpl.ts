@@ -10,7 +10,7 @@ export class AuditLogsRepositoryImpl implements AuditLogsRepository {
     async record(payload: AuditLogsRequest): Promise<void> {
         const { error } = await this.supabase
             .from('audit_logs')
-            .insert([payload.toJson()]);
+            .insert(payload.toJson());
         if (error) {
             throw new Error(`Failed to record audit log: ${error.message}`);
         }

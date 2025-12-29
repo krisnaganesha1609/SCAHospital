@@ -1,6 +1,7 @@
+import { AuditLogsServiceImpl } from '$lib/server/services/AuditLogsServiceImpl';
 import { PatientServiceImpl } from '$lib/server/services/PatientServiceImpl';
 import { AuditLogsRequest } from '$lib/shared/utils/AuditLogs_Request';
-export const POST = async ({ request, locals }) => {
+export const POST = async ({ request, locals, getClientAddress }) => {
     const payload = await request.json();
     const patientService = new PatientServiceImpl(locals.supabase);
     try {
@@ -10,20 +11,11 @@ export const POST = async ({ request, locals }) => {
             'create',
             'patients',
             id,
-            ''
+            getClientAddress()
         );
 
-        const auditResponse = await fetch('/api/log', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(logs)
-        });
-
-        if (!auditResponse.ok) {
-            console.error('Failed to record audit log for creating patient');
-        }
+        const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
+        await auditLogsService.recordAuditLog(logs);
         return new Response(JSON.stringify({ success: true }), { status: 201 });
     } catch (e) {
         console.error('Error adding patient:', e);

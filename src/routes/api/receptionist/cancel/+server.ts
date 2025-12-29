@@ -1,9 +1,10 @@
+import { AuditLogsServiceImpl } from '$lib/server/services/AuditLogsServiceImpl';
 import { ReservationServiceImpl } from '$lib/server/services/ReservationServiceImpl';
 import { AuditLogsRequest } from '$lib/shared/utils/AuditLogs_Request';
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 
-export const PATCH: RequestHandler = async ({ request, locals }) => {
+export const PATCH: RequestHandler = async ({ request, locals, getClientAddress }) => {
   const payload = await request.json();
   const req = payload.reservationId as string;
 
@@ -13,20 +14,11 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
     'canceling',
     'reservations',
     req,
-    ''
+    getClientAddress()
   );
 
-  const auditResponse = await fetch('/api/log', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(logs)
-  });
-
-  if (!auditResponse.ok) {
-    console.error('Failed to record audit log for canceling reservation');
-  }
+  const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
+  await auditLogsService.recordAuditLog(logs);
 
   return json({ success: true });
 };

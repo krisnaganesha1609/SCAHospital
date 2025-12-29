@@ -1,7 +1,8 @@
+import { AuditLogsServiceImpl } from '$lib/server/services/AuditLogsServiceImpl';
 import { PatientServiceImpl } from '$lib/server/services/PatientServiceImpl.js';
 import { AuditLogsRequest } from '$lib/shared/utils/AuditLogs_Request';
 
-export const PUT = async ({ request, locals }) => {
+export const PUT = async ({ request, locals, getClientAddress }) => {
     const data = await request.json();
     const id = data.id;
     const payload = data.payload;
@@ -11,19 +12,10 @@ export const PUT = async ({ request, locals }) => {
         'update',
         'patients',
         id,
-        ''
+        getClientAddress()
     );
 
-    const auditResponse = await fetch('/api/log', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(logs)
-    });
-
-    if (!auditResponse.ok) {
-        console.error('Failed to record audit log for updating patient');
-    }
+    const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
+    await auditLogsService.recordAuditLog(logs);
     return new Response(JSON.stringify({ message: `Patient updated successfully`, payload }), { status: 200 });
 }

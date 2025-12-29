@@ -9,7 +9,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
         auditLogsRequest.getAction(),
         auditLogsRequest.getTableName(),
         auditLogsRequest.getRecordId(),
-        auditLogsRequest.getIpAddress() == '' ? getClientAddress() : auditLogsRequest.getIpAddress()
+        auditLogsRequest.getIpAddress() === '' || auditLogsRequest.getIpAddress() === null || auditLogsRequest.getIpAddress() === undefined ? getClientAddress() : auditLogsRequest.getIpAddress()
     );
     const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
     await auditLogsService.recordAuditLog(payload);

@@ -1,3 +1,4 @@
+import { AuditLogsServiceImpl } from '$lib/server/services/AuditLogsServiceImpl';
 import { MedicineServiceImpl } from '$lib/server/services/MedicineServiceImpl';
 import { PrescriptionServiceImpl } from '$lib/server/services/PrescriptionServiceImpl';
 import { AuditLogsRequest } from '$lib/shared/utils/AuditLogs_Request';
@@ -5,7 +6,7 @@ import { PrescriptionItemsRequest } from '$lib/shared/utils/PrescriptionItems_Re
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
   const payload = await request.json();
   const medicalRecordId = payload.medical_record_id;
   const doctorId = payload.doctor_id;
@@ -27,20 +28,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     'issuing',
     'prescriptions',
     id,
-    ''
+    getClientAddress()
   );
 
-  const auditResponse = await fetch('/api/log', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(logs)
-  });
-
-  if (!auditResponse.ok) {
-    console.error('Failed to record audit log for issuing prescription');
-  }
+  const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
+    await auditLogsService.recordAuditLog(logs);
 
   return json({ success: true });
 };

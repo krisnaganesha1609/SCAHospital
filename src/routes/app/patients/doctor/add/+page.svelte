@@ -8,7 +8,7 @@
 	import { Calendar as UiCalendar } from '$lib/components/ui/calendar';
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Command from '$lib/components/ui/command';
-	import { type DateValue, DateFormatter, getLocalTimeZone } from '@internationalized/date';
+	import { type DateValue, CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date';
 	import { cn } from '$lib/utils.js';
 	import { CalendarDays, CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
 	import { format } from 'date-fns';
@@ -432,6 +432,7 @@
 											type="single"
 											initialFocus
 											captionLayout="dropdown"
+											minValue={new CalendarDate( new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate())}
 											bind:value={followUpDate}
 										/>
 									</Popover.Content>

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { actions } from './+page.server';
+import { actions } from '../../../routes/auth/+page.server';
 import { fail } from '@sveltejs/kit';
 
 describe('auth login action', () => {

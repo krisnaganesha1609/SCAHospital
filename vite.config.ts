@@ -10,12 +10,17 @@ export default defineConfig({
 		environment: 'node',
 		include: ['src/**/*.test.ts']
 	},
+	build: {
+		rollupOptions: {
+			external: [/\.test\.ts$/]
+		}
+	},
 	server: {
-    // This allows Vite to be accessed over the network (e.g., via ngrok or LAN)
-    host: true, 
-	allowedHosts: [
-		'localhost',
-		'33ea3ed8df3a.ngrok-free.app'
-	]
-  	},
+		// This allows Vite to be accessed over the network (e.g., via ngrok or LAN)
+		host: true,
+		allowedHosts: [
+			'localhost',
+			'33ea3ed8df3a.ngrok-free.app'
+		]
+	},
 });

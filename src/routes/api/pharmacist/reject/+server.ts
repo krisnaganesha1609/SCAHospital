@@ -27,16 +27,16 @@ export const PATCH: RequestHandler = async ({ request, locals, getClientAddress 
         }
     });
 
-    const logs: AuditLogsRequest = new AuditLogsRequest(
-        locals.user?.id || '',
-        'rejecting',
-        'prescriptions',
-        prescription_id,
-        getClientAddress()
-    );
+    // const logs: AuditLogsRequest = new AuditLogsRequest(
+    //     locals.user?.id || '',
+    //     'rejecting',
+    //     'prescriptions',
+    //     prescription_id,
+    //     getClientAddress()
+    // );
 
-    const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
-    await auditLogsService.recordAuditLog(logs);
+    // const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
+    // await auditLogsService.recordAuditLog(logs);
 
     return json({ success: true });
 };

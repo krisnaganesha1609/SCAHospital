@@ -11,15 +11,15 @@ export const PATCH: RequestHandler = async ({ request, locals, getClientAddress 
 
   await new PrescriptionServiceImpl(locals.supabase).markDispensed(prescription_id, pharmacy_approval_id);
 
-  const logs: AuditLogsRequest = new AuditLogsRequest(
-    locals.user?.id || '',
-    'dispensing',
-    'prescriptions',
-    prescription_id,
-    getClientAddress()
-  );
+  // const logs: AuditLogsRequest = new AuditLogsRequest(
+  //   locals.user?.id || '',
+  //   'dispensing',
+  //   'prescriptions',
+  //   prescription_id,
+  //   getClientAddress()
+  // );
 
-  const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
-  await auditLogsService.recordAuditLog(logs);
+  // const auditLogsService = new AuditLogsServiceImpl(locals.supabase);
+  // await auditLogsService.recordAuditLog(logs);
   return json({ success: true });
 };

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { PatientRepositoryImpl } from '$lib/server/repositories/PatientRepositoryImpl';
-import { createSupabaseMock } from '../SupabaseMock.test';
+import { createSupabaseMock } from '../SupabaseMock';
 
 describe('PatientRepositoryImpl', () => {
 

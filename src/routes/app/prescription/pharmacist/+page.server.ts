@@ -57,7 +57,7 @@ export const actions: Actions = {
         const prescriptionId = formData.get('prescriptionId') as string;
         const pharmacyApprovalId = formData.get('pharmacyApprovalId') as string;
         const cancelReason = formData.get('cancelReason') as string || 'No reason provided';
-        const response = await fetch(`${url.origin}/api/pharmacist/cancel`, {
+        const response = await fetch(`${url.origin}/api/pharmacist/reject`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'

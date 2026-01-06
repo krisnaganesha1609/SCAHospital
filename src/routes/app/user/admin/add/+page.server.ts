@@ -11,7 +11,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-    createUser: async ({ request, locals }) => {
+    createUser: async ({ request, locals, url }) => {
         const formData = await request.formData();
         const email = (formData.get('email') || '').toString().trim();
         const fullName = (formData.get('fullName') || '').toString().trim();
@@ -48,7 +48,7 @@ export const actions: Actions = {
                 ''
             );
 
-            const auditResponse = await fetch('/api/log', {
+            const auditResponse = await fetch(`${url.origin}/api/log`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

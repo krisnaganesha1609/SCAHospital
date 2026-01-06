@@ -12,13 +12,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-    approve: async ({ request, locals }) => {
+    approve: async ({ request, url }) => {
         const formData = await request.formData();
         const prescriptionId = formData.get('prescriptionId') as string;
         const pharmacyApprovalId = formData.get('pharmacyApprovalId') as string;
         const pharmacistId = formData.get('pharmacistId') as string;
 
-        const response = await fetch('/api/pharmacist/approve', {
+        const response = await fetch(`${url.origin}/api/pharmacist/approve`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -33,12 +33,12 @@ export const actions: Actions = {
             throw new Error('Failed to approve prescription');
         }
     },
-    dispense: async ({ request, locals }) => {
+    dispense: async ({ request, url }) => {
         const formData = await request.formData();
         const prescriptionId = formData.get('prescriptionId') as string;
         const pharmacyApprovalId = formData.get('pharmacyApprovalId') as string;
 
-        const response = await fetch('/api/pharmacist/dispense', {
+        const response = await fetch(`${url.origin}/api/pharmacist/dispense`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -52,12 +52,12 @@ export const actions: Actions = {
             throw new Error('Failed to dispense prescription');
         }
     },
-    cancel: async ({ request, locals }) => {
+    cancel: async ({ request, url }) => {
         const formData = await request.formData();
         const prescriptionId = formData.get('prescriptionId') as string;
         const pharmacyApprovalId = formData.get('pharmacyApprovalId') as string;
         const cancelReason = formData.get('cancelReason') as string || 'No reason provided';
-        const response = await fetch('/api/pharmacist/cancel', {
+        const response = await fetch(`${url.origin}/api/pharmacist/cancel`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'

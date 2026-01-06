@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 };
 
 export const actions: Actions = {
-    updateUser: async ({ request, locals }) => {
+    updateUser: async ({ request, locals, url }) => {
         const formData = await request.formData();
         const id = formData.get('id') as string;
 
@@ -43,7 +43,7 @@ export const actions: Actions = {
                 ''
             );
 
-            const auditResponse = await fetch('/api/log', {
+            const auditResponse = await fetch(`${url.origin}/api/log`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -61,7 +61,7 @@ export const actions: Actions = {
         }
     },
 
-    deleteUser: async ({ request, locals }) => {
+    deleteUser: async ({ request, locals, url }) => {
         const formData = await request.formData();
         const id = formData.get('id') as string;
         const userService = new UserServiceImpl(locals.supabase);
@@ -78,7 +78,7 @@ export const actions: Actions = {
                 ''
             );
 
-            const auditResponse = await fetch('/api/log', {
+            const auditResponse = await fetch(`${url.origin}/api/log`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

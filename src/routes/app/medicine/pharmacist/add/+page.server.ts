@@ -8,7 +8,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-    createMedicine: async ({ request, locals }) => {
+    createMedicine: async ({ request, locals, url }) => {
         const formData = await request.formData();
 
         const medicineRequest: MedicineRequest = new MedicineRequest(
@@ -34,7 +34,7 @@ export const actions: Actions = {
                 ''
             );
 
-            const auditResponse = await fetch('/api/log', {
+            const auditResponse = await fetch(`${url.origin}/api/log`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

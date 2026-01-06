@@ -6,10 +6,8 @@ import type { UserService } from "./interfaces/UserService";
 import { includeIfNotEmpty } from "$lib/shared/utils/Utils";
 
 export class UserServiceImpl implements UserService {
-    private supabase: SupabaseClient;
     private userRepository: UserRepositoryImpl;
     constructor(supabase: SupabaseClient) {
-        this.supabase = supabase;
         this.userRepository = new UserRepositoryImpl(supabase);
     }
     async createUser(fullName: string, password: string, role: roles, phone: string, email: string): Promise<uuid> {

@@ -15,13 +15,17 @@ npm run dev
 npm run dev -- --open
 ```
 
+Also, you need to rename the `.example.env.local` into `.env.local` and contact the project organizer to retrieve the SUPABASE KEY! 
+
 ## Components
 
 - [`shadcn-svelte`](https://shadcn-svelte.com/docs/components)
+
+How to add new component:
 
 ```sh
 npx shadcn-svelte@latest add [component_name]
 ```
 
 - [`supabase-js`](https://supabase.com/docs/guides/auth/server-side/sveltekit)
-- [`svelte-sonner`]
+- [`date-fns`](https://date-fns.org/)
